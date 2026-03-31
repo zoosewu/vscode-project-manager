@@ -1,7 +1,7 @@
 # Design: Migrate Project Storage from globalState to User-Level settings.json
 
 **Date:** 2026-03-31
-**Status:** Approved
+**Status:** Approved (rev 3)
 
 ## Summary
 
@@ -55,7 +55,7 @@ Register `projectManager.projects` in `package.json` under `contributes.configur
             "profile": { "type": "string", "default": "" },
             "group": { "type": "string", "default": "" }
         },
-        "additionalProperties": false
+        "additionalProperties": true
     }
 }
 ```
@@ -63,6 +63,7 @@ Register `projectManager.projects` in `package.json` under `contributes.configur
 - **`scope: "application"`** ensures the setting is user-level only, not per-workspace.
 - **`required: ["name", "rootPath"]`** — minimum for a valid project entry. Other fields have defaults.
 - Settings Sync handles `application`-scoped settings natively — `setKeysForSync()` is removed.
+- **`additionalProperties: true`** — prevents the JSON schema validator from rejecting unknown keys in the settings editor. Note: the runtime model only contains known `Project` fields after `load()` (the second `.map()` projects to known fields only). Any unknown keys added by hand in settings.json will remain in the file until the next `save()`, at which point only known fields are written back. This is an acceptable trade-off: the schema stays lenient for editor validation, while the runtime operates on a well-defined shape.
 
 ### Localization
 
@@ -124,6 +125,8 @@ public load(): string {
             group: project.group
         }));
 
+        this.projects = this.projects.filter(p => p.name !== "" && p.rootPath !== "");
+
         this.updatePaths();
         return "";
     } catch (error) {
@@ -137,10 +140,19 @@ public load(): string {
 
 ```typescript
 public async save(): Promise<void> {
-    const config = vscode.workspace.getConfiguration("projectManager");
-    await config.update("projects", this.projects, vscode.ConfigurationTarget.Global);
+    try {
+        const config = vscode.workspace.getConfiguration("projectManager");
+        await config.update("projects", this.projects, vscode.ConfigurationTarget.Global);
+    } catch (error) {
+        vscode.window.showErrorMessage(
+            l10n.t("Failed to save projects: {0}", error.toString())
+        );
+        throw error;
+    }
 }
 ```
+
+Error handling is required: `config.update()` can fail if the settings file is read-only or inaccessible. The in-memory `projects` array may already reflect the change, so callers must be aware that a failed save means data is not persisted.
 
 Writes to user-level settings.json via `ConfigurationTarget.Global`.
 
@@ -231,12 +243,26 @@ Remove keys for deleted commands/settings from `package.nls.json` and all `packa
 
 ---
 
-## 6. Unchanged Components
+## 6. Additional Affected File: `src/quickpick/projectsPicker.ts`
+
+The `folderNotFound()` function calls `commands.executeCommand("projectManager.editProjects")` when a project has an invalid path and the user chooses "Update Project". Since `editProjects` is removed, this must be replaced.
+
+Replacement: open VS Code settings focused on `projectManager.projects`:
+
+```typescript
+commands.executeCommand("workbench.action.openSettings", "projectManager.projects");
+```
+
+This takes the user directly to the relevant setting where they can fix the path.
+
+---
+
+## 7. Unchanged Components
 
 | Component | Why Unchanged |
 |-----------|---------------|
 | `src/sidebar/` (`StorageProvider`, `providers.ts`, `autodetectProvider.ts`, `nodes.ts`) | Only calls `ProjectStorage` public methods; interface unchanged |
-| `src/quickpick/` (`projectsPicker.ts`, `tagsPicker.ts`) | Same |
+| `src/quickpick/tagsPicker.ts` | No storage dependency |
 | `src/statusbar/` | Does not touch storage directly |
 | `src/autodetect/` | Independent of favorites storage |
 | `src/core/project.ts` | `Project` interface unchanged |
@@ -246,7 +272,7 @@ Remove keys for deleted commands/settings from `package.nls.json` and all `packa
 
 ---
 
-## 7. Testing Strategy
+## 8. Testing Strategy
 
 ### Unit Tests
 
@@ -265,7 +291,18 @@ Remove keys for deleted commands/settings from `package.nls.json` and all `packa
 
 ---
 
-## 8. Risk Assessment
+## 9. Breaking Changes (Explicit List)
+
+This is a major version breaking change. The following must be documented in the changelog and What's New:
+
+1. **Project data reset** — Existing projects stored in globalState are not migrated. Users must re-add their projects or manually copy the data into `settings.json`. The release notes must prominently warn about this and provide instructions.
+2. **Removed commands** — `projectManager.exportProjects`, `projectManager.importProjects`, `projectManager.editProjects`, `_projectManager.refreshFavorites`. Users with custom keybindings to these commands will see "command not found" errors.
+3. **Removed setting** — `projectManager.projectsLocation` is fully removed. Users referencing this in settings will see an "unknown setting" warning.
+4. **External integrations** — Other extensions or scripts calling `executeCommand("projectManager.exportProjects")` etc. will break.
+
+---
+
+## 10. Risk Assessment
 
 | Risk | Mitigation |
 |------|------------|
@@ -274,3 +311,5 @@ Remove keys for deleted commands/settings from `package.nls.json` and all `packa
 | Settings Sync conflicts | VS Code handles settings.json merge; acceptable for project lists |
 | `onDidChangeConfiguration` firing during programmatic saves | `affectsConfiguration` check is lightweight; redundant reload is harmless |
 | Users accidentally break JSON syntax in settings.json | VS Code's settings editor provides validation and error highlighting via the registered JSON schema |
+| Very large project lists degrade settings.json editability | Hundreds of projects is practical; for extreme cases (1000+), recommend periodic cleanup. Settings Sync merge conflicts become more likely with very large arrays |
+| `onDidChangeConfiguration` fires during programmatic `save()` | The reload is idempotent (re-reads what was just written); minor redundant work but no correctness issue |
