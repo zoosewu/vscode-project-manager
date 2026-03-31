@@ -18,8 +18,8 @@ export class ProjectStorage {
         this.projects = [];
     }
 
-    public push(name: string, rootPath: string): void {
-        this.projects.push(createProject(name, rootPath));
+    public push(name: string, rootPath: string, group: string = ""): void {
+        this.projects.push(createProject(name, rootPath, group));
         return;
     }
 

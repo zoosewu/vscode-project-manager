@@ -33,7 +33,7 @@ import { l10n } from "vscode";
 import { registerWalkthrough } from "./commands/walkthrough";
 import { registerSideBarDecorations } from "./sidebar/decoration";
 import { ProjectNode } from "./sidebar/nodes";
-import { Project } from "./core/project";
+import { parseProjectInput, Project } from "./core/project";
 
 let locators: Locators;
 
@@ -322,7 +322,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
         let selectedTags: string[] | undefined;
 
-        const saveProjectInternal = async (projectName: string, tags?: string[]): Promise<boolean> => {
+        const saveProjectInternal = async (rawInput: string, tags?: string[]): Promise<boolean> => {
+            const { name: projectName, group } = parseProjectInput(rawInput);
+
             if (projectName === "") {
                 vscode.window.showWarningMessage(l10n.t("You must define a name for the project."));
                 return false;
@@ -333,7 +335,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (!projectStorage.exists(projectName)) {
                 Container.stack.push(projectName);
                 context.globalState.update("recent", Container.stack.toString());
-                projectStorage.push(projectName, rootPath);
+                projectStorage.push(projectName, rootPath, group);
                 if (tagsToSave) {
                     projectStorage.editTags(projectName, tagsToSave);
                 }
@@ -364,6 +366,9 @@ export async function activate(context: vscode.ExtensionContext) {
                     Container.stack.push(projectName);
                     context.globalState.update("recent", Container.stack.toString());
                     projectStorage.updateRootPath(projectName, rootPath);
+                    if (group) {
+                        projectStorage.editGroup(projectName, group);
+                    }
                     if (tagsToSave) {
                         projectStorage.editTags(projectName, tagsToSave);
                     }
@@ -383,7 +388,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const input = vscode.window.createInputBox();
         input.title = l10n.t("Save Project");
         input.prompt = l10n.t("Project Name");
-        input.placeholder = l10n.t("Type a name for your project");
+        input.placeholder = l10n.t("Type a name for your project (e.g. Work/Frontend/my-app)");
         input.value = wpath;
 
         const tagsButton: vscode.QuickInputButton = {

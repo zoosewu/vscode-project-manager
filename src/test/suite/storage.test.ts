@@ -8,7 +8,7 @@ import * as path from "path";
 import * as os from "os";
 import * as vscode from "vscode";
 import { Uri } from "vscode";
-import { normalizeGroupPath } from "../../core/project";
+import { normalizeGroupPath, parseProjectInput } from "../../core/project";
 import { ProjectStorage } from "../../storage/storage";
 import { NO_TAGS_DEFINED } from "../../sidebar/constants";
 
@@ -349,5 +349,37 @@ suite("normalizeGroupPath", () => {
 
     test("handles complex case", () => {
         assert.strictEqual(normalizeGroupPath("  /Work///Frontend/ "), "Work/Frontend");
+    });
+});
+
+suite("parseProjectInput", () => {
+    test("plain name without slash returns empty group", () => {
+        const result = parseProjectInput("my-app");
+        assert.strictEqual(result.name, "my-app");
+        assert.strictEqual(result.group, "");
+    });
+
+    test("single slash separates group and name", () => {
+        const result = parseProjectInput("Work/my-app");
+        assert.strictEqual(result.name, "my-app");
+        assert.strictEqual(result.group, "Work");
+    });
+
+    test("nested group path is extracted", () => {
+        const result = parseProjectInput("Work/Frontend/my-app");
+        assert.strictEqual(result.name, "my-app");
+        assert.strictEqual(result.group, "Work/Frontend");
+    });
+
+    test("trailing slash yields empty name", () => {
+        const result = parseProjectInput("Work/Frontend/");
+        assert.strictEqual(result.name, "");
+        assert.strictEqual(result.group, "Work/Frontend");
+    });
+
+    test("group path is normalized", () => {
+        const result = parseProjectInput("  /Work//Frontend/my-app");
+        assert.strictEqual(result.name, "my-app");
+        assert.strictEqual(result.group, "Work/Frontend");
     });
 });

@@ -33,3 +33,14 @@ export function normalizeGroupPath(group: string): string {
         .replace(/\/+/g, "/")
         .replace(/^\/|\/$/g, "");
 }
+
+export function parseProjectInput(input: string): { name: string; group: string } {
+    const lastSlash = input.lastIndexOf("/");
+    if (lastSlash === -1) {
+        return { name: input, group: "" };
+    }
+    return {
+        name: input.substring(lastSlash + 1),
+        group: normalizeGroupPath(input.substring(0, lastSlash))
+    };
+}
