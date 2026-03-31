@@ -5,7 +5,7 @@
 	"version": "13.0.0",
 	"publisher": "alefragnani",
 	"engines": {
-		"vscode": "^1.74.0"
+		"vscode": "^1.78.0"
 	},
 	"categories": [
 		"Other"
@@ -133,16 +133,24 @@
 				"icon": "$(edit)"
 			},
 			{
+				"command": "projectManager.exportProjects",
+				"title": "%projectManager.commands.exportProjects.title%",
+				"icon": "$(export)"
+			},
+			{
+				"command": "projectManager.importProjects",
+				"title": "%projectManager.commands.importProjects.title%",
+				"icon": "$(cloud-download)"
+			},
+			{
 				"command": "_projectManager.viewAsTags#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsTags#sideBarFavorites.title%",
-				"icon": "$(list-tree)",
-				"enablement": "projectManager.viewAsList"
+				"icon": "$(list-tree)"
 			},
 			{
 				"command": "_projectManager.viewAsList#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsList#sideBarFavorites.title%",
-				"icon": "$(list-flat)",
-				"enablement": "!projectManager.viewAsList"
+				"icon": "$(list-flat)"
 			},
 			{
 				"command": "_projectManager.sortBySaved#sideBarFavorites",
@@ -181,6 +189,12 @@
 			{
 				"command": "projectManager.refreshProjects",
 				"title": "%projectManager.commands.refreshProjects.title%"
+			},
+			{
+				"command": "_projectManager.refreshFavorites",
+				"title": "%projectManager.commands.refreshFavorites.title%",
+				"icon": "$(refresh)",
+				"category": "Project Manager"
 			},
 			{
 				"command": "projectManager.refreshVSCodeProjects",
@@ -293,11 +307,20 @@
 				"command": "_projectManager.renameProject",
 				"title": "%projectManager.commands.renameProject.title%"
 			},
-			{
-				"command": "_projectManager.editTags",
-				"title": "%projectManager.commands.editTags.title%"
-			},
-			{
+		{
+			"command": "_projectManager.editTags",
+			"title": "%projectManager.commands.editTags.title%"
+		},
+		{
+			"command": "_projectManager.editGroup",
+			"title": "%projectManager.commands.editGroup.title%"
+		},
+		{
+			"command": "_projectManager.viewAsGroups#sideBarFavorites",
+			"title": "%projectManager.commands.viewAsGroups#sideBarFavorites.title%",
+			"icon": "$(type-hierarchy)"
+		},
+		{
 				"command": "projectManager.whatsNew",
 				"title": "%projectManager.commands.whatsNew.title%"
 			},
@@ -464,11 +487,23 @@
 					"command": "_projectManager.openFolderWelcome",
 					"when": "false"
 				},
-				{
-					"command": "_projectManager.openSideBar",
-					"when": "false"
-				}
-			],
+			{
+				"command": "_projectManager.openSideBar",
+				"when": "false"
+			},
+			{
+				"command": "_projectManager.editGroup",
+				"when": "false"
+			},
+			{
+				"command": "_projectManager.viewAsGroups#sideBarFavorites",
+				"when": "false"
+			},
+			{
+				"command": "_projectManager.refreshFavorites",
+				"when": "false"
+			}
+		],
 			"view/title": [
 				{
 					"command": "projectManager.saveProject",
@@ -476,22 +511,32 @@
 					"group": "navigation@10"
 				},
 				{
-					"command": "projectManager.editProjects",
+					"command": "_projectManager.refreshFavorites",
 					"when": "view == projectsExplorerFavorites",
 					"group": "navigation@11"
 				},
 				{
-					"command": "_projectManager.viewAsTags#sideBarFavorites",
-					"when": "view == projectsExplorerFavorites && projectManager.viewAsList",
+					"command": "projectManager.editProjects",
+					"when": "view == projectsExplorerFavorites",
 					"group": "navigation@12"
 				},
 				{
-					"command": "_projectManager.viewAsList#sideBarFavorites",
-					"when": "view == projectsExplorerFavorites && !projectManager.viewAsList",
+					"command": "_projectManager.viewAsTags#sideBarFavorites",
+					"when": "view == projectsExplorerFavorites && projectManager.favoritesViewMode == 'list'",
 					"group": "navigation@13"
 				},
 				{
-					"command": "projectManager.listFavoriteProjects#sideBarFavorites",
+					"command": "_projectManager.viewAsGroups#sideBarFavorites",
+					"when": "view == projectsExplorerFavorites && projectManager.favoritesViewMode == 'tags'",
+					"group": "navigation@13"
+				},
+				{
+					"command": "_projectManager.viewAsList#sideBarFavorites",
+					"when": "view == projectsExplorerFavorites && projectManager.favoritesViewMode == 'groups'",
+					"group": "navigation@13"
+				},
+			{
+				"command": "projectManager.listFavoriteProjects#sideBarFavorites",
 					"when": "view == projectsExplorerFavorites",
 					"group": "navigation@14"
 				},
@@ -632,13 +677,18 @@
 					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
 					"group": "favorites"
 				},
-				{
-					"command": "_projectManager.editTags",
-					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
-					"group": "favorites"
-				},
-				{
-					"command": "_projectManager.toggleProjectEnabled",
+			{
+				"command": "_projectManager.editTags",
+				"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
+				"group": "favorites"
+			},
+			{
+				"command": "_projectManager.editGroup",
+				"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
+				"group": "favorites"
+			},
+			{
+				"command": "_projectManager.toggleProjectEnabled",
 					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
 					"group": "favorites"
 				},
@@ -665,12 +715,16 @@
 					"command": "_projectManager.viewAsList#sideBarFavorites",
 					"group": "1_projectManager#sideBarFavorites"
 				},
-				{
-					"command": "_projectManager.viewAsTags#sideBarFavorites",
-					"group": "1_projectManager#sideBarFavorites"
-				},
-				{
-					"command": "_projectManager.sortBySaved#sideBarFavorites",
+			{
+				"command": "_projectManager.viewAsTags#sideBarFavorites",
+				"group": "1_projectManager#sideBarFavorites"
+			},
+			{
+				"command": "_projectManager.viewAsGroups#sideBarFavorites",
+				"group": "1_projectManager#sideBarFavorites"
+			},
+			{
+				"command": "_projectManager.sortBySaved#sideBarFavorites",
 					"group": "2_projectManager#sideBarFavorites"
 				},
 				{
@@ -730,11 +784,12 @@
 						"default": false,
 						"description": "%projectManager.configuration.groupList.description%"
 					},
-					"projectManager.projectsLocation": {
-						"type": "string",
-						"default": "",
-						"description": "%projectManager.configuration.projectsLocation.description%"
-					},
+				"projectManager.projectsLocation": {
+					"type": "string",
+					"default": "",
+					"description": "%projectManager.configuration.projectsLocation.description%",
+					"deprecationMessage": "Projects are now stored in synced global state. Use Export/Import commands instead."
+				},
 					"projectManager.cacheProjectsBetweenSessions": {
 						"type": "boolean",
 						"default": true,
@@ -1122,7 +1177,8 @@
 		"pretest": "npm run compile && npm run lint",
 		"test-compile": "tsc -p ./ && npm run webpack",
 		"just-test": "node ./out/src/test/runTest.js",
-		"test": "npm run test-compile && npm run just-test"
+		"test": "npm run test-compile && npm run just-test",
+		"package": "npx @vscode/vsce package --no-dependencies --skip-license"
 	},
 	"devDependencies": {
 		"@types/mocha": "^10.0.0",

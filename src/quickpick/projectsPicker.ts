@@ -25,7 +25,7 @@ function getProjects(itemsSorted: any[]): Promise<any[]> {
     });
 }
 
-function folderNotFound(name: string, projectStorage: ProjectStorage) {
+async function folderNotFound(name: string, projectStorage: ProjectStorage) {
 
     const optionUpdateProject = <MessageItem>{
         title: l10n.t("Update Project")
@@ -34,20 +34,18 @@ function folderNotFound(name: string, projectStorage: ProjectStorage) {
         title: l10n.t("Delete Project")
     };
 
-    window.showErrorMessage(l10n.t("The project has an invalid path. What would you like to do?"), optionUpdateProject, optionDeleteProject).then(option => {
-        // nothing selected
-        if (typeof option === "undefined") {
-            return;
-        }
+    const option = await window.showErrorMessage(l10n.t("The project has an invalid path. What would you like to do?"), optionUpdateProject, optionDeleteProject);
 
-        if (option.title === l10n.t("Update Project")) {
-            commands.executeCommand("projectManager.editProjects");
-        } else { // Update Project
-            projectStorage.pop(name);
-            projectStorage.save();
-            return;
-        }
-    });
+    if (typeof option === "undefined") {
+        return;
+    }
+
+    if (option.title === l10n.t("Update Project")) {
+        commands.executeCommand("projectManager.editProjects");
+    } else {
+        projectStorage.pop(name);
+        await projectStorage.save();
+    }
 }
 
 function canPickSelectedProject(item: QuickPickItem, projectStorage: ProjectStorage): boolean {
@@ -139,6 +137,7 @@ export async function pickProjects(projectStorage: ProjectStorage, locators: Loc
                             return {
                                 label: folder.label,
                                 description: folder.description,
+                                detail: folder.group || undefined,
                                 profile: folder.profile,
                                 buttons: showOpenInNewWindowButton ? [ openInNewWindowButton ] : []
                             };
