@@ -2,7 +2,7 @@
 	"name": "project-manager",
 	"displayName": "Project Manager",
 	"description": "Easily switch between projects",
-	"version": "13.0.1",
+	"version": "13.1.0",
 	"publisher": "alefragnani",
 	"engines": {
 		"vscode": "^1.78.0"
@@ -128,21 +128,6 @@
 				"title": "%projectManager.commands.listProjectsNewWindow.title%"
 			},
 			{
-				"command": "projectManager.editProjects",
-				"title": "%projectManager.commands.editProjects.title%",
-				"icon": "$(edit)"
-			},
-			{
-				"command": "projectManager.exportProjects",
-				"title": "%projectManager.commands.exportProjects.title%",
-				"icon": "$(export)"
-			},
-			{
-				"command": "projectManager.importProjects",
-				"title": "%projectManager.commands.importProjects.title%",
-				"icon": "$(cloud-download)"
-			},
-			{
 				"command": "_projectManager.viewAsTags#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsTags#sideBarFavorites.title%",
 				"icon": "$(list-tree)"
@@ -189,12 +174,6 @@
 			{
 				"command": "projectManager.refreshProjects",
 				"title": "%projectManager.commands.refreshProjects.title%"
-			},
-			{
-				"command": "_projectManager.refreshFavorites",
-				"title": "%projectManager.commands.refreshFavorites.title%",
-				"icon": "$(refresh)",
-				"category": "Project Manager"
 			},
 			{
 				"command": "projectManager.refreshVSCodeProjects",
@@ -498,10 +477,6 @@
 			{
 				"command": "_projectManager.viewAsGroups#sideBarFavorites",
 				"when": "false"
-			},
-			{
-				"command": "_projectManager.refreshFavorites",
-				"when": "false"
 			}
 		],
 			"view/title": [
@@ -509,16 +484,6 @@
 					"command": "projectManager.saveProject",
 					"when": "view == projectsExplorerFavorites",
 					"group": "navigation@10"
-				},
-				{
-					"command": "_projectManager.refreshFavorites",
-					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@11"
-				},
-				{
-					"command": "projectManager.editProjects",
-					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@12"
 				},
 				{
 					"command": "_projectManager.viewAsTags#sideBarFavorites",
@@ -784,12 +749,26 @@
 						"default": false,
 						"description": "%projectManager.configuration.groupList.description%"
 					},
-				"projectManager.projectsLocation": {
-					"type": "string",
-					"default": "",
-					"description": "%projectManager.configuration.projectsLocation.description%",
-					"deprecationMessage": "Projects are now stored in synced global state. Use Export/Import commands instead."
-				},
+					"projectManager.projects": {
+						"type": "array",
+						"scope": "application",
+						"default": [],
+						"description": "%projectManager.configuration.projects.description%",
+						"items": {
+							"type": "object",
+							"required": ["name", "rootPath"],
+							"properties": {
+								"name": { "type": "string", "description": "Project display name" },
+								"rootPath": { "type": "string", "description": "Absolute path or remote URI" },
+								"paths": { "type": "array", "items": { "type": "string" }, "default": [] },
+								"tags": { "type": "array", "items": { "type": "string" }, "default": [] },
+								"enabled": { "type": "boolean", "default": true },
+								"profile": { "type": "string", "default": "" },
+								"group": { "type": "string", "default": "" }
+							},
+							"additionalProperties": true
+						}
+					},
 					"projectManager.cacheProjectsBetweenSessions": {
 						"type": "boolean",
 						"default": true,

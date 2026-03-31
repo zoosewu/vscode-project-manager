@@ -41,7 +41,7 @@ async function folderNotFound(name: string, projectStorage: ProjectStorage) {
     }
 
     if (option.title === l10n.t("Update Project")) {
-        commands.executeCommand("projectManager.editProjects");
+        commands.executeCommand("workbench.action.openSettings", "projectManager.projects");
     } else {
         projectStorage.pop(name);
         await projectStorage.save();

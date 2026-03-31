@@ -3,26 +3,23 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { Memento, Uri } from "vscode";
+import * as vscode from "vscode";
+import { Uri, l10n } from "vscode";
 import { PathUtils } from "../utils/path";
 import { isRemotePath } from "../utils/remote";
 import { createProject, normalizeGroupPath, Project } from "../core/project";
 import { NO_TAGS_DEFINED } from "../sidebar/constants";
 
-const STORAGE_KEY = "projectManager.projects";
-
 export class ProjectStorage {
 
     private projects: Project[];
-    private globalState: Memento;
 
-    constructor(globalState: Memento) {
-        this.globalState = globalState;
+    constructor() {
         this.projects = [];
     }
 
-    public push(name: string, rootPath: string): void {
-        this.projects.push(createProject(name, rootPath));
+    public push(name: string, rootPath: string, group: string = ""): void {
+        this.projects.push(createProject(name, rootPath, group));
         return;
     }
 
@@ -126,7 +123,8 @@ export class ProjectStorage {
 
     public load(): string {
         try {
-            const items = this.globalState.get<Array<Partial<Project>>>(STORAGE_KEY, []);
+            const config = vscode.workspace.getConfiguration("projectManager");
+            const items = config.get<Array<Partial<Project>>>("projects", []);
 
             this.projects = items.map(item => ({
                 name: "",
@@ -149,6 +147,8 @@ export class ProjectStorage {
                 group: project.group
             }));
 
+            this.projects = this.projects.filter(p => p.name !== "" && p.rootPath !== "");
+
             this.updatePaths();
             return "";
         } catch (error) {
@@ -158,7 +158,15 @@ export class ProjectStorage {
     }
 
     public async save(): Promise<void> {
-        await this.globalState.update(STORAGE_KEY, this.projects);
+        try {
+            const config = vscode.workspace.getConfiguration("projectManager");
+            await config.update("projects", this.projects, vscode.ConfigurationTarget.Global);
+        } catch (error) {
+            vscode.window.showErrorMessage(
+                l10n.t("Failed to save projects: {0}", error.toString())
+            );
+            throw error;
+        }
     }
 
     public getProjects(): Project[] {

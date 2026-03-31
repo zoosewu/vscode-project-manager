@@ -3,9 +3,27 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { commands, l10n, window, workspace } from "vscode";
+import { commands, l10n, Uri, window, workspace } from "vscode";
 import path = require("path");
 import { isRunningOnCodespaces } from "./remote";
+
+const REMOTE_TYPE_LABELS: Record<string, string> = {
+    "ssh-remote": "SSH",
+    "wsl": "WSL",
+    "attached-container": "Container",
+    "dev-container": "Container",
+    "codespaces": "Codespaces",
+    "tunnel": "Tunnel",
+};
+
+function getRemoteTypeLabel(uri: Uri): string {
+    const remoteType = uri.authority.split("+")[0];
+    return REMOTE_TYPE_LABELS[remoteType] ?? remoteType;
+}
+
+function prefixedName(baseName: string, prefix: string): string {
+    return `${prefix}/${baseName}`;
+}
 
 export interface ProjectDetails {
     path: string;
@@ -24,14 +42,15 @@ export async function getProjectDetails(): Promise<ProjectDetails> {
         if (workspace.workspaceFile.scheme === "file") {
             return {
                 path: workspace.workspaceFile.fsPath,
-                name: path.basename(workspace.workspaceFile.fsPath, ".code-workspace")
+                name: prefixedName(path.basename(workspace.workspaceFile.fsPath, ".code-workspace"), "Local")
             };
         }
 
         if (workspace.workspaceFile.scheme === "vscode-remote") {
+            const label = getRemoteTypeLabel(workspace.workspaceFile);
             return {
                 path: `${workspace.workspaceFile.scheme}://${workspace.workspaceFile.authority}${workspace.workspaceFile.path}`,
-                name: path.basename(workspace.workspaceFile.fsPath, ".code-workspace")
+                name: prefixedName(path.basename(workspace.workspaceFile.fsPath, ".code-workspace"), label)
             };
         }
     }
@@ -48,28 +67,30 @@ export async function getProjectDetails(): Promise<ProjectDetails> {
             if (info) {
                 return {
                     path: `vscode-remote://codespaces+${info.name}${workspace.workspaceFolders[ 0 ].uri.fsPath}`,
-                    name: path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath)
+                    name: prefixedName(path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath), "Codespaces")
                 };
             }
         }
 
         return {
             path: workspace.workspaceFolders[ 0 ].uri.fsPath,
-            name: path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath)
+            name: prefixedName(path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath), "Local")
         };
     }
 
     if (workspace.workspaceFolders[ 0 ].uri.scheme === "vscode-remote") {
+        const label = getRemoteTypeLabel(workspace.workspaceFolders[ 0 ].uri);
         return {
             path: `${workspace.workspaceFolders[ 0 ].uri.scheme}://${workspace.workspaceFolders[ 0 ].uri.authority}${workspace.workspaceFolders[ 0 ].uri.path}`,
-            name: path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath)
+            name: prefixedName(path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath), label)
         };
     }
 
     if (workspace.workspaceFolders[ 0 ].uri.scheme === "vscode-vfs") {
+        const label = getRemoteTypeLabel(workspace.workspaceFolders[ 0 ].uri);
         return {
             path: `${workspace.workspaceFolders[ 0 ].uri.scheme}://${workspace.workspaceFolders[ 0 ].uri.authority}${workspace.workspaceFolders[ 0 ].uri.path}`,
-            name: path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath)
+            name: prefixedName(path.basename(workspace.workspaceFolders[ 0 ].uri.fsPath), label)
         };
     }
 }

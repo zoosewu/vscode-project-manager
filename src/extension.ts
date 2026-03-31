@@ -8,7 +8,6 @@ import * as vscode from "vscode";
 
 import { Locators } from "./autodetect/locators";
 import { ProjectStorage } from "./storage/storage";
-import { needsMigration, migrateFromFile } from "./storage/migration";
 import { PathUtils } from "./utils/path";
 
 import { Providers } from "./sidebar/providers";
@@ -23,7 +22,6 @@ import { Container } from "./core/container";
 import { registerWhatsNew } from "./whats-new/commands";
 import { registerSupportProjectManager } from "./commands/supportProjectManager";
 import { registerHelpAndFeedbackView } from "./sidebar/helpAndFeedbackView";
-import { exportProjects, importProjects } from "./commands/exportImport";
 import { registerRevealFileInOS } from "./commands/revealFileInOS";
 import { registerOpenSettings } from "./commands/openSettings";
 import { pickTags } from "./quickpick/tagsPicker";
@@ -35,7 +33,7 @@ import { l10n } from "vscode";
 import { registerWalkthrough } from "./commands/walkthrough";
 import { registerSideBarDecorations } from "./sidebar/decoration";
 import { ProjectNode } from "./sidebar/nodes";
-import { Project } from "./core/project";
+import { parseProjectInput, Project } from "./core/project";
 
 let locators: Locators;
 
@@ -51,25 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // load the projects
     locators = new Locators();
 
-    context.globalState.setKeysForSync(["projectManager.projects"]);
-
-    if (needsMigration(context.globalState)) {
-        try {
-            const projectsLocation = vscode.workspace.getConfiguration("projectManager").get<string>("projectsLocation", "");
-            const result = await migrateFromFile(context.globalState, projectsLocation);
-            if (result.migrated) {
-                vscode.window.showInformationMessage(
-                    l10n.t("Projects migrated from projects.json to synced storage. ({0} projects)", result.count)
-                );
-            }
-        } catch {
-            vscode.window.showErrorMessage(
-                l10n.t("Failed to migrate projects.json. You can use Import Projects to load them manually.")
-            );
-        }
-    }
-
-    const projectStorage: ProjectStorage = new ProjectStorage(context.globalState);
+    const projectStorage: ProjectStorage = new ProjectStorage();
 
     const providerManager: Providers = new Providers(locators, projectStorage);
     locators.setProviderManager(providerManager);
@@ -124,13 +104,6 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("projectManager.saveProject", () => saveProject());
     vscode.commands.registerCommand("projectManager.refreshProjects", () => refreshProjects(true, true));
     locators.registerCommands();
-    vscode.commands.registerCommand("projectManager.editProjects", () => editProjects());
-    vscode.commands.registerCommand("projectManager.exportProjects", async () => { await exportProjects(projectStorage); });
-    vscode.commands.registerCommand("projectManager.importProjects", async () => { await importProjects(projectStorage, () => {
-        loadProjectsFile();
-        providerManager.storageProvider.refresh();
-        providerManager.updateTreeViewStorage();
-    }); });
     vscode.commands.registerCommand("projectManager.listProjects", () => listProjects(false));
     vscode.commands.registerCommand("projectManager.listProjectsNewWindow", () => listProjects(true));
     
@@ -169,10 +142,6 @@ export async function activate(context: vscode.ExtensionContext) {
         await projectStorage.save();
         providerManager.refreshStorageTreeView();
         vscode.window.showInformationMessage(l10n.t("Project group updated!"));
-    });
-    vscode.commands.registerCommand("_projectManager.refreshFavorites", () => {
-        loadProjectsFile();
-        providerManager.refreshStorageTreeView();
     });
     vscode.commands.registerCommand("projectManager.addToFavorites", (node) => saveProject(node));
     vscode.commands.registerCommand("_projectManager.toggleProjectEnabled", (node) => toggleProjectEnabled(node));
@@ -271,6 +240,12 @@ export async function activate(context: vscode.ExtensionContext) {
             providerManager.updateTreeViewStorage();
         }
 
+        if (cfg.affectsConfiguration("projectManager.projects")) {
+            loadProjectsFile();
+            providerManager.storageProvider.refresh();
+            providerManager.updateTreeViewStorage();
+        }
+
         if (cfg.affectsConfiguration("projectManager.showParentFolderInfoOnDuplicates")) {
             providerManager.refreshTreeViews();
         }
@@ -329,10 +304,6 @@ export async function activate(context: vscode.ExtensionContext) {
         });
     }
 
-    function editProjects() {
-        vscode.commands.executeCommand("projectManager.exportProjects");
-    }
-
     async function saveProject(node?: ProjectNode) {
         let wpath: string;
         let rootPath: string;
@@ -351,7 +322,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
         let selectedTags: string[] | undefined;
 
-        const saveProjectInternal = async (projectName: string, tags?: string[]): Promise<boolean> => {
+        const saveProjectInternal = async (rawInput: string, tags?: string[]): Promise<boolean> => {
+            const { name: projectName, group } = parseProjectInput(rawInput);
+
             if (projectName === "") {
                 vscode.window.showWarningMessage(l10n.t("You must define a name for the project."));
                 return false;
@@ -362,7 +335,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (!projectStorage.exists(projectName)) {
                 Container.stack.push(projectName);
                 context.globalState.update("recent", Container.stack.toString());
-                projectStorage.push(projectName, rootPath);
+                projectStorage.push(projectName, rootPath, group);
                 if (tagsToSave) {
                     projectStorage.editTags(projectName, tagsToSave);
                 }
@@ -393,6 +366,9 @@ export async function activate(context: vscode.ExtensionContext) {
                     Container.stack.push(projectName);
                     context.globalState.update("recent", Container.stack.toString());
                     projectStorage.updateRootPath(projectName, rootPath);
+                    if (group) {
+                        projectStorage.editGroup(projectName, group);
+                    }
                     if (tagsToSave) {
                         projectStorage.editTags(projectName, tagsToSave);
                     }
@@ -412,7 +388,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const input = vscode.window.createInputBox();
         input.title = l10n.t("Save Project");
         input.prompt = l10n.t("Project Name");
-        input.placeholder = l10n.t("Type a name for your project");
+        input.placeholder = l10n.t("Type a name for your project (e.g. Work/Frontend/my-app)");
         input.value = wpath;
 
         const tagsButton: vscode.QuickInputButton = {
