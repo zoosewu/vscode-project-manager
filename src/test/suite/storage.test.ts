@@ -13,6 +13,7 @@ import { ProjectStorage } from "../../storage/storage";
 import { NO_TAGS_DEFINED } from "../../sidebar/constants";
 
 let stubProjects: unknown[] = [];
+let lastUpdateTarget: vscode.ConfigurationTarget | undefined;
 const originalGetConfiguration = vscode.workspace.getConfiguration.bind(vscode.workspace);
 
 function installProjectManagerConfigStub(): void {
@@ -25,9 +26,10 @@ function installProjectManagerConfigStub(): void {
                     }
                     return originalGetConfiguration(section, scope).get(key, defaultValue);
                 },
-                update: async (key: string, value: unknown) => {
+                update: async (key: string, value: unknown, target?: vscode.ConfigurationTarget) => {
                     if (key === "projects") {
                         stubProjects = value as unknown[];
+                        lastUpdateTarget = target;
                     }
                 },
                 has: (key: string) => (key === "projects" ? true : originalGetConfiguration(section, scope).has(key)),
@@ -50,6 +52,7 @@ suite("ProjectStorage", () => {
 
     setup(() => {
         stubProjects = [];
+        lastUpdateTarget = undefined;
     });
 
     test("push and length track added projects", () => {
@@ -190,7 +193,8 @@ suite("ProjectStorage", () => {
         assert.deepStrictEqual(mapped[0], {
             label: "EnabledProject",
             description: "/enabled",
-            profile: ""
+            profile: "",
+            group: ""
         });
     });
 
@@ -326,6 +330,110 @@ suite("ProjectStorage", () => {
         assert.strictEqual(storage.length(), 1);
         assert.ok(storage.exists("B"));
         assert.strictEqual(storage.exists("A"), false);
+    });
+
+    test("push with group parameter stores the group", () => {
+        const storage = new ProjectStorage();
+        storage.push("App", "/app", "Work/Frontend");
+
+        const project = storage.existsWithRootPath("/app");
+        assert.ok(project);
+        assert.strictEqual(project!.group, "Work/Frontend");
+    });
+
+    test("push without group parameter defaults to empty string", () => {
+        const storage = new ProjectStorage();
+        storage.push("App", "/app");
+
+        const project = storage.existsWithRootPath("/app");
+        assert.ok(project);
+        assert.strictEqual(project!.group, "");
+    });
+
+    test("save writes to ConfigurationTarget.Global", async () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        await storage.save();
+
+        assert.strictEqual(lastUpdateTarget, vscode.ConfigurationTarget.Global);
+    });
+
+    test("load filters out entries with empty name", () => {
+        stubProjects = [
+            { name: "", rootPath: "/valid" },
+            { name: "Good", rootPath: "/good" }
+        ];
+        const storage = new ProjectStorage();
+        storage.load();
+
+        assert.strictEqual(storage.length(), 1);
+        assert.ok(storage.exists("Good"));
+    });
+
+    test("load filters out entries with empty rootPath", () => {
+        stubProjects = [
+            { name: "NoPath", rootPath: "" },
+            { name: "Good", rootPath: "/good" }
+        ];
+        const storage = new ProjectStorage();
+        storage.load();
+
+        assert.strictEqual(storage.length(), 1);
+        assert.ok(storage.exists("Good"));
+    });
+
+    test("load strips unknown keys from projects", () => {
+        stubProjects = [
+            { name: "A", rootPath: "/a", customField: "should-be-stripped", extraNum: 42 }
+        ];
+        const storage = new ProjectStorage();
+        storage.load();
+
+        assert.strictEqual(storage.length(), 1);
+        const projects = storage.getProjects();
+        const keys = Object.keys(projects[0]).sort();
+        assert.deepStrictEqual(keys, ["enabled", "group", "name", "paths", "profile", "rootPath", "tags"]);
+    });
+
+    test("map includes group for projects with groups", () => {
+        const storage = new ProjectStorage();
+        storage.push("App", "/app", "Work/Frontend");
+
+        const mapped = storage.map();
+        assert.strictEqual(mapped.length, 1);
+        assert.strictEqual(mapped[0].group, "Work/Frontend");
+    });
+
+    test("getProjectsByTag includes group in returned items", () => {
+        const storage = new ProjectStorage();
+        storage.push("App", "/app", "Work");
+        storage.editTags("App", ["web"]);
+
+        const result = storage.getProjectsByTag("web");
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].group, "Work");
+    });
+
+    test("getProjectsByTags includes group in returned items", () => {
+        const storage = new ProjectStorage();
+        storage.push("App", "/app", "Infra");
+        storage.editTags("App", ["backend"]);
+
+        const result = storage.getProjectsByTags(["backend"]);
+        assert.strictEqual(result.length, 1);
+        assert.strictEqual(result[0].group, "Infra");
+    });
+
+    test("save and load round-trip preserves group from push", async () => {
+        const storage = new ProjectStorage();
+        storage.push("App", "/app", "Deploy/Prod");
+        await storage.save();
+
+        const storage2 = new ProjectStorage();
+        storage2.load();
+        const project = storage2.existsWithRootPath("/app");
+        assert.ok(project);
+        assert.strictEqual(project!.group, "Deploy/Prod");
     });
 
 });
