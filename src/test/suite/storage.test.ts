@@ -292,11 +292,11 @@ suite("ProjectStorage", () => {
         const storage = new ProjectStorage();
         storage.load();
         assert.strictEqual(storage.length(), 1);
-        const project = storage.existsWithRootPath("/legacy");
-        assert.ok(project);
-        assert.deepStrictEqual(project!.tags, []);
-        assert.strictEqual(project!.group, "");
-        assert.strictEqual(project!.enabled, true);
+        assert.ok(storage.exists("Legacy"));
+        const project = storage.getProjects()[0];
+        assert.deepStrictEqual(project.tags, []);
+        assert.strictEqual(project.group, "");
+        assert.strictEqual(project.enabled, true);
     });
 
     test("save and load round-trip with group", async () => {
@@ -307,7 +307,8 @@ suite("ProjectStorage", () => {
 
         const storage2 = new ProjectStorage();
         storage2.load();
-        const project = storage2.existsWithRootPath("/path/a");
+        assert.ok(storage2.exists("A"));
+        const project = storage2.getProjects().find(p => p.name === "A");
         assert.ok(project);
         assert.strictEqual(project!.group, "Work/Frontend");
     });
@@ -431,7 +432,8 @@ suite("ProjectStorage", () => {
 
         const storage2 = new ProjectStorage();
         storage2.load();
-        const project = storage2.existsWithRootPath("/app");
+        assert.ok(storage2.exists("App"));
+        const project = storage2.getProjects().find(p => p.name === "App");
         assert.ok(project);
         assert.strictEqual(project!.group, "Deploy/Prod");
     });
