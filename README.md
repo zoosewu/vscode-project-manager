@@ -1,3 +1,6 @@
+> **This is a fork of [alefragnani/vscode-project-manager](https://github.com/alefragnani/vscode-project-manager) published as `zoosewu.project-manager-zoo`.**
+> Original extension by [Alessandro Fragnani](https://github.com/alefragnani) — [View on Marketplace](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager).
+
 [![](https://vsmarketplacebadges.dev/version-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
 [![](https://vsmarketplacebadges.dev/downloads-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
 [![](https://vsmarketplacebadges.dev/rating-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)

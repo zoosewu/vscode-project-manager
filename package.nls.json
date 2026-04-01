@@ -1,5 +1,5 @@
 {
-    "projectManager.activitybar.title": "Project Manager",
+    "projectManager.activitybar.title": "Project Manager (Zoo)",
     "projectManager.views.favorites.name": "Favorites",
     "projectManager.views.git.name": "Git",
     "projectManager.views.svn.name": "SVN",
@@ -61,7 +61,7 @@
     "projectManager.commands.openSideBar.title": "Open Side Bar",
     "projectManager.commands.whatsNew.title": "Project Manager: What's New",
     "projectManager.commands.whatsNewContextMenu.title": "What's New",
-    "projectManager.configuration.title": "Project Manager",
+    "projectManager.configuration.title": "Project Manager (Zoo)",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Should display the project name in the Status Bar?",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Should the project be opened using a New Window when you click the Status Bar?",
     "projectManager.configuration.removeCurrentProjectFromList.description": "Should the current project be hidden in the list of available projects?",
