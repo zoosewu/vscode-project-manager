@@ -16,3 +16,8 @@ webpack.config.js
 **/.git
 **/.gitmodules
 .devcontainer/
+.claude/
+AGENTS.md
+.nvmrc
+.release-please-manifest.json
+release-please-config.json
