@@ -3,7 +3,7 @@
 	"displayName": "Project Manager",
 	"description": "Easily switch between projects",
 	"version": "13.1.0",
-	"publisher": "alefragnani",
+	"publisher": "zoosewu",
 	"engines": {
 		"vscode": "^1.78.0"
 	},
@@ -672,7 +672,7 @@
 				{
 					"command": "_projectManager.whatsNewContextMenu",
 					"group": "projectManager",
-					"when": "extension == alefragnani.project-manager && extensionStatus == installed"
+					"when": "extension == zoosewu.project-manager && extensionStatus == installed"
 				}
 			],
 			"projectManager.sideBar.favorites.title": [
