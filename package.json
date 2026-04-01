@@ -2,7 +2,7 @@
 	"name": "project-manager-zoo",
 	"displayName": "Project Manager (Zoo)",
 	"description": "Easily switch between projects. Fork of alefragnani.project-manager by Alessandro Fragnani (https://github.com/alefragnani/vscode-project-manager).",
-	"version": "13.1.1",
+	"version": "13.1.2",
 	"publisher": "zoosewu",
 	"engines": {
 		"vscode": "^1.78.0"
@@ -33,13 +33,13 @@
 	},
 	"icon": "images/icon.png",
 	"license": "GPL-3.0",
-	"homepage": "https://github.com/alefragnani/vscode-project-manager/blob/master/README.md",
+	"homepage": "https://github.com/zoosewu/vscode-project-manager/blob/master/README.md",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/alefragnani/vscode-project-manager.git"
+		"url": "https://github.com/zoosewu/vscode-project-manager.git"
 	},
 	"bugs": {
-		"url": "https://github.com/alefragnani/vscode-project-manager/issues"
+		"url": "https://github.com/zoosewu/vscode-project-manager/issues"
 	},
 	"sponsor": {
 		"url": "https://github.com/sponsors/alefragnani"
