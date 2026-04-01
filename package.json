@@ -1157,7 +1157,7 @@
 		"test-compile": "tsc -p ./ && npm run webpack",
 		"just-test": "node ./out/src/test/runTest.js",
 		"test": "npm run test-compile && npm run just-test",
-		"package": "npx @vscode/vsce package --no-dependencies --skip-license"
+		"package": "npx @vscode/vsce package --no-dependencies"
 	},
 	"devDependencies": {
 		"@types/mocha": "^10.0.0",
