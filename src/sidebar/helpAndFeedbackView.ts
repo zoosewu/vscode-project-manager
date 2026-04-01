@@ -8,7 +8,7 @@ import { HelpAndFeedbackView, Link, StandardLinksProvider, ProvideFeedbackLink, 
 
 export function registerHelpAndFeedbackView(context: ExtensionContext) {
     const items = new Array<Link | Command>();
-    const predefinedProvider = new StandardLinksProvider('zoosewu.project-manager');
+    const predefinedProvider = new StandardLinksProvider('zoosewu.project-manager-zoo');
     items.push(predefinedProvider.getGetStartedLink());
     items.push(new ProvideFeedbackLink('project-manager'));
     items.push(predefinedProvider.getReviewIssuesLink());

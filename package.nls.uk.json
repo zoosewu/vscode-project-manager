@@ -1,5 +1,5 @@
 {
-    "projectManager.activitybar.title": "Project Manager",
+    "projectManager.activitybar.title": "Project Manager (Zoo)",
     "projectManager.views.favorites.name": "Улюблені",
     "projectManager.views.git.name": "Git",
     "projectManager.views.svn.name": "SVN",
@@ -61,7 +61,7 @@
     "projectManager.commands.openSideBar.title": "Відкрити бічну панель",
     "projectManager.commands.whatsNew.title": "Project Manager: Що нового",
     "projectManager.commands.whatsNewContextMenu.title": "Що нового",
-    "projectManager.configuration.title": "Project Manager",
+    "projectManager.configuration.title": "Project Manager (Zoo)",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Відображати назву проєкту на панелі стану?",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Відкривати проєкт у новому вікні при натисканні на панель стану?",
     "projectManager.configuration.removeCurrentProjectFromList.description": "Приховувати поточний проєкт у списку доступних проєктів?",

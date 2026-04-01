@@ -1,5 +1,5 @@
 {
-    "projectManager.activitybar.title": "Project Manager",
+    "projectManager.activitybar.title": "Project Manager (Zoo)",
     "projectManager.views.favorites.name": "Favoritos",
     "projectManager.views.git.name": "Git",
     "projectManager.views.svn.name": "SVN",
@@ -61,7 +61,7 @@
     "projectManager.commands.openSideBar.title": "Abrir Barra Lateral",
     "projectManager.commands.whatsNew.title": "Project Manager: Novidades",
     "projectManager.commands.whatsNewContextMenu.title": "Novidades",
-    "projectManager.configuration.title": "Project Manager",
+    "projectManager.configuration.title": "Project Manager (Zoo)",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Controla se deve exibir o nome do projeto na barra de status",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Controla se o projeto deve ser aberto em uma Nova Janela quando clicar na barra de status",
     "projectManager.configuration.removeCurrentProjectFromList.description": "Controla se o projeto corrente deve ser suprimido da lista de projetos disponíveis",

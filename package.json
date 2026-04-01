@@ -1,6 +1,6 @@
 {
-	"name": "project-manager",
-	"displayName": "Project Manager",
+	"name": "project-manager-zoo",
+	"displayName": "Project Manager (Zoo)",
 	"description": "Easily switch between projects",
 	"version": "13.1.0",
 	"publisher": "zoosewu",
@@ -53,14 +53,14 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "project-manager",
+					"id": "project-manager-zoo",
 					"title": "%projectManager.activitybar.title%",
 					"icon": "images/project-manager-side-bar.svg"
 				}
 			]
 		},
 		"views": {
-			"project-manager": [
+			"project-manager-zoo": [
 				{
 					"id": "projectsExplorerFavorites",
 					"name": "%projectManager.views.favorites.name%"
@@ -672,7 +672,7 @@
 				{
 					"command": "_projectManager.whatsNewContextMenu",
 					"group": "projectManager",
-					"when": "extension == zoosewu.project-manager && extensionStatus == installed"
+					"when": "extension == zoosewu.project-manager-zoo && extensionStatus == installed"
 				}
 			],
 			"projectManager.sideBar.favorites.title": [
