@@ -2,7 +2,7 @@
 	"name": "project-manager-zoo",
 	"displayName": "Project Manager (Zoo)",
 	"description": "Easily switch between projects. Fork of alefragnani.project-manager by Alessandro Fragnani (https://github.com/alefragnani/vscode-project-manager).",
-	"version": "13.1.0",
+	"version": "13.1.1",
 	"publisher": "zoosewu",
 	"engines": {
 		"vscode": "^1.78.0"
