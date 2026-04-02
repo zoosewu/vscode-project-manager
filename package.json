@@ -2,7 +2,7 @@
 	"name": "project-manager-zoo",
 	"displayName": "Project Manager (Zoo)",
 	"description": "Easily switch between projects. Fork of alefragnani.project-manager by Alessandro Fragnani (https://github.com/alefragnani/vscode-project-manager).",
-	"version": "13.1.2",
+	"version": "13.1.3",
 	"publisher": "zoosewu",
 	"engines": {
 		"vscode": "^1.78.0"
@@ -286,20 +286,20 @@
 				"command": "_projectManager.renameProject",
 				"title": "%projectManager.commands.renameProject.title%"
 			},
-		{
-			"command": "_projectManager.editTags",
-			"title": "%projectManager.commands.editTags.title%"
-		},
-		{
-			"command": "_projectManager.editGroup",
-			"title": "%projectManager.commands.editGroup.title%"
-		},
-		{
-			"command": "_projectManager.viewAsGroups#sideBarFavorites",
-			"title": "%projectManager.commands.viewAsGroups#sideBarFavorites.title%",
-			"icon": "$(list-tree)"
-		},
-		{
+			{
+				"command": "_projectManager.editTags",
+				"title": "%projectManager.commands.editTags.title%"
+			},
+			{
+				"command": "_projectManager.editGroup",
+				"title": "%projectManager.commands.editGroup.title%"
+			},
+			{
+				"command": "_projectManager.viewAsGroups#sideBarFavorites",
+				"title": "%projectManager.commands.viewAsGroups#sideBarFavorites.title%",
+				"icon": "$(list-tree)"
+			},
+			{
 				"command": "projectManager.whatsNew",
 				"title": "%projectManager.commands.whatsNew.title%"
 			},
@@ -466,19 +466,19 @@
 					"command": "_projectManager.openFolderWelcome",
 					"when": "false"
 				},
-			{
-				"command": "_projectManager.openSideBar",
-				"when": "false"
-			},
-			{
-				"command": "_projectManager.editGroup",
-				"when": "false"
-			},
-			{
-				"command": "_projectManager.viewAsGroups#sideBarFavorites",
-				"when": "false"
-			}
-		],
+				{
+					"command": "_projectManager.openSideBar",
+					"when": "false"
+				},
+				{
+					"command": "_projectManager.editGroup",
+					"when": "false"
+				},
+				{
+					"command": "_projectManager.viewAsGroups#sideBarFavorites",
+					"when": "false"
+				}
+			],
 			"view/title": [
 				{
 					"command": "projectManager.saveProject",
@@ -500,8 +500,8 @@
 					"when": "view == projectsExplorerFavorites && projectManager.favoritesViewMode == 'groups'",
 					"group": "navigation@13"
 				},
-			{
-				"command": "projectManager.listFavoriteProjects#sideBarFavorites",
+				{
+					"command": "projectManager.listFavoriteProjects#sideBarFavorites",
 					"when": "view == projectsExplorerFavorites",
 					"group": "navigation@14"
 				},
@@ -642,18 +642,18 @@
 					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
 					"group": "favorites"
 				},
-			{
-				"command": "_projectManager.editTags",
-				"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
-				"group": "favorites"
-			},
-			{
-				"command": "_projectManager.editGroup",
-				"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
-				"group": "favorites"
-			},
-			{
-				"command": "_projectManager.toggleProjectEnabled",
+				{
+					"command": "_projectManager.editTags",
+					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
+					"group": "favorites"
+				},
+				{
+					"command": "_projectManager.editGroup",
+					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
+					"group": "favorites"
+				},
+				{
+					"command": "_projectManager.toggleProjectEnabled",
 					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
 					"group": "favorites"
 				},
@@ -680,16 +680,16 @@
 					"command": "_projectManager.viewAsList#sideBarFavorites",
 					"group": "1_projectManager#sideBarFavorites"
 				},
-			{
-				"command": "_projectManager.viewAsTags#sideBarFavorites",
-				"group": "1_projectManager#sideBarFavorites"
-			},
-			{
-				"command": "_projectManager.viewAsGroups#sideBarFavorites",
-				"group": "1_projectManager#sideBarFavorites"
-			},
-			{
-				"command": "_projectManager.sortBySaved#sideBarFavorites",
+				{
+					"command": "_projectManager.viewAsTags#sideBarFavorites",
+					"group": "1_projectManager#sideBarFavorites"
+				},
+				{
+					"command": "_projectManager.viewAsGroups#sideBarFavorites",
+					"group": "1_projectManager#sideBarFavorites"
+				},
+				{
+					"command": "_projectManager.sortBySaved#sideBarFavorites",
 					"group": "2_projectManager#sideBarFavorites"
 				},
 				{
@@ -756,15 +756,45 @@
 						"description": "%projectManager.configuration.projects.description%",
 						"items": {
 							"type": "object",
-							"required": ["name", "rootPath"],
+							"required": [
+								"name",
+								"rootPath"
+							],
 							"properties": {
-								"name": { "type": "string", "description": "Project display name" },
-								"rootPath": { "type": "string", "description": "Absolute path or remote URI" },
-								"paths": { "type": "array", "items": { "type": "string" }, "default": [] },
-								"tags": { "type": "array", "items": { "type": "string" }, "default": [] },
-								"enabled": { "type": "boolean", "default": true },
-								"profile": { "type": "string", "default": "" },
-								"group": { "type": "string", "default": "" }
+								"name": {
+									"type": "string",
+									"description": "Project display name"
+								},
+								"rootPath": {
+									"type": "string",
+									"description": "Absolute path or remote URI"
+								},
+								"paths": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"default": []
+								},
+								"tags": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"default": []
+								},
+								"enabled": {
+									"type": "boolean",
+									"default": true
+								},
+								"profile": {
+									"type": "string",
+									"default": ""
+								},
+								"group": {
+									"type": "string",
+									"default": ""
+								}
 							},
 							"additionalProperties": true
 						}
