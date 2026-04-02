@@ -130,12 +130,12 @@
 			{
 				"command": "_projectManager.viewAsTags#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsTags#sideBarFavorites.title%",
-				"icon": "$(list-tree)"
+				"icon": "$(list-flat)"
 			},
 			{
 				"command": "_projectManager.viewAsList#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsList#sideBarFavorites.title%",
-				"icon": "$(list-flat)"
+				"icon": "$(type-hierarchy)"
 			},
 			{
 				"command": "_projectManager.sortBySaved#sideBarFavorites",
@@ -297,7 +297,7 @@
 		{
 			"command": "_projectManager.viewAsGroups#sideBarFavorites",
 			"title": "%projectManager.commands.viewAsGroups#sideBarFavorites.title%",
-			"icon": "$(type-hierarchy)"
+			"icon": "$(list-tree)"
 		},
 		{
 				"command": "projectManager.whatsNew",

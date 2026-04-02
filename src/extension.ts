@@ -60,9 +60,11 @@ export async function activate(context: vscode.ExtensionContext) {
     registerHelpAndFeedbackView(context);
     registerSortBy();
     registerSideBarDecorations();
-    await registerWalkthrough();
+    registerWalkthrough();
 
-    registerWhatsNew();
+    // Defer What's New initialization — it is non-critical for core functionality
+    // and may trigger a webview on activation.
+    setImmediate(() => registerWhatsNew());
 
     context.subscriptions.push(vscode.commands.registerCommand("_projectManager.openFolderWelcome", () => {
         const openFolderCommand = isWindows || isMacOS ? "workbench.action.files.openFolder" : "workbench.action.files.openFileFolder";
@@ -218,7 +220,12 @@ export async function activate(context: vscode.ExtensionContext) {
     const currentProject = showStatusBar(projectStorage, locators);
     Container.currentProject = currentProject;
 
-    // // new place to register TreeView
+    // TODO (Progressive loading): Show the Favorites (storage) sidebar immediately after
+    // loadProjectsFile(), then load the five autodetect providers in the background and
+    // refresh the tree views once each one completes. This decouples the fast path
+    // (Favorites is ready instantly from VS Code config) from the slow path (filesystem
+    // walking for Git/VSCode/SVN/Mercurial/Any). Requires extracting current-project
+    // detection out of showStatusBar() first — see the existing TODO above that call.
     await providerManager.showTreeViewFromAllProviders();
 
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async cfg => {

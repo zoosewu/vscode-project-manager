@@ -94,12 +94,13 @@ export class Providers {
     }
 
     public async showTreeViewFromAllProviders() {
-        // this.projectProviderStorage.showTreeView();
-        await this.vscodeProvider.showTreeView();
-        await this.gitProvider.showTreeView();
-        await this.mercurialProvider.showTreeView();
-        await this.svnProvider.showTreeView();
-        await this.anyProvider.showTreeView();
+        await Promise.all([
+            this.vscodeProvider.showTreeView(),
+            this.gitProvider.showTreeView(),
+            this.mercurialProvider.showTreeView(),
+            this.svnProvider.showTreeView(),
+            this.anyProvider.showTreeView(),
+        ]);
 
         this.updateTreeViewDetails();
     }
