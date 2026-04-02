@@ -64,6 +64,7 @@ function canPickSelectedProject(item: QuickPickItem, projectStorage: ProjectStor
     }
 
     folderNotFound(item.label, projectStorage);
+    return false;
 }
 
 function getProjectsFromLocator(folders: any, locators: Locators, locatorToFilter: CustomProjectLocator, locatorToGetFrom: CustomProjectLocator) {

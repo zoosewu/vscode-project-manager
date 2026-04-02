@@ -60,9 +60,11 @@ export async function activate(context: vscode.ExtensionContext) {
     registerHelpAndFeedbackView(context);
     registerSortBy();
     registerSideBarDecorations();
-    await registerWalkthrough();
+    registerWalkthrough();
 
-    registerWhatsNew();
+    // Defer What's New initialization — it is non-critical for core functionality
+    // and may trigger a webview on activation.
+    setImmediate(() => registerWhatsNew());
 
     context.subscriptions.push(vscode.commands.registerCommand("_projectManager.openFolderWelcome", () => {
         const openFolderCommand = isWindows || isMacOS ? "workbench.action.files.openFolder" : "workbench.action.files.openFileFolder";
@@ -169,16 +171,16 @@ export async function activate(context: vscode.ExtensionContext) {
         providerManager.refreshTreeViews();
     }
 
-    function toggleViewAsFavoriteProjects(view: ViewFavoritesAs) {
+    async function toggleViewAsFavoriteProjects(view: ViewFavoritesAs) {
         switch (view) {
             case ViewFavoritesAs.VIEW_AS_LIST:
-                setViewMode("list");
+                await setViewMode("list");
                 break;
             case ViewFavoritesAs.VIEW_AS_TAGS:
-                setViewMode("tags");
+                await setViewMode("tags");
                 break;
             case ViewFavoritesAs.VIEW_AS_GROUPS:
-                setViewMode("groups");
+                await setViewMode("groups");
                 break;
         }
     }
@@ -210,16 +212,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
     loadProjectsFile();
 
-    // TODO: Extract the detection of the current project from `showStatusBar`, and optimize how it works.
-    // Evaluate if it is really necessary to get the `Project` instance, or if just the root path is enough.
-    // Up until then, the call to `showStatusBar` (and the assignment to `Container.currentProject`)
-    // intentionally happens *before* `providerManager.showTreeViewFromAllProviders()`, and changing this order may
-    // introduce issues.
-    const currentProject = showStatusBar(projectStorage, locators);
-    Container.currentProject = currentProject;
+    // Show status bar immediately using storage (favorites) and any warm cache from
+    // locators. For autodetect-only projects on a cold cache this may return undefined;
+    // the background callback below will retry once each provider finishes scanning.
+    Container.currentProject = showStatusBar(projectStorage, locators);
 
-    // // new place to register TreeView
-    await providerManager.showTreeViewFromAllProviders();
+    // Favorites sidebar is ready instantly (VS Code config is in-memory). Autodetect
+    // providers are started in the background; each one refreshes its own tree view and
+    // updates the sidebar titles as soon as it finishes. If the status bar did not find
+    // the current project yet (cold cache, autodetect-only project), each completed
+    // provider triggers another attempt.
+    providerManager.startAutodetectProvidersInBackground(() => {
+        if (!Container.currentProject) {
+            Container.currentProject = showStatusBar(projectStorage, locators);
+        }
+    });
 
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async cfg => {
         if (cfg.affectsConfiguration("projectManager.git") || cfg.affectsConfiguration("projectManager.hg") ||
@@ -603,6 +610,5 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-
-    locators.dispose();
+    locators?.dispose();
 }

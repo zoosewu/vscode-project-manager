@@ -98,7 +98,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Ta
                 let projectsMapped = <ProjectInQuickPickList>this.projectSource.getProjectsByTag(element.label);
 
                 if (projectsMapped.length === 0) {
-                    resolve(nodes);
+                    return resolve(nodes);
                 }
 
                 projectsMapped = sortProjects(projectsMapped);
