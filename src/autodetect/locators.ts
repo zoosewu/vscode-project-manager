@@ -52,25 +52,14 @@ export class Locators implements Disposable {
         this.providerManager = providerManager;
     }
 
-    public getLocatorProjects(itemsSorted: any[], locator: CustomProjectLocator): Promise<any[]> {
-
-        return new Promise((resolve) => {
-
-            locator.locateProjects()
-                .then(this.filterKnownDirectories.bind(this, itemsSorted))
-                .then((dirList: AutodetectedProjectInfo[]) => {
-                    let newItems = [];
-                    newItems = dirList.map(item => {
-                        return {
-                            label: item.icon + " " + item.name,
-                            description: item.fullPath
-                        };
-                    });
-
-                    newItems = this.sortGroupedList(newItems);
-                    resolve(itemsSorted.concat(newItems));
-                });
-        });
+    public async getLocatorProjects(itemsSorted: any[], locator: CustomProjectLocator): Promise<any[]> {
+        const located = await locator.locateProjects();
+        const dirList = await this.filterKnownDirectories(itemsSorted, located);
+        const newItems = this.sortGroupedList(dirList.map(item => ({
+            label: item.icon + " " + item.name,
+            description: item.fullPath
+        })));
+        return itemsSorted.concat(newItems);
     }
 
     public sortGroupedList(items): any[] {
@@ -133,7 +122,7 @@ export class Locators implements Disposable {
                     }
                 });
             } else {
-                return items.filter(value => value.description.toString().toLowerCase() !== workspace.rootPath.toLowerCase());
+                return items.filter(value => value.description.toString().toLowerCase() !== workspace0.fsPath.toLowerCase());
             }
         }
     }

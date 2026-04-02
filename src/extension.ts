@@ -171,16 +171,16 @@ export async function activate(context: vscode.ExtensionContext) {
         providerManager.refreshTreeViews();
     }
 
-    function toggleViewAsFavoriteProjects(view: ViewFavoritesAs) {
+    async function toggleViewAsFavoriteProjects(view: ViewFavoritesAs) {
         switch (view) {
             case ViewFavoritesAs.VIEW_AS_LIST:
-                setViewMode("list");
+                await setViewMode("list");
                 break;
             case ViewFavoritesAs.VIEW_AS_TAGS:
-                setViewMode("tags");
+                await setViewMode("tags");
                 break;
             case ViewFavoritesAs.VIEW_AS_GROUPS:
-                setViewMode("groups");
+                await setViewMode("groups");
                 break;
         }
     }
@@ -610,6 +610,5 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-
-    locators.dispose();
+    locators?.dispose();
 }

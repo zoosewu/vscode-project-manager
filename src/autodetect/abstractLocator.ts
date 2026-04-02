@@ -125,70 +125,62 @@ export class CustomProjectLocator {
         projectsDirList = PathUtils.handleSymlinks(projectsDirList);
         this.baseFolders = projectsDirList.slice();
 
-        return new Promise<AutodetectedProjectList>((resolve) => {
+        if (projectsDirList.length === 0) {
+            return <AutodetectedProjectList> [];
+        }
 
-            if (projectsDirList.length === 0) {
-                resolve(<AutodetectedProjectList> []);
-                return;
+        if (this.alreadyLocated) {
+            return this.projectList;
+        }
+
+        const promises: Promise<void>[] = [];
+        this.clearProjectList();
+
+        for (const projectBasePath of projectsDirList) {
+            const expandedBasePath: string = PathUtils.expandHomePath(projectBasePath);
+            if (!fs.existsSync(expandedBasePath)) {
+                continue;
             }
 
-            if (this.alreadyLocated) {
-                resolve(this.projectList);
-                return;
-            }
+            const depth = this.getPathDepth(expandedBasePath);
 
-            const promises = [];
-            this.clearProjectList();
-
-            projectsDirList.forEach((projectBasePath) => {
-                const expandedBasePath: string = PathUtils.expandHomePath(projectBasePath);
-                if (!fs.existsSync(expandedBasePath)) {
-
-                    return;
+            promises.push(new Promise<void>((resolve, reject) => {
+                try {
+                    walker(expandedBasePath)
+                        .filterDir((dir) => {
+                            return !(this.isFolderIgnored(path.basename(dir)) ||
+                                this.isMaxDepthReached(this.getPathDepth(dir), depth) ||
+                                this.isProjectWithinProjectIgnored(dir));
+                        })
+                        .on("dir", this.processDirectory)
+                        .on("file", this.processFile)
+                        .on("symlink", (link) => {
+                            if (!workspace.getConfiguration("projectManager").get<boolean>("supportSymlinksOnBaseFolders", false)) {
+                                return;
+                            }
+                            if (this.isFolderIgnored(path.basename(link)) ||
+                                this.isMaxDepthReached(this.getPathDepth(link), depth) ||
+                                this.isProjectWithinProjectIgnored(link)) {
+                                return;
+                            }
+                            this.processDirectory(link);
+                        })
+                        .on("error", this.handleError)
+                        .on("end", () => { resolve(); });
+                } catch (error) {
+                    reject(error);
                 }
+            }));
+        }
 
-                const depth = this.getPathDepth(expandedBasePath);
-
-                const promise = new Promise<void>((resolve, reject) => {
-                    try {
-                        walker(expandedBasePath)
-                            .filterDir((dir) => {
-                                return !(this.isFolderIgnored(path.basename(dir)) ||
-                                    this.isMaxDepthReached(this.getPathDepth(dir), depth) || 
-                                    this.isProjectWithinProjectIgnored(dir));
-                            })
-                            .on("dir", this.processDirectory)
-                            .on("file", this.processFile)
-                            .on("symlink", (link) => {
-                                if (!workspace.getConfiguration("projectManager").get<boolean>("supportSymlinksOnBaseFolders", false)) {
-                                    return;
-                                }
-                                if (this.isFolderIgnored(path.basename(link)) ||
-                                    this.isMaxDepthReached(this.getPathDepth(link), depth) ||
-                                    this.isProjectWithinProjectIgnored(link)) {
-                                    return;
-                                }
-                                this.processDirectory(link);
-                            })
-                            .on("error", this.handleError)
-                            .on("end", () => {
-                                resolve();
-                            });
-                    } catch (error) {
-                        reject(error);
-                    }
-
-                });
-                promises.push(promise);
-            });
-
-            Promise.all(promises)
-                .then(() => {
-                    this.updateCacheFile();
-                    resolve(this.projectList);
-                })
-                .catch(() => { vscode.window.showErrorMessage(l10n.t("Error while loading projects.")); });
-        });
+        try {
+            await Promise.all(promises);
+            this.updateCacheFile();
+            return this.projectList;
+        } catch (error) {
+            vscode.window.showErrorMessage(l10n.t("Error while loading projects."));
+            throw error;
+        }
     }
 
     private addToList(projectInfo: AutodetectedProjectInfo) {
@@ -338,7 +330,7 @@ export class CustomProjectLocator {
 
         for (let i = 0, l = array1.length; i < l; i++) {
             if (array1[i] instanceof Array && array2[i] instanceof Array) {
-                if (!array1[i].equals(array2[i])) {
+                if (!this.arraysAreEquals(array1[i], array2[i])) {
                     return false;
                 }
             } else {
