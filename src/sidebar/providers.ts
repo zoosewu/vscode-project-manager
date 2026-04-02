@@ -105,6 +105,30 @@ export class Providers {
         this.updateTreeViewDetails();
     }
 
+    /**
+     * Starts all five autodetect providers concurrently without blocking the caller.
+     * Each provider refreshes its tree view and updates the sidebar titles as soon as
+     * it finishes locating projects (filesystem scan or cache read).
+     *
+     * @param onProviderLoaded - Optional callback invoked after each individual provider
+     *   finishes. Use this to react to new project data becoming available, e.g. to
+     *   retry status bar detection for autodetect-only projects on a cold cache.
+     */
+    public startAutodetectProvidersInBackground(onProviderLoaded?: () => void): void {
+        for (const provider of [
+            this.vscodeProvider,
+            this.gitProvider,
+            this.mercurialProvider,
+            this.svnProvider,
+            this.anyProvider,
+        ]) {
+            provider.showTreeView().then(() => {
+                this.updateTreeViewDetails();
+                onProviderLoaded?.();
+            });
+        }
+    }
+
     public refreshTreeViews() {
         this.storageProvider.refresh();
         this.vscodeProvider.refresh();

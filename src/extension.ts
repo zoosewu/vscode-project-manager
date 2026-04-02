@@ -212,21 +212,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
     loadProjectsFile();
 
-    // TODO: Extract the detection of the current project from `showStatusBar`, and optimize how it works.
-    // Evaluate if it is really necessary to get the `Project` instance, or if just the root path is enough.
-    // Up until then, the call to `showStatusBar` (and the assignment to `Container.currentProject`)
-    // intentionally happens *before* `providerManager.showTreeViewFromAllProviders()`, and changing this order may
-    // introduce issues.
-    const currentProject = showStatusBar(projectStorage, locators);
-    Container.currentProject = currentProject;
+    // Show status bar immediately using storage (favorites) and any warm cache from
+    // locators. For autodetect-only projects on a cold cache this may return undefined;
+    // the background callback below will retry once each provider finishes scanning.
+    Container.currentProject = showStatusBar(projectStorage, locators);
 
-    // TODO (Progressive loading): Show the Favorites (storage) sidebar immediately after
-    // loadProjectsFile(), then load the five autodetect providers in the background and
-    // refresh the tree views once each one completes. This decouples the fast path
-    // (Favorites is ready instantly from VS Code config) from the slow path (filesystem
-    // walking for Git/VSCode/SVN/Mercurial/Any). Requires extracting current-project
-    // detection out of showStatusBar() first — see the existing TODO above that call.
-    await providerManager.showTreeViewFromAllProviders();
+    // Favorites sidebar is ready instantly (VS Code config is in-memory). Autodetect
+    // providers are started in the background; each one refreshes its own tree view and
+    // updates the sidebar titles as soon as it finishes. If the status bar did not find
+    // the current project yet (cold cache, autodetect-only project), each completed
+    // provider triggers another attempt.
+    providerManager.startAutodetectProvidersInBackground(() => {
+        if (!Container.currentProject) {
+            Container.currentProject = showStatusBar(projectStorage, locators);
+        }
+    });
 
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async cfg => {
         if (cfg.affectsConfiguration("projectManager.git") || cfg.affectsConfiguration("projectManager.hg") ||
