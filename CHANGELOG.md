@@ -27,6 +27,14 @@
 - Security Alert: braces (dependabot [PR #746](https://github.com/alefragnani/vscode-project-manager/pull/746))
 
 
+## [13.3.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.2.0...v13.3.0) (2026-04-07)
+
+
+### ### Added
+
+* **agents:** enforce whats-new and README sync requirement ([2b1acf7](https://github.com/zoosewu/vscode-project-manager/commit/2b1acf7ca10dfe6ce720bad81a96fda0db6ee2fc))
+* **agents:** enforce whats-new and README sync requirement ([4eee466](https://github.com/zoosewu/vscode-project-manager/commit/4eee4665cb5c27cbcb52807a2aa18fe007f73f38))
+
 ## [13.2.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.1.3...v13.2.0) (2026-04-07)
 
 
