@@ -98,17 +98,6 @@ export class ProjectNode extends TreeItem {
 }
 
 
-export class TagNode extends TreeItem {
-
-    constructor(
-        public readonly label: string,
-        public readonly collapsibleState: TreeItemCollapsibleState,
-    ) {
-        super(label, collapsibleState);
-        this.iconPath = ThemeIcons.tag;
-    }
-}
-
 export class GroupNode extends TreeItem {
 
     constructor(
@@ -122,13 +111,3 @@ export class GroupNode extends TreeItem {
     }
 }
 
-export class NoTagNode extends TagNode {
-
-    constructor(
-        label: string,
-        public readonly collapsibleState: TreeItemCollapsibleState,
-    ) {
-        super("", collapsibleState);
-        this.description = label;
-    }
-}

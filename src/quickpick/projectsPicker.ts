@@ -97,9 +97,8 @@ export async function pickProjects(projectStorage: ProjectStorage, locators: Loc
     try {
         return await new Promise<Picked<Project> | undefined>((resolve) => {
             let items = [];
-            const filterByTags = Container.context.globalState.get<string[]>("filterByTags", []);
             if (projectStorage) {
-                items = projectStorage.getProjectsByTags(filterByTags);
+                items = projectStorage.map();
                 if (locators) {
                     items = locators?.sortGroupedList(items);
                 }

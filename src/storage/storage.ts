@@ -8,7 +8,6 @@ import { Uri, l10n } from "vscode";
 import { PathUtils } from "../utils/path";
 import { isRemotePath } from "../utils/remote";
 import { createProject, normalizeGroupPath, Project } from "../core/project";
-import { NO_TAGS_DEFINED } from "../sidebar/constants";
 
 export class ProjectStorage {
 
@@ -36,15 +35,6 @@ export class ProjectStorage {
         for (const element of this.projects) {
             if (element.name.toLowerCase() === oldName.toLowerCase()) {
                 element.name = newName;
-                return;
-            }
-        }
-    }
-
-    public editTags(name: string, tags: string[]): void {
-        for (const element of this.projects) {
-            if (element.name.toLowerCase() === name.toLowerCase()) {
-                element.tags = tags;
                 return;
             }
         }
@@ -130,7 +120,6 @@ export class ProjectStorage {
                 name: "",
                 rootPath: "",
                 paths: [],
-                tags: [],
                 enabled: true,
                 profile: "",
                 group: "",
@@ -141,7 +130,6 @@ export class ProjectStorage {
                 name: project.name,
                 rootPath: project.rootPath,
                 paths: project.paths,
-                tags: project.tags,
                 enabled: project.enabled,
                 profile: project.profile,
                 group: project.group
@@ -195,43 +183,6 @@ export class ProjectStorage {
                 project.rootPath = PathUtils.updateWithPathSeparatorStr(project.rootPath);
             }
         }
-    }
-
-    public getAvailableTags(): string[] {
-        const tags: string[] = [];
-        for (const project of this.projects) {
-            tags.push(...project.tags);
-        }
-        const tagsSet = new Set(tags);
-        return [ ...tagsSet ];
-    }
-
-    public getProjectsByTag(tag: string): any {
-        const newItems = this.projects.filter(item => item.enabled && (item.tags.includes(tag) || (tag === '' && item.tags.length === 0))).map(item => {
-            return {
-                label: item.name,
-                description: item.rootPath,
-                group: item.group
-            };
-        });
-        return newItems;
-    }
-
-    public getProjectsByTags(tags: string[]): any {
-        const newItems = this.projects.filter(
-            item => item.enabled
-                && (item.tags.some(t => tags.includes(t))
-                    || ((tags.length === 0 || tags.includes(NO_TAGS_DEFINED) && item.tags.length === 0)
-                    ))
-        ).map(item => {
-            return {
-                label: item.name,
-                description: item.rootPath,
-                profile: item.profile,
-                group: item.group
-            };
-        });
-        return newItems;
     }
 
 }

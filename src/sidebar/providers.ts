@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { Locators } from "../autodetect/locators";
 import { ProjectStorage } from "../storage/storage";
-import { GroupNode, ProjectNode, TagNode } from "./nodes";
+import { GroupNode, ProjectNode } from "./nodes";
 import { AutodetectProvider } from "./autodetectProvider";
 import { StorageProvider } from "./storageProvider";
 import { Container } from "../core/container";
@@ -21,7 +21,7 @@ export class Providers {
     public svnProvider: AutodetectProvider;
     public anyProvider: AutodetectProvider;
 
-    private storageTreeView: vscode.TreeView<ProjectNode | TagNode | GroupNode>;
+    private storageTreeView: vscode.TreeView<ProjectNode | GroupNode>;
     private vscodeTreeView: vscode.TreeView<ProjectNode>;
     private gitTreeView: vscode.TreeView<ProjectNode>;
     private mercurialTreeView: vscode.TreeView<ProjectNode>;
@@ -81,16 +81,8 @@ export class Providers {
         );
     }
 
-    private async handleStorageTreeViewExpansionChange(event: vscode.TreeViewExpansionEvent<ProjectNode | TagNode | GroupNode>, state: "expanded" | "collapsed") {
-        const element = event.element;
-        if (element instanceof TagNode) {
-            const behavior = vscode.workspace.getConfiguration("projectManager").get<string>("tags.collapseItems", "startExpanded");
-            const shouldPersistExpansion = behavior === "startExpanded" || behavior === "startCollapsed";
-            if (shouldPersistExpansion) {
-                const tagId = (element.label as string) || (element.description as string) || "";
-                await StorageProvider.setTagExpanded(tagId, state === "expanded");
-            }
-        }
+    private async handleStorageTreeViewExpansionChange(_event: vscode.TreeViewExpansionEvent<ProjectNode | GroupNode>, _state: "expanded" | "collapsed") {
+        // Group expansion changes are handled by VS Code natively
     }
 
     public async showTreeViewFromAllProviders() {
@@ -147,13 +139,8 @@ export class Providers {
         const disabledProjects = this.projectStorage.disabled()?.length;
         const disabledProjectsTitle = disabledProjects ? l10n.t("{0} disabled", disabledProjects) : "";
 
-        const filterByTags = Container.context.globalState.get<string[]>("filterByTags", []);
-        const filterByTagsTitle = filterByTags.length > 0 ? l10n.t("filtered by tags") : "";
-
-        const separatorTitle = disabledProjects && filterByTags.length > 0 ? "/ " : " ";
-
         this.storageTreeView.title = `Favorites (${this.projectStorage.length() - disabledProjects})`;
-        this.storageTreeView.description = `${disabledProjectsTitle} ${separatorTitle} ${filterByTagsTitle}`;
+        this.storageTreeView.description = disabledProjectsTitle;
     }
 
     public updateTreeViewDetails() {

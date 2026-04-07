@@ -11,7 +11,6 @@ import { ProjectStorage } from "./storage/storage";
 import { PathUtils } from "./utils/path";
 
 import { Providers } from "./sidebar/providers";
-import { StorageProvider } from "./sidebar/storageProvider";
 
 import { showStatusBar, updateStatusBar } from "./statusbar/statusBar";
 import { getProjectDetails } from "./utils/suggestion";
@@ -24,7 +23,6 @@ import { registerSupportProjectManager } from "./commands/supportProjectManager"
 import { registerHelpAndFeedbackView } from "./sidebar/helpAndFeedbackView";
 import { registerRevealFileInOS } from "./commands/revealFileInOS";
 import { registerOpenSettings } from "./commands/openSettings";
-import { pickTags } from "./quickpick/tagsPicker";
 import { ViewFavoritesAs } from "./sidebar/constants";
 import { registerSortBy, updateSortByContext } from "./commands/sortBy";
 import { canSwitchOnActiveWindow, openPickedProject, pickProjects, shouldOpenInNewWindow } from "./quickpick/projectsPicker";
@@ -124,7 +122,6 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("projectManager.addToWorkspace", () => addProjectToWorkspace(undefined));
     vscode.commands.registerCommand("_projectManager.deleteProject", (node) => deleteProject(node));
     vscode.commands.registerCommand("_projectManager.renameProject", (node) => renameProject(node));
-    vscode.commands.registerCommand("_projectManager.editTags", (node) => editTags(node));
     vscode.commands.registerCommand("_projectManager.editGroup", async (node: ProjectNode) => {
         const project = projectStorage.existsWithRootPath(node.command.arguments[0]);
         if (!project) {
@@ -153,14 +150,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     function getViewMode(): string {
         const stored = Container.context.globalState.get<string>("favoritesViewMode", undefined);
-        if (stored !== undefined) {
+        if (stored !== undefined && stored !== "tags") {
             return stored;
         }
-        const legacyViewAsList = Container.context.globalState.get<boolean>("viewAsList", true);
-        const mode = legacyViewAsList ? "list" : "tags";
-        Container.context.globalState.update("favoritesViewMode", mode);
-        Container.context.globalState.update("viewAsList", undefined);
-        return mode;
+        return "list";
     }
 
     function setViewModeContext(mode: string) {
@@ -179,9 +172,6 @@ export async function activate(context: vscode.ExtensionContext) {
             case ViewFavoritesAs.VIEW_AS_LIST:
                 await setViewMode("list");
                 break;
-            case ViewFavoritesAs.VIEW_AS_TAGS:
-                await setViewMode("tags");
-                break;
             case ViewFavoritesAs.VIEW_AS_GROUPS:
                 await setViewMode("groups");
                 break;
@@ -190,28 +180,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const viewMode = getViewMode();
     setViewModeContext(viewMode);
-    vscode.commands.registerCommand("_projectManager.viewAsTags#sideBarFavorites", () => toggleViewAsFavoriteProjects(ViewFavoritesAs.VIEW_AS_TAGS));
     vscode.commands.registerCommand("_projectManager.viewAsList#sideBarFavorites", () => toggleViewAsFavoriteProjects(ViewFavoritesAs.VIEW_AS_LIST));
     vscode.commands.registerCommand("_projectManager.viewAsGroups#sideBarFavorites", () => toggleViewAsFavoriteProjects(ViewFavoritesAs.VIEW_AS_GROUPS));
-    vscode.commands.registerCommand("projectManager.filterProjectsByTag", () => filterProjectsByTag());
-    vscode.commands.registerCommand("projectManager.filterProjectsByTag#sideBar", () => filterProjectsByTag());
-
-    async function filterProjectsByTag() {
-        const filterByTags = Container.context.globalState.get<string[]>("filterByTags", []);
-
-        const tags = await pickTags(projectStorage, filterByTags, {
-            useDefaultTags: false,
-            useNoTagsDefined: true,
-            showWarningWhenHasNoTagsToPick: true
-        });
-
-        if (!tags) {
-            return;
-        }
-
-        Container.context.globalState.update("filterByTags", tags);
-        providerManager.refreshStorageTreeView();
-    }
 
     loadProjectsFile();
 
@@ -260,10 +230,6 @@ export async function activate(context: vscode.ExtensionContext) {
             providerManager.refreshTreeViews();
         }
 
-        if (cfg.affectsConfiguration("projectManager.tags.collapseItems")) {
-            await StorageProvider.resetTagExpansionState();
-            providerManager.refreshStorageTreeView();
-        }
     }));
 
     function refreshProjects(showMessage?: boolean, forceRefresh?: boolean) {
@@ -330,9 +296,7 @@ export async function activate(context: vscode.ExtensionContext) {
             wpath = projectDetails.name;
         }
 
-        let selectedTags: string[] | undefined;
-
-        const saveProjectInternal = async (rawInput: string, tags?: string[]): Promise<boolean> => {
+        const saveProjectInternal = async (rawInput: string): Promise<boolean> => {
             const { name: projectName, group } = parseProjectInput(rawInput);
 
             if (projectName === "") {
@@ -340,15 +304,10 @@ export async function activate(context: vscode.ExtensionContext) {
                 return false;
             }
 
-            const tagsToSave = (tags && tags.length > 0) ? tags : undefined;
-
             if (!projectStorage.exists(projectName)) {
                 Container.stack.push(projectName);
                 context.globalState.update("recent", Container.stack.toString());
                 projectStorage.push(projectName, rootPath, group);
-                if (tagsToSave) {
-                    projectStorage.editTags(projectName, tagsToSave);
-                }
                 await projectStorage.save();
                 providerManager.updateTreeViewStorage();
                 vscode.window.showInformationMessage(l10n.t("Project saved!"));
@@ -379,9 +338,6 @@ export async function activate(context: vscode.ExtensionContext) {
                     if (group) {
                         projectStorage.editGroup(projectName, group);
                     }
-                    if (tagsToSave) {
-                        projectStorage.editTags(projectName, tagsToSave);
-                    }
                     await projectStorage.save();
                     providerManager.updateTreeViewStorage();
                     vscode.window.showInformationMessage(l10n.t("Project saved!"));
@@ -401,56 +357,8 @@ export async function activate(context: vscode.ExtensionContext) {
         input.placeholder = l10n.t("Type a name for your project (e.g. Work/Frontend/my-app)");
         input.value = wpath;
 
-        const tagsButton: vscode.QuickInputButton = {
-            iconPath: new vscode.ThemeIcon("tag"),
-            tooltip: l10n.t("Select tags")
-        };
-
-        input.buttons = [ tagsButton ];
-
         input.onDidAccept(async () => {
-            const saved = await saveProjectInternal(input.value, selectedTags);
-            if (saved) {
-                input.hide();
-                input.dispose();
-            }
-        });
-
-        input.onDidTriggerButton(async (button) => {
-            if (button !== tagsButton) {
-                return;
-            }
-
-            if (input.value === "") {
-                vscode.window.showWarningMessage(l10n.t("You must define a name for the project."));
-                return;
-            }
-
-            let preselectedTags: string[] = selectedTags ?? [];
-            const existingProject = projectStorage.existsWithRootPath(rootPath);
-            if (existingProject && existingProject.name.toLowerCase() === input.value.toLowerCase() && (!selectedTags || selectedTags.length === 0)) {
-                preselectedTags = existingProject.tags;
-            }
-
-            const picked = await pickTags(projectStorage, preselectedTags, {
-                useDefaultTags: true,
-                useNoTagsDefined: false,
-                allowAddingNewTags: true
-            });
-
-            if (!picked) {
-                return;
-            }
-
-            selectedTags = picked;
-
-            if (selectedTags.length > 0) {
-                input.prompt = l10n.t("Selected tags: {0}", selectedTags.join(", "));
-            } else {
-                input.prompt = l10n.t("Project Name");
-            }
-
-            const saved = await saveProjectInternal(input.value, selectedTags);
+            const saved = await saveProjectInternal(input.value);
             if (saved) {
                 input.hide();
                 input.dispose();
@@ -558,25 +466,6 @@ export async function activate(context: vscode.ExtensionContext) {
             updateStatusBar(oldName, node.command.arguments[0], newName);
         } else {
             vscode.window.showErrorMessage(l10n.t("Project already exists!"));
-        }
-    }
-
-    async function editTags(node: ProjectNode) {
-
-        const project = projectStorage.existsWithRootPath(node.command.arguments[0]);
-        if (!project) {
-            return;
-        }
-
-        const picked = await pickTags(projectStorage, project.tags, {
-            useDefaultTags: true,
-            useNoTagsDefined: false
-        });
-
-        if (picked) {
-            projectStorage.editTags(project.name, picked);
-            await projectStorage.save();
-            vscode.window.showInformationMessage(l10n.t("Project updated!"));
         }
     }
 
