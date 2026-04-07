@@ -31,6 +31,7 @@ import { canSwitchOnActiveWindow, openPickedProject, pickProjects, shouldOpenInN
 import { CustomProjectLocator } from "./autodetect/abstractLocator";
 import { l10n } from "vscode";
 import { registerWalkthrough } from "./commands/walkthrough";
+import { checkForUpdates } from "./updater/githubUpdater";
 import { registerSideBarDecorations } from "./sidebar/decoration";
 import { ProjectNode } from "./sidebar/nodes";
 import { parseProjectInput, Project } from "./core/project";
@@ -62,9 +63,11 @@ export async function activate(context: vscode.ExtensionContext) {
     registerSideBarDecorations();
     registerWalkthrough();
 
-    // Defer What's New initialization — it is non-critical for core functionality
-    // and may trigger a webview on activation.
-    setImmediate(() => registerWhatsNew());
+    // Defer non-critical initialization — both may trigger UI on activation.
+    setImmediate(() => {
+        registerWhatsNew();
+        checkForUpdates(context);
+    });
 
     context.subscriptions.push(vscode.commands.registerCommand("_projectManager.openFolderWelcome", () => {
         const openFolderCommand = isWindows || isMacOS ? "workbench.action.files.openFolder" : "workbench.action.files.openFileFolder";
