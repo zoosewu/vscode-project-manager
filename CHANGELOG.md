@@ -27,6 +27,14 @@
 - Security Alert: braces (dependabot [PR #746](https://github.com/alefragnani/vscode-project-manager/pull/746))
 
 
+## [13.2.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.1.3...v13.2.0) (2026-04-07)
+
+
+### ### Added
+
+* **ci:** switch to GitHub Releases distribution with auto-update ([ab9e7cb](https://github.com/zoosewu/vscode-project-manager/commit/ab9e7cbd21a8a14240ecc5440e74560f85fa5f64))
+* **ci:** switch to GitHub Releases distribution with auto-update ([b983ae8](https://github.com/zoosewu/vscode-project-manager/commit/b983ae8bdde1d4b9ca75347d9d7447c634190b61))
+
 ## [13.1.3](https://github.com/zoosewu/vscode-project-manager/compare/v13.1.2...v13.1.3) (2026-04-02)
 
 
