@@ -128,11 +128,6 @@
 				"title": "%projectManager.commands.listProjectsNewWindow.title%"
 			},
 			{
-				"command": "_projectManager.viewAsTags#sideBarFavorites",
-				"title": "%projectManager.commands.viewAsTags#sideBarFavorites.title%",
-				"icon": "$(list-flat)"
-			},
-			{
 				"command": "_projectManager.viewAsList#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsList#sideBarFavorites.title%",
 				"icon": "$(type-hierarchy)"
@@ -156,15 +151,6 @@
 				"command": "_projectManager.sortByRecent#sideBarFavorites",
 				"title": "%projectManager.commands.sortByRecent#sideBarFavorites.title%",
 				"enablement": "projectManager.sortBy != Recent"
-			},
-			{
-				"command": "projectManager.filterProjectsByTag",
-				"title": "%projectManager.commands.filterProjectsByTag.title%"
-			},
-			{
-				"command": "projectManager.filterProjectsByTag#sideBar",
-				"title": "%projectManager.commands.filterProjectsByTag#sideBar.title%",
-				"icon": "$(tag)"
 			},
 			{
 				"command": "projectManager.listFavoriteProjects#sideBarFavorites",
@@ -287,10 +273,6 @@
 				"title": "%projectManager.commands.renameProject.title%"
 			},
 			{
-				"command": "_projectManager.editTags",
-				"title": "%projectManager.commands.editTags.title%"
-			},
-			{
 				"command": "_projectManager.editGroup",
 				"title": "%projectManager.commands.editGroup.title%"
 			},
@@ -371,14 +353,6 @@
 					"when": "false"
 				},
 				{
-					"command": "_projectManager.editTags",
-					"when": "false"
-				},
-				{
-					"command": "_projectManager.viewAsTags#sideBarFavorites",
-					"when": "false"
-				},
-				{
 					"command": "_projectManager.viewAsList#sideBarFavorites",
 					"when": "false"
 				},
@@ -396,10 +370,6 @@
 				},
 				{
 					"command": "_projectManager.sortByRecent#sideBarFavorites",
-					"when": "false"
-				},
-				{
-					"command": "projectManager.filterProjectsByTag#sideBar",
 					"when": "false"
 				},
 				{
@@ -486,13 +456,8 @@
 					"group": "navigation@10"
 				},
 				{
-					"command": "_projectManager.viewAsTags#sideBarFavorites",
-					"when": "view == projectsExplorerFavorites && projectManager.favoritesViewMode == 'list'",
-					"group": "navigation@13"
-				},
-				{
 					"command": "_projectManager.viewAsGroups#sideBarFavorites",
-					"when": "view == projectsExplorerFavorites && projectManager.favoritesViewMode == 'tags'",
+					"when": "view == projectsExplorerFavorites && projectManager.favoritesViewMode == 'list'",
 					"group": "navigation@13"
 				},
 				{
@@ -502,11 +467,6 @@
 				},
 				{
 					"command": "projectManager.listFavoriteProjects#sideBarFavorites",
-					"when": "view == projectsExplorerFavorites",
-					"group": "navigation@14"
-				},
-				{
-					"command": "projectManager.filterProjectsByTag#sideBar",
 					"when": "view == projectsExplorerFavorites",
 					"group": "navigation@14"
 				},
@@ -643,11 +603,6 @@
 					"group": "favorites"
 				},
 				{
-					"command": "_projectManager.editTags",
-					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
-					"group": "favorites"
-				},
-				{
 					"command": "_projectManager.editGroup",
 					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
 					"group": "favorites"
@@ -678,10 +633,6 @@
 			"projectManager.sideBar.favorites.title": [
 				{
 					"command": "_projectManager.viewAsList#sideBarFavorites",
-					"group": "1_projectManager#sideBarFavorites"
-				},
-				{
-					"command": "_projectManager.viewAsTags#sideBarFavorites",
 					"group": "1_projectManager#sideBarFavorites"
 				},
 				{
@@ -776,14 +727,7 @@
 									},
 									"default": []
 								},
-								"tags": {
-									"type": "array",
-									"items": {
-										"type": "string"
-									},
-									"default": []
-								},
-								"enabled": {
+							"enabled": {
 									"type": "boolean",
 									"default": true
 								},
@@ -879,40 +823,12 @@
 							"Only ask for confirmation if you use the Side Bar",
 							"Whenever you call the Open command, it will ask for confirmation"
 						],
-						"description": "%projectManager.configuration.confirmSwitchOnActiveWindow.description%"
-					},
-					"projectManager.tags": {
-						"type": "array",
-						"default": [
-							"Personal",
-							"Work"
-						],
-						"items": {
-							"type": "string"
-						},
-						"description": "%projectManager.configuration.tags.description%"
-					},
-					"projectManager.tags.collapseItems": {
-						"type": "string",
-						"default": "startExpanded",
-						"enum": [
-							"alwaysExpanded",
-							"alwaysCollapsed",
-							"startExpanded",
-							"startCollapsed"
-						],
-						"enumDescriptions": [
-							"%projectManager.configuration.tags.collapseItems.enumDescriptions.alwaysExpanded%",
-							"%projectManager.configuration.tags.collapseItems.enumDescriptions.alwaysCollapsed%",
-							"%projectManager.configuration.tags.collapseItems.enumDescriptions.startExpanded%",
-							"%projectManager.configuration.tags.collapseItems.enumDescriptions.startCollapsed%"
-						],
-						"description": "%projectManager.configuration.tags.collapseItems.description%"
-					}
+					"description": "%projectManager.configuration.confirmSwitchOnActiveWindow.description%"
 				}
-			},
-			{
-				"id": "projectManager-git",
+			}
+		},
+		{
+			"id": "projectManager-git",
 				"title": "Git",
 				"properties": {
 					"projectManager.git.baseFolders": {
@@ -1127,16 +1043,8 @@
 							"markdown": "walkthrough/findAndOpenProjects.md"
 						}
 					},
-					{
-						"id": "organizeWithTags",
-						"title": "%projectManager.walkthroughs.organizeWithTags.title%",
-						"description": "%projectManager.walkthroughs.organizeWithTags.description%",
-						"media": {
-							"markdown": "walkthrough/organizeWithTags.md"
-						}
-					},
-					{
-						"id": "exclusiveSideBar",
+				{
+					"id": "exclusiveSideBar",
 						"title": "%projectManager.walkthroughs.exclusiveSideBar.title%",
 						"description": "%projectManager.walkthroughs.exclusiveSideBar.description%",
 						"media": {

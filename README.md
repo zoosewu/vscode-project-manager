@@ -40,7 +40,7 @@ Here are some of the features that **Project Manager** provides:
 
 * Save any folder or workspace as a **Project**
 * Auto-detect **Git**, **Mercurial** or **SVN** repositories
-* Organize your projects using **Tags** and **Groups**
+* Organize your projects using **Groups**
 * Open projects in the same or new window
 * Identify _deleted/renamed_ projects
 * A **Status Bar** which identifies the current project
@@ -53,7 +53,6 @@ Here are some of the features that **Project Manager** provides:
 * `Project Manager: Save Project` — Save the current folder/workspace as a new project
 * `Project Manager: List Projects to Open` — List all saved/detected projects and pick one
 * `Project Manager: List Projects to Open in New Window` — Open a project in a new window
-* `Project Manager: Filter Projects by Tag` — Filter the Favorites by selected tags
 * `Project Manager: Add Project to Workspace` — Add a project as a workspace folder
 * `Project Manager: Refresh Projects` — Force-refresh all auto-detected projects
 
@@ -84,7 +83,6 @@ Projects are stored directly in **settings.json** under the `projectManager.proj
     {
         "name": "Pascal MI",
         "rootPath": "c:\\PascalProjects\\pascal-menu-insight",
-        "tags": [],
         "group": "",
         "enabled": true,
         "profile": "Delphi"
@@ -92,7 +90,6 @@ Projects are stored directly in **settings.json** under the `projectManager.proj
     {
         "name": "my-app",
         "rootPath": "$home\\Documents\\GitHub\\my-app",
-        "tags": ["Personal", "VS Code"],
         "group": "Work/Frontend",
         "enabled": true
     }
@@ -119,17 +116,10 @@ The **Project Manager** extension has its own **Side Bar**, with a variety of co
 
 ### View Modes for Favorites
 
-The Favorites view supports three display modes, cycling with the toolbar button:
+The Favorites view supports two display modes, cycling with the toolbar button:
 
 * **List** — flat list of all projects
-* **Tags** — projects grouped by tag
 * **Groups** — projects organized by their group hierarchy (e.g., `Work › Frontend`)
-
-### Project Tags — View and Filter
-
-You can define your custom tags (via `projectManager.tags` setting), assign multiple **tags** to each project, and filter projects by their **tags**.
-
-![Side Bar Tags](images/vscode-project-manager-side-bar-tags.gif)
 
 ### Project Groups — Hierarchy
 
@@ -306,28 +296,6 @@ If you normally connect to remotes (SSH/WSL) and want to save Favorite projects 
 
 ```json
 "projectManager.openInCurrentWindowIfEmpty": "always"
-```
-
-* Custom tags for organizing projects (`Personal` and `Work` by default)
-
-```json
-"projectManager.tags": [
-    "Personal",
-    "Work",
-    "VS Code",
-    "Learning"
-]
-```
-
-* Controls how tag groups in the Favorites view expand/collapse (`startExpanded` by default)
-
-  * `alwaysExpanded` — always expanded
-  * `alwaysCollapsed` — always collapsed
-  * `startExpanded` — start expanded, remember state
-  * `startCollapsed` — start collapsed, remember state
-
-```json
-"projectManager.tags.collapseItems": "startExpanded"
 ```
 
 ## Available Colors

@@ -252,7 +252,6 @@ export class CustomProjectLocator {
                 return {
                     rootPath: element.fullPath,
                     name: element.name,
-                    tags: [],
                     paths: [],
                     enabled: true,
                     profile: "",

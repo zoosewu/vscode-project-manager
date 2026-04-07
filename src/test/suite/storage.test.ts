@@ -10,7 +10,6 @@ import * as vscode from "vscode";
 import { Uri } from "vscode";
 import { normalizeGroupPath, parseProjectInput } from "../../core/project";
 import { ProjectStorage } from "../../storage/storage";
-import { NO_TAGS_DEFINED } from "../../sidebar/constants";
 
 let stubProjects: unknown[] = [];
 let lastUpdateTarget: vscode.ConfigurationTarget | undefined;
@@ -124,62 +123,6 @@ suite("ProjectStorage", () => {
         assert.strictEqual(storage.disabled()!.length, 0);
     });
 
-    test("editTags and getAvailableTags collect unique tags", () => {
-        const storage = new ProjectStorage();
-
-        storage.push("A", "/a");
-        storage.push("B", "/b");
-        storage.push("C", "/c");
-
-        storage.editTags("A", [ "frontend", "react" ]);
-        storage.editTags("B", [ "backend", "node" ]);
-        storage.editTags("C", [ "frontend", "node" ]);
-
-        const tags = storage.getAvailableTags().sort();
-        assert.deepStrictEqual(tags, [ "backend", "frontend", "node", "react" ]);
-    });
-
-    test("getProjectsByTag returns enabled projects matching tag (including no-tag case)", () => {
-        const storage = new ProjectStorage();
-
-        storage.push("WithTag", "/with");
-        storage.push("NoTag", "/notag");
-
-        storage.editTags("WithTag", [ "tag1" ]);
-
-        let result = storage.getProjectsByTag("tag1");
-        assert.strictEqual(result.length, 1);
-        assert.strictEqual(result[0].label, "WithTag");
-
-        result = storage.getProjectsByTag("");
-        assert.strictEqual(result.length, 1);
-        assert.strictEqual(result[0].label, "NoTag");
-    });
-
-    test("getProjectsByTags returns enabled projects matching any tag and NO_TAGS_DEFINED behavior", () => {
-        const storage = new ProjectStorage();
-
-        storage.push("Frontend", "/fe");
-        storage.push("Backend", "/be");
-        storage.push("NoTags", "/nt");
-
-        storage.editTags("Frontend", [ "frontend" ]);
-        storage.editTags("Backend", [ "backend" ]);
-
-        let result = storage.getProjectsByTags([ "frontend" ]);
-        assert.strictEqual(result.length, 1);
-        assert.strictEqual(result[0].label, "Frontend");
-
-        result = storage.getProjectsByTags([ "frontend", "backend" ]);
-        assert.strictEqual(result.length, 2);
-        const labels = result.map(r => r.label).sort();
-        assert.deepStrictEqual(labels, [ "Backend", "Frontend" ]);
-
-        result = storage.getProjectsByTags([ NO_TAGS_DEFINED ]);
-        assert.strictEqual(result.length, 1);
-        assert.strictEqual(result[0].label, "NoTags");
-    });
-
     test("map returns only enabled projects with expected shape", () => {
         const storage = new ProjectStorage();
 
@@ -196,27 +139,6 @@ suite("ProjectStorage", () => {
             profile: "",
             group: ""
         });
-    });
-
-    test("save and load preserve projects in v2 format", async () => {
-        const storage = new ProjectStorage();
-
-        storage.push("A", "/path/a");
-        storage.push("B", "/path/b");
-        storage.editTags("A", [ "x" ]);
-        storage.editTags("B", [ "y" ]);
-
-        await storage.save();
-
-        const loadedStorage = new ProjectStorage();
-        const error = loadedStorage.load();
-        assert.strictEqual(error, "");
-        assert.strictEqual(loadedStorage.length(), 2);
-        assert.ok(loadedStorage.exists("A"));
-        assert.ok(loadedStorage.exists("B"));
-
-        const tags = loadedStorage.getAvailableTags().sort();
-        assert.deepStrictEqual(tags, [ "x", "y" ]);
     });
 
     test("existsRemoteWithRootPath returns matching project for remote URI", () => {
@@ -294,7 +216,6 @@ suite("ProjectStorage", () => {
         assert.strictEqual(storage.length(), 1);
         assert.ok(storage.exists("Legacy"));
         const project = storage.getProjects()[0];
-        assert.deepStrictEqual(project.tags, []);
         assert.strictEqual(project.group, "");
         assert.strictEqual(project.enabled, true);
     });
@@ -326,7 +247,7 @@ suite("ProjectStorage", () => {
         const storage = new ProjectStorage();
         storage.push("A", "/a");
         storage.setProjects([
-            { name: "B", rootPath: "/b", paths: [], tags: [], enabled: true, profile: "", group: "" }
+            { name: "B", rootPath: "/b", paths: [], enabled: true, profile: "", group: "" }
         ]);
         assert.strictEqual(storage.length(), 1);
         assert.ok(storage.exists("B"));
@@ -393,7 +314,7 @@ suite("ProjectStorage", () => {
         assert.strictEqual(storage.length(), 1);
         const projects = storage.getProjects();
         const keys = Object.keys(projects[0]).sort();
-        assert.deepStrictEqual(keys, ["enabled", "group", "name", "paths", "profile", "rootPath", "tags"]);
+        assert.deepStrictEqual(keys, ["enabled", "group", "name", "paths", "profile", "rootPath"]);
     });
 
     test("map includes group for projects with groups", () => {
@@ -403,26 +324,6 @@ suite("ProjectStorage", () => {
         const mapped = storage.map();
         assert.strictEqual(mapped.length, 1);
         assert.strictEqual(mapped[0].group, "Work/Frontend");
-    });
-
-    test("getProjectsByTag includes group in returned items", () => {
-        const storage = new ProjectStorage();
-        storage.push("App", "/app", "Work");
-        storage.editTags("App", ["web"]);
-
-        const result = storage.getProjectsByTag("web");
-        assert.strictEqual(result.length, 1);
-        assert.strictEqual(result[0].group, "Work");
-    });
-
-    test("getProjectsByTags includes group in returned items", () => {
-        const storage = new ProjectStorage();
-        storage.push("App", "/app", "Infra");
-        storage.editTags("App", ["backend"]);
-
-        const result = storage.getProjectsByTags(["backend"]);
-        assert.strictEqual(result.length, 1);
-        assert.strictEqual(result[0].group, "Infra");
     });
 
     test("save and load round-trip preserves group from push", async () => {

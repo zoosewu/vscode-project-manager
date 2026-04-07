@@ -19,6 +19,12 @@ export class ProjectManagerContentProvider implements ContentProvider {
     public provideChangeLog(): ChangeLogItem[] {
         const changeLog: ChangeLogItem[] = [];
 
+        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.3.0", releaseDate: "April 2026" } });
+        changeLog.push({
+            kind: ChangeLogKind.INTERNAL,
+            detail: "Removed <b>Tags</b> feature — projects are now organized exclusively via <b>Groups</b>"
+        });
+
         changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.2.0", releaseDate: "April 2026" } });
         changeLog.push({
             kind: ChangeLogKind.NEW,
@@ -149,14 +155,6 @@ export class ProjectManagerContentProvider implements ContentProvider {
                 id: 771,
                 kind: IssueKind.PR,
                 kudos: "@Mister-Hope"
-            }
-        });
-        changeLog.push({
-            kind: ChangeLogKind.FIXED,
-            detail: {
-                message: "Favorites not shown while filtering by tags",
-                id: 557,
-                kind: IssueKind.Issue
             }
         });
         changeLog.push({

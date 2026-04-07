@@ -9,6 +9,4 @@ export const NODE_PROJECT = 1;
 
 export enum ProjectNodeKind { NODE_KIND, NODE_PROJECT }
 
-export const NO_TAGS_DEFINED = '** no tags **';
-
-export enum ViewFavoritesAs { VIEW_AS_LIST, VIEW_AS_TAGS, VIEW_AS_GROUPS }
+export enum ViewFavoritesAs { VIEW_AS_LIST, VIEW_AS_GROUPS }
