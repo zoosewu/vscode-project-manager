@@ -1,47 +1,38 @@
 > **This is a fork of [alefragnani/vscode-project-manager](https://github.com/alefragnani/vscode-project-manager) published as `zoosewu.project-manager-zoo`.**
-> Original extension by [Alessandro Fragnani](https://github.com/alefragnani) — [View on Marketplace](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager).
+> Original extension by [Alessandro Fragnani](https://github.com/alefragnani) — [View original on Marketplace](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager).
 
-[![](https://vsmarketplacebadges.dev/version-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
-[![](https://vsmarketplacebadges.dev/downloads-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
-[![](https://vsmarketplacebadges.dev/rating-short/alefragnani.project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)
+[![GitHub Release](https://img.shields.io/github/v/release/zoosewu/vscode-project-manager)](https://github.com/zoosewu/vscode-project-manager/releases/latest)
+[![GitHub Downloads](https://img.shields.io/github/downloads/zoosewu/vscode-project-manager/total)](https://github.com/zoosewu/vscode-project-manager/releases)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE.md)
 
 <p align="center">
   <br />
-  <a title="Learn more about Project Manager" href="http://github.com/alefragnani/vscode-project-manager"><img src="https://raw.githubusercontent.com/alefragnani/vscode-project-manager/master/images/vscode-project-manager-logo-readme.png" alt="Project Manager Logo" width="70%" /></a>
+  <a title="Learn more about Project Manager" href="https://github.com/zoosewu/vscode-project-manager"><img src="https://raw.githubusercontent.com/alefragnani/vscode-project-manager/master/images/vscode-project-manager-logo-readme.png" alt="Project Manager Logo" width="70%" /></a>
 </p>
 
-# What's new in Project Manager 13.0
+# What's new in Project Manager 13.2
 
-* Fully Open Source again
-* Adds **Profile** support
-* Highlights the current project in the Side Bar
-* Published to **Open VSX**
-* Adds **Getting Started / Walkthrough**
-* Organize your projects with **Tags**
-* Adds **Virtual Workspaces** support
-* Adds **Workspace Trust** support
+* **Auto-update** — detects the latest GitHub release on startup and installs automatically
+* Distributed via **GitHub Releases** (VSIX) instead of the VS Code Marketplace
+* Organize projects with **Group hierarchy** using slash notation (e.g., `Work/Frontend/my-app`)
+* **View as Groups** mode in the Favorites Side Bar
+* Edit project **Group** from the Side Bar context menu
+* Projects stored in **settings.json** — shareable via Settings Sync
+* Faster startup via parallel and progressive autodetect provider loading
 
-# Support
+# Installation
 
-**Project Manager** is an extension created for **Visual Studio Code**. If you find it useful, please consider supporting it.
+This extension is distributed as a VSIX file via [GitHub Releases](https://github.com/zoosewu/vscode-project-manager/releases/latest). The extension checks for updates automatically on startup.
 
-<table align="center" width="60%" border="0">
-  <tr>
-    <td>
-      <a title="Paypal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=EP57F3B6FXKTU&lc=US&item_name=Alessandro%20Fragnani&item_number=vscode%20extensions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"/></a>
-    </td>
-    <td>
-      <a title="GitHub Sponsors" href="https://github.com/sponsors/alefragnani"><img src="https://raw.githubusercontent.com/alefragnani/oss-resources/master/images/button-become-a-sponsor-rounded-small.png"/></a>
-    </td>
-    <td>
-      <a title="Patreon" href="https://www.patreon.com/alefragnani"><img src="https://raw.githubusercontent.com/alefragnani/oss-resources/master/images/button-become-a-patron-rounded-small.png"/></a>
-    </td>
-  </tr>
-</table>
+**Manual install:**
+
+1. Download the latest `.vsix` from the [Releases page](https://github.com/zoosewu/vscode-project-manager/releases/latest)
+2. In VS Code, open the Command Palette and run **Extensions: Install from VSIX...**
+3. Select the downloaded file
 
 # Project Manager
 
-It helps you to easily access your **projects**, no matter where they are located. _Don't miss those important projects anymore_. 
+It helps you to easily access your **projects**, no matter where they are located. _Don't miss those important projects anymore_.
 
 You can define your own **Projects** (also called **Favorites**), or choose for auto-detect **Git**, **Mercurial** or **SVN** repositories, **VSCode** folders, or **any** other folder.
 
@@ -49,7 +40,7 @@ Here are some of the features that **Project Manager** provides:
 
 * Save any folder or workspace as a **Project**
 * Auto-detect **Git**, **Mercurial** or **SVN** repositories
-* Organize your projects using **Tags**
+* Organize your projects using **Tags** and **Groups**
 * Open projects in the same or new window
 * Identify _deleted/renamed_ projects
 * A **Status Bar** which identifies the current project
@@ -59,312 +50,295 @@ Here are some of the features that **Project Manager** provides:
 
 ## Available Commands
 
-* `Project Manager: Save Project` Save the current folder/workspace as a new project
-* `Project Manager: Edit Project` Edit your projects manually (`projects.json`)
-* `Project Manager: List Projects to Open` List all saved/detected projects and pick one
-* `Project Manager: List Projects to Open in New Window` List all saved/detected projects and pick one to be opened in New Window
-* `Project Manager: Filter Projects by Tag` Filter the Favorite projects by selected tags
+* `Project Manager: Save Project` — Save the current folder/workspace as a new project
+* `Project Manager: List Projects to Open` — List all saved/detected projects and pick one
+* `Project Manager: List Projects to Open in New Window` — Open a project in a new window
+* `Project Manager: Filter Projects by Tag` — Filter the Favorites by selected tags
+* `Project Manager: Add Project to Workspace` — Add a project as a workspace folder
+* `Project Manager: Refresh Projects` — Force-refresh all auto-detected projects
 
 ## Manage your projects
 
 ### Save Project
 
-You can save the current folder/workspace as a **Project** at any time. You just need to type its name. 
+You can save the current folder/workspace as a **Project** at any time. You just need to type its name.
 
 ![Save](images/project-manager-save.png)
 
 > It suggests a name to you _automatically_ :)
- 
-### Edit Projects
 
-For easier customization of your project list, you can edit the `projects.json` file, directly inside **Code**. Just execute `Project Manager: Edit Projects` and the `projects.json` file is opened. Simple as this:
+Use a slash in the name to assign a **Group** at the same time:
+
+```
+Work/Frontend/my-app
+```
+
+This saves the project under the `Work › Frontend` group hierarchy.
+
+### Project Storage
+
+Projects are stored directly in **settings.json** under the `projectManager.projects` key. This means your project list is automatically shared via **Settings Sync** without any extra configuration.
 
 ```json
-[
+"projectManager.projects": [
     {
         "name": "Pascal MI",
         "rootPath": "c:\\PascalProjects\\pascal-menu-insight",
         "tags": [],
+        "group": "",
         "enabled": true,
         "profile": "Delphi"
     },
     {
-        "name": "Bookmarks",
-        "rootPath": "$home\\Documents\\GitHub\\vscode-bookmarks",
-        "tags": [
-            "Personal",
-            "VS Code"
-        ],
-        "enabled": true,
-        "profile": "VSCode"
-    },
-    {
-        "name": "Numbered Bookmarks",
-        "rootPath": "~\\Documents\\GitHub\\vscode-numbered-bookmarks",
-        "tags": [
-            "Personal",
-            "VS Code"
-        ],
-        "enabled": false,
-        "profile": "VSCode"
+        "name": "my-app",
+        "rootPath": "$home\\Documents\\GitHub\\my-app",
+        "tags": ["Personal", "VS Code"],
+        "group": "Work/Frontend",
+        "enabled": true
     }
 ]
 ```
 
-> You can use `~` or `$home` while defining any path. It will be replaced by your HOME folder.
+> You can use `~` or `$home` in any path — it will be replaced by your HOME folder.
 
-> Be sure that the JSON file is well-formed. Otherwise, **Project Manager** will not be able to open it, and an error message like this should appear. In this case, you should use the `Open File` button to fix it.
-
-![Corrupted](images/project-manager-edit-corrupted-projectsJson.png)
-
-## Access 
+## Access
 
 ### List Projects to Open
 
-Shows your projects and select one to open.
+Shows your projects and lets you select one to open.
 
 ### List Projects to Open in New Window
 
 Just like **List Projects** but always opening in **New Window**.
 
+## Side Bar
+
+The **Project Manager** extension has its own **Side Bar**, with a variety of commands to improve your productivity.
+
+![Side Bar](images/vscode-project-manager-side-bar.png)
+
+### View Modes for Favorites
+
+The Favorites view supports three display modes, cycling with the toolbar button:
+
+* **List** — flat list of all projects
+* **Tags** — projects grouped by tag
+* **Groups** — projects organized by their group hierarchy (e.g., `Work › Frontend`)
+
+### Project Tags — View and Filter
+
+You can define your custom tags (via `projectManager.tags` setting), assign multiple **tags** to each project, and filter projects by their **tags**.
+
+![Side Bar Tags](images/vscode-project-manager-side-bar-tags.gif)
+
+### Project Groups — Hierarchy
+
+Assign a group path to any project (via the context menu **Edit Group** or the slash notation when saving). Groups nest arbitrarily deep and are rendered as a tree in the **Groups** view mode.
+
 ## Keyboard Focused Users
 
-If you are a keyboard focused user and uses _Vim like_ keyboard navigation, you can navigate thru the project list with your own keybindings. 
+If you are a keyboard focused user and use _Vim-like_ keyboard navigation, you can navigate through the project list with your own keybindings.
 
 Just use the `when` clause `"inProjectManagerList"`, like:
 
 ```json
-    {
-        "key": "cmd+j",
-        "command": "workbench.action.quickOpenSelectNext",
-        "when": "inProjectManagerList && isMac"
-    },
-    {
-        "key": "cmd+shift+j",
-        "command": "workbench.action.quickOpenSelectPrevious",
-        "when": "inProjectManagerList && isMac"
-    },
-    {
-        "key": "ctrl+j",
-        "command": "workbench.action.quickOpenSelectNext",
-        "when": "inProjectManagerList && (isWindows || isLinux)"
-    },
-    {
-        "key": "ctrl+shift+j",
-        "command": "workbench.action.quickOpenSelectPrevious",
-        "when": "inProjectManagerList && (isWindows || isLinux)"
-    }
+{
+    "key": "cmd+j",
+    "command": "workbench.action.quickOpenSelectNext",
+    "when": "inProjectManagerList && isMac"
+},
+{
+    "key": "cmd+shift+j",
+    "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inProjectManagerList && isMac"
+},
+{
+    "key": "ctrl+j",
+    "command": "workbench.action.quickOpenSelectNext",
+    "when": "inProjectManagerList && (isWindows || isLinux)"
+},
+{
+    "key": "ctrl+shift+j",
+    "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inProjectManagerList && (isWindows || isLinux)"
+}
 ```
 
 ## Working with Remotes
 
-The extension support [Remote Development](https://code.visualstudio.com/docs/remote/remote-overview) scenarios, and you may choose how to use it, depending on your needs
+The extension supports [Remote Development](https://code.visualstudio.com/docs/remote/remote-overview) scenarios.
 
 ### I access Remotes, but most of my work is Local
 
-This is the _regular_ scenario, and that's why you don't need to do anything special for the extension to work. It works out of the box.
-
-When installed locally, you can save any Container, SSH, WSL or Codespaces projects as Favorites. Each one will have its own icon to be properly identified, and when you select them, VS Code will open the remote automatically.
-
-_It just works_
+This is the _regular_ scenario — the extension works out of the box. When installed locally, you can save any Container, SSH, WSL or Codespaces projects as Favorites. Each has its own icon and VS Code opens the remote automatically when you select it.
 
 ### But what if I do most of my work on Remotes
 
-If you normally connect to remotes (like SSH/WSL) and would like to save Favorite projects on that remote, or to be able to auto-detect repos located on that remote, you must activate/install the extension to work on remotes. 
-
-You just have to add the lines below on your `User Settings`.
+If you normally connect to remotes (SSH/WSL) and want to save Favorite projects on that remote, or auto-detect repos there, install the extension on the remote side by adding:
 
 ```json
-    "remote.extensionKind": {
-        "alefragnani.project-manager": [
-            "workspace"
-        ]
-    },
+"remote.extensionKind": {
+    "zoosewu.project-manager-zoo": [
+        "workspace"
+    ]
+}
 ```
 
 > More details on [VS Code documentation](https://code.visualstudio.com/docs/remote/containers#_advanced-forcing-an-extension-to-run-locally-or-remotely)
 
 ## Available Settings
 
-You can choose how your projects are sorted
+* Sort the project list
 
-* `Saved`: The order that you saved the projects
-* `Name`: The name that you typed for the project
-* `Path`: The full path of the project
-* `Recent`: The recently used projects
+  * `Saved` — the order you saved the projects
+  * `Name` — alphabetically by name
+  * `Path` — by full path
+  * `Recent` — most recently used first
 
 ```json
-    "projectManager.sortList": "Name"
+"projectManager.sortList": "Name"
 ```
 
 ![List](images/project-manager-list-sort-by-name.png)
 
-* Choose if the project list must be grouped by its _kind_ (**Favorites**, **Git**, **Mercurial**, **SVN** and **VS Code**).
+* Group the project list by its _kind_ (**Favorites**, **Git**, **Mercurial**, **SVN**, **VS Code**)
 
 ```json
-    "projectManager.groupList": true
+"projectManager.groupList": true
 ```
 
-* Should the current project be removed from the list? (`false` by default)
+* Remove the current project from the list (`false` by default)
 
 ```json
-    "projectManager.removeCurrentProjectFromList": true
+"projectManager.removeCurrentProjectFromList": true
 ```
 
-* Should identify _invalid paths_ on project list? (`true` by default)
-
-```json 
-    "projectManager.checkInvalidPathsBeforeListing": false
-```
-
-* Should support symlinks on `baseFolders`? (`false` by default)
-
-```json 
-    "projectManager.supportSymlinksOnBaseFolders": true
-```
-
-* Should show the parent folder info when projects with same name are detected? (`false` by default)
-
-```json 
-    "projectManager.showParentFolderInfoOnDuplicates": true
-```
-
-* Filter Projects Through Full Path (`false` by default)
-
-```json 
-    "projectManager.filterOnFullPath": true
-```
-
-* Custom projects file (`projects.json`) location
-
-If you intend to _share_ projects between  **Stable** and **Insider** installations, or if you store your settings in different locations (cloud services), you can indicate an _alternative_ location (folder path) for the `projects.json` file.
+* Identify _invalid paths_ in the project list (`true` by default)
 
 ```json
-    "projectManager.projectsLocation": "C\\Users\\myUser\\AppData\\Roaming\\Code\\User"
+"projectManager.checkInvalidPathsBeforeListing": false
 ```
 
-> You can use `~` or `$home` while defining the folder path. It will be replaced by your HOME folder.
-
-* Automatic Detection of Projects (**Git** ![git](images/ico_git_branch.png), **Mercurial** ![git](images/ico_git_branch.png), **SVN** ![svn](images/ico_svn.png) and **VSCode** ![vscode](images/ico_file_code.png))
+* Support symlinks in `baseFolders` (`false` by default)
 
 ```json
-    "projectManager.git.baseFolders": [
-        "c:\\Projects\\code",
-        "d:\\MoreProjects\\code-*",
-        "$home\\personal-coding"
-    ]
+"projectManager.supportSymlinksOnBaseFolders": true
 ```
+
+* Show parent folder info for duplicate project names (`false` by default)
+
+```json
+"projectManager.showParentFolderInfoOnDuplicates": true
+```
+
+* Filter projects through the full path (`false` by default)
+
+```json
+"projectManager.filterOnFullPath": true
+```
+
+* Automatic Detection of Projects (**Git**, **Mercurial**, **SVN**, **VSCode**, **Any**)
+
+```json
+"projectManager.git.baseFolders": [
+    "c:\\Projects\\code",
+    "d:\\MoreProjects\\code-*",
+    "$home\\personal-coding"
+]
+```
+
 > Indicates folders or [glob patterns](https://code.visualstudio.com/docs/editor/glob-patterns) to search for projects
 
 ```json
-    "projectManager.git.ignoredFolders": [
-        "node_modules", 
-        "out", 
-        "typings", 
-        "test"
-        "fork*"
-    ],
+"projectManager.git.ignoredFolders": [
+    "node_modules",
+    "out",
+    "typings",
+    "test",
+    "fork*"
+]
 ```
-> Indicates folders or [glob patterns](https://code.visualstudio.com/docs/editor/glob-patterns) to be ignored when searching for projects
+
+> Indicates folders or glob patterns to be ignored when searching for projects
 
 ```json
-    "projectManager.git.maxDepthRecursion": 4
+"projectManager.git.maxDepthRecursion": 4
 ```
-> Define how deeps it should search for projects
 
-* Exclude the base folders themselves from the auto-detected projects list (`false` by default)
+> Defines how deep to search for projects
+
+* Exclude base folders themselves from auto-detected results (`false` by default)
 
 ```json
-    "projectManager.any.excludeBaseFoldersFromResults": true
+"projectManager.any.excludeBaseFoldersFromResults": true
 ```
-> When enabled, the **Any** base folders configured in `projectManager.any.baseFolders` are not returned as projects themselves, only their matching subfolders are.
 
-* Should ignore projects found inside other projects? (`false` by default)
+* Ignore projects found inside other projects (`false` by default)
 
-```json 
-    "projectManager.ignoreProjectsWithinProjects": true
+```json
+"projectManager.ignoreProjectsWithinProjects": true
 ```
 
 * Cache automatically detected projects (`true` by default)
 
-```json 
-    "projectManager.cacheProjectsBetweenSessions": false
+```json
+"projectManager.cacheProjectsBetweenSessions": false
 ```
 
 * Display the Project Name in Status Bar (`true` by default)
 
-```json 
-    "projectManager.showProjectNameInStatusBar": true
+```json
+"projectManager.showProjectNameInStatusBar": true
 ```
 
-* Open projects in _New Window_ when clicking in status bar (`false` by default)
-
-```json 
-    "projectManager.openInNewWindowWhenClickingInStatusBar": true
-```
-
-* Indicates if the `New Window` command should open the project in current window, when empty (`always` by default)
-
-  * `always`: Whenever you call the Open in New Window command, it will open in the current window, if empty
-  * `onlyUsingCommandPalette`: Only open in the current window if you use the Command Palette
-  * `onlyUsingSideBar`: Only open in the current window if you use the Side Bar
-  * `never`: Works as today. The Open in New Window command will always open in New Window
-
-```json 
-    "projectManager.openInCurrentWindowIfEmpty": "always"
-```
-
-* Indicates the list of tags you can use to organize your projects _(`Personal` and `Work` by default)_
+* Open projects in _New Window_ when clicking in the Status Bar (`false` by default)
 
 ```json
-    "projectManager.tags": [
-        "Personal", 
-        "Work",
-        "VS Code",
-        "Learning"
-    ]
+"projectManager.openInNewWindowWhenClickingInStatusBar": true
 ```
 
-* Controls how tag groups in the Favorites view are expanded or collapsed, and whether their state is remembered (`startExpanded` by default)
+* Behavior of the **Open in New Window** command when the current window is empty (`always` by default)
 
-  * `alwaysExpanded`: Tag groups are always expanded
-  * `alwaysCollapsed`: Tag groups are always collapsed
-  * `startExpanded`: Tag groups start expanded and remember your last expand/collapse state
-  * `startCollapsed`: Tag groups start collapsed and remember your last expand/collapse state
+  * `always` — opens in the current window if empty
+  * `onlyUsingCommandPalette` — only when using the Command Palette
+  * `onlyUsingSideBar` — only when using the Side Bar
+  * `never` — always opens a new window
 
 ```json
-    "projectManager.tags.collapseItems": "startExpanded"
+"projectManager.openInCurrentWindowIfEmpty": "always"
+```
+
+* Custom tags for organizing projects (`Personal` and `Work` by default)
+
+```json
+"projectManager.tags": [
+    "Personal",
+    "Work",
+    "VS Code",
+    "Learning"
+]
+```
+
+* Controls how tag groups in the Favorites view expand/collapse (`startExpanded` by default)
+
+  * `alwaysExpanded` — always expanded
+  * `alwaysCollapsed` — always collapsed
+  * `startExpanded` — start expanded, remember state
+  * `startCollapsed` — start collapsed, remember state
+
+```json
+"projectManager.tags.collapseItems": "startExpanded"
 ```
 
 ## Available Colors
 
-* Choose the foreground color to highlight the current project in the Side Bar
+* Foreground color to highlight the current project in the Side Bar
+
 ```json
-    "workbench.colorCustomizations": {
-      "projectManager.sideBar.currentProjectHighlightForeground": "#e13015"  
-    }
+"workbench.colorCustomizations": {
+    "projectManager.sideBar.currentProjectHighlightForeground": "#e13015"
+}
 ```
-
-## Side Bar
-
-The **Project Manager** extension has its own **Side Bar**, with a variety of commands to improve your productivity. 
-
-![Side Bar](images/vscode-project-manager-side-bar.png)
-
-### Project Tags - View and Filter
-
-Starting in v12.3, you can now organize your Projects with **Tags**. 
-
-You can define your custom tags (via `projectManager.tags` setting), define multiple **tags** for each project, and filter the projects baded on their **tags**. 
-
-![Side Bar](images/vscode-project-manager-side-bar-tags.gif)
-
-## Installation and Configuration
-
-You should follow the official documentation to:
-
-- [Install the extension](https://code.visualstudio.com/docs/editor/extension-gallery)
-- [Modify its settings](https://code.visualstudio.com/docs/getstarted/settings)
 
 # License
 
