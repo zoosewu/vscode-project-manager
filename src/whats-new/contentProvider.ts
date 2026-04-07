@@ -19,6 +19,46 @@ export class ProjectManagerContentProvider implements ContentProvider {
     public provideChangeLog(): ChangeLogItem[] {
         const changeLog: ChangeLogItem[] = [];
 
+        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.2.0", releaseDate: "April 2026" } });
+        changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "Auto-detect the latest release from <b>GitHub</b> and prompt to install on startup"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.INTERNAL,
+            detail: "Distribution switched from VS Code Marketplace to <b>GitHub Releases</b>"
+        });
+
+        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.1.0", releaseDate: "January 2026" } });
+        changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "Organize projects with <b>Group hierarchy</b> using slash notation (e.g., <code>Work/Frontend/my-app</code>)"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "<b>View as Groups</b> mode in the Favorites Side Bar"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "Edit project <b>Group</b> directly from the Side Bar context menu"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "Projects stored in <b>settings.json</b>, enabling sharing via Settings Sync"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.CHANGED,
+            detail: "Parallelize autodetect provider loading for faster startup"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.CHANGED,
+            detail: "Progressive loading for autodetect Side Bar providers"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.FIXED,
+            detail: "Multiple bugs resolved in static analysis"
+        });
+
         changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.0.0", releaseDate: "November 2025" } });
         changeLog.push({
             kind: ChangeLogKind.NEW,
