@@ -2,7 +2,7 @@
 	"name": "project-manager-zoo",
 	"displayName": "Project Manager (Zoo)",
 	"description": "Easily switch between projects. Fork of alefragnani.project-manager by Alessandro Fragnani (https://github.com/alefragnani/vscode-project-manager).",
-	"version": "13.3.0",
+	"version": "13.4.0",
 	"publisher": "zoosewu",
 	"engines": {
 		"vscode": "^1.78.0"
@@ -727,7 +727,7 @@
 									},
 									"default": []
 								},
-							"enabled": {
+								"enabled": {
 									"type": "boolean",
 									"default": true
 								},
@@ -823,12 +823,12 @@
 							"Only ask for confirmation if you use the Side Bar",
 							"Whenever you call the Open command, it will ask for confirmation"
 						],
-					"description": "%projectManager.configuration.confirmSwitchOnActiveWindow.description%"
+						"description": "%projectManager.configuration.confirmSwitchOnActiveWindow.description%"
+					}
 				}
-			}
-		},
-		{
-			"id": "projectManager-git",
+			},
+			{
+				"id": "projectManager-git",
 				"title": "Git",
 				"properties": {
 					"projectManager.git.baseFolders": {
@@ -1043,8 +1043,8 @@
 							"markdown": "walkthrough/findAndOpenProjects.md"
 						}
 					},
-				{
-					"id": "exclusiveSideBar",
+					{
+						"id": "exclusiveSideBar",
 						"title": "%projectManager.walkthroughs.exclusiveSideBar.title%",
 						"description": "%projectManager.walkthroughs.exclusiveSideBar.description%",
 						"media": {
