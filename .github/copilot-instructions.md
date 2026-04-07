@@ -178,6 +178,19 @@ Before committing:
 3. Run `npm run test-compile`.
 4. Validate core quick pick/sidebar workflows in Extension Host.
 
+## Documentation Sync on Every Feature Commit
+
+Any commit that adds or changes a user-facing feature **must** also update:
+
+1. **`src/whats-new/contentProvider.ts`** — add an entry under the upcoming version block
+   (`ChangeLogKind.NEW`, `CHANGED`, or `FIXED` as appropriate).
+2. **`README.md`** — reflect the new capability in the relevant section (features list,
+   commands, settings, or side bar documentation).
+
+These updates should be included in the same commit as the feature change, not as a separate
+follow-up. If the upcoming version block does not yet exist in `contentProvider.ts`, create it
+before the previous version's block.
+
 ## Common Tasks
 
 1. Add/update commands and keep `package.json` contributions synchronized.
