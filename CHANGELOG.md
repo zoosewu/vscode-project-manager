@@ -30,17 +30,15 @@
 ## [13.3.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.2.0...v13.3.0) (2026-04-07)
 
 
-### ### Added
+### Added
 
-* **agents:** enforce whats-new and README sync requirement ([2b1acf7](https://github.com/zoosewu/vscode-project-manager/commit/2b1acf7ca10dfe6ce720bad81a96fda0db6ee2fc))
 * **agents:** enforce whats-new and README sync requirement ([4eee466](https://github.com/zoosewu/vscode-project-manager/commit/4eee4665cb5c27cbcb52807a2aa18fe007f73f38))
 
 ## [13.2.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.1.3...v13.2.0) (2026-04-07)
 
 
-### ### Added
+### Added
 
-* **ci:** switch to GitHub Releases distribution with auto-update ([ab9e7cb](https://github.com/zoosewu/vscode-project-manager/commit/ab9e7cbd21a8a14240ecc5440e74560f85fa5f64))
 * **ci:** switch to GitHub Releases distribution with auto-update ([b983ae8](https://github.com/zoosewu/vscode-project-manager/commit/b983ae8bdde1d4b9ca75347d9d7447c634190b61))
 
 ## [13.1.3](https://github.com/zoosewu/vscode-project-manager/compare/v13.1.2...v13.1.3) (2026-04-02)
