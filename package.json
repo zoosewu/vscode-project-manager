@@ -277,6 +277,10 @@
 				"title": "%projectManager.commands.editGroup.title%"
 			},
 			{
+				"command": "_projectManager.renameGroup",
+				"title": "%projectManager.commands.renameGroup.title%"
+			},
+			{
 				"command": "_projectManager.viewAsGroups#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsGroups#sideBarFavorites.title%",
 				"icon": "$(list-tree)"
@@ -440,14 +444,18 @@
 					"command": "_projectManager.openSideBar",
 					"when": "false"
 				},
-				{
-					"command": "_projectManager.editGroup",
-					"when": "false"
-				},
-				{
-					"command": "_projectManager.viewAsGroups#sideBarFavorites",
-					"when": "false"
-				}
+			{
+				"command": "_projectManager.editGroup",
+				"when": "false"
+			},
+			{
+				"command": "_projectManager.renameGroup",
+				"when": "false"
+			},
+			{
+				"command": "_projectManager.viewAsGroups#sideBarFavorites",
+				"when": "false"
+			}
 			],
 			"view/title": [
 				{
@@ -610,6 +618,11 @@
 				{
 					"command": "_projectManager.toggleProjectEnabled",
 					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
+					"group": "favorites"
+				},
+				{
+					"command": "_projectManager.renameGroup",
+					"when": "view == projectsExplorerFavorites && viewItem == GroupNodeKind",
 					"group": "favorites"
 				},
 				{

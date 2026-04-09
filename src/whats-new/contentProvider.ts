@@ -21,6 +21,10 @@ export class ProjectManagerContentProvider implements ContentProvider {
 
         changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.3.0", releaseDate: "April 2026" } });
         changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "<b>Rename Group</b> directly from the Side Bar context menu — renames the group and all sub-groups in one step"
+        });
+        changeLog.push({
             kind: ChangeLogKind.INTERNAL,
             detail: "Removed <b>Tags</b> feature — projects are now organized exclusively via <b>Groups</b>"
         });

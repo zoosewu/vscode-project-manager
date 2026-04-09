@@ -31,6 +31,7 @@
     "projectManager.commands.deleteProject.title": "Supprimer le projet",
     "projectManager.commands.renameProject.title": "Renommer le projet",
     "projectManager.commands.editGroup.title": "Modifier le groupe",
+    "projectManager.commands.renameGroup.title": "Renommer le groupe",
     "projectManager.commands.viewAsGroups#sideBarFavorites.title": "Voir par groupes",
     "projectManager.commands.viewAsList#sideBarFavorites.title": "Voir comme liste",
     "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Afficher et trier",

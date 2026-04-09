@@ -41,6 +41,7 @@
     "projectManager.commands.deleteProject.title": "Видалити проєкт",
     "projectManager.commands.renameProject.title": "Перейменувати проєкт",
     "projectManager.commands.editGroup.title": "Редагувати групу",
+    "projectManager.commands.renameGroup.title": "Перейменувати групу",
     "projectManager.commands.viewAsGroups#sideBarFavorites.title": "Перегляд за групами",
     "projectManager.commands.viewAsList#sideBarFavorites.title": "Перегляд списком",
     "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Перегляд і сортування",

@@ -31,6 +31,7 @@
     "projectManager.commands.deleteProject.title": "Smazat projekt",
     "projectManager.commands.renameProject.title": "Přejmenovat projekt",
     "projectManager.commands.editGroup.title": "Upravit skupinu",
+    "projectManager.commands.renameGroup.title": "Přejmenovat skupinu",
     "projectManager.commands.viewAsGroups#sideBarFavorites.title": "Zobrazit jako skupiny",
     "projectManager.commands.viewAsList#sideBarFavorites.title": "Zobrazit jako seznam",
     "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Zobrazit a třídit",

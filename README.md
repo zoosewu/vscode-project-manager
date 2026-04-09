@@ -16,7 +16,7 @@
 * Distributed via **GitHub Releases** (VSIX) instead of the VS Code Marketplace
 * Organize projects with **Group hierarchy** using slash notation (e.g., `Work/Frontend/my-app`)
 * **View as Groups** mode in the Favorites Side Bar
-* Edit project **Group** from the Side Bar context menu
+* Edit or **Rename Group** from the Side Bar context menu
 * Projects stored in **settings.json** — shareable via Settings Sync
 * Faster startup via parallel and progressive autodetect provider loading
 
@@ -124,6 +124,8 @@ The Favorites view supports two display modes, cycling with the toolbar button:
 ### Project Groups — Hierarchy
 
 Assign a group path to any project (via the context menu **Edit Group** or the slash notation when saving). Groups nest arbitrarily deep and are rendered as a tree in the **Groups** view mode.
+
+Right-click any group node in the **Groups** view and choose **Rename Group** to rename it (and all sub-groups) in one step.
 
 ## Keyboard Focused Users
 

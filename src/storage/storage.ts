@@ -49,6 +49,19 @@ export class ProjectStorage {
         }
     }
 
+    public renameGroup(oldGroup: string, newGroup: string): void {
+        const normalizedOld = normalizeGroupPath(oldGroup);
+        const normalizedNew = normalizeGroupPath(newGroup);
+
+        for (const element of this.projects) {
+            if (element.group === normalizedOld) {
+                element.group = normalizedNew;
+            } else if (element.group.startsWith(normalizedOld + "/")) {
+                element.group = normalizedNew + element.group.substring(normalizedOld.length);
+            }
+        }
+    }
+
     public toggleEnabled(name: string): boolean | undefined {
         for (const element of this.projects) {
             if (element.name.toLowerCase() === name.toLowerCase()) {

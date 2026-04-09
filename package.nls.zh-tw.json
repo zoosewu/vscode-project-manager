@@ -31,6 +31,7 @@
     "projectManager.commands.deleteProject.title": "刪除項目",
     "projectManager.commands.renameProject.title": "重命名項目",
     "projectManager.commands.editGroup.title": "編輯群組",
+    "projectManager.commands.renameGroup.title": "重新命名群組",
     "projectManager.commands.viewAsGroups#sideBarFavorites.title": "以群組檢視",
     "projectManager.commands.viewAsList#sideBarFavorites.title": "以列表形式查看",
     "projectManager.submenus.viewAndSort#sideBarFavorites.title": "查看和排序",

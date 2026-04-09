@@ -31,7 +31,7 @@ import { l10n } from "vscode";
 import { registerWalkthrough } from "./commands/walkthrough";
 import { checkForUpdates } from "./updater/githubUpdater";
 import { registerSideBarDecorations } from "./sidebar/decoration";
-import { ProjectNode } from "./sidebar/nodes";
+import { GroupNode, ProjectNode } from "./sidebar/nodes";
 import { parseProjectInput, Project } from "./core/project";
 
 let locators: Locators;
@@ -144,6 +144,24 @@ export async function activate(context: vscode.ExtensionContext) {
         await projectStorage.save();
         providerManager.refreshStorageTreeView();
         vscode.window.showInformationMessage(l10n.t("Project group updated!"));
+    });
+    vscode.commands.registerCommand("_projectManager.renameGroup", async (node: GroupNode) => {
+        const currentGroup = node.groupPath;
+        const ibo: vscode.InputBoxOptions = {
+            prompt: l10n.t("New Group Path (e.g. Work/Frontend)"),
+            placeHolder: l10n.t("Type a new group path"),
+            value: currentGroup
+        };
+
+        const newGroup = await vscode.window.showInputBox(ibo);
+        if (newGroup === undefined || newGroup.trim() === "") {
+            return;
+        }
+
+        projectStorage.renameGroup(currentGroup, newGroup);
+        await projectStorage.save();
+        providerManager.refreshStorageTreeView();
+        vscode.window.showInformationMessage(l10n.t("Group renamed!"));
     });
     vscode.commands.registerCommand("projectManager.addToFavorites", (node) => saveProject(node));
     vscode.commands.registerCommand("_projectManager.toggleProjectEnabled", (node) => toggleProjectEnabled(node));
