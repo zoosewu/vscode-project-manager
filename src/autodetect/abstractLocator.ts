@@ -30,6 +30,7 @@ export class CustomProjectLocator {
     private baseFolders: string[];
     private excludeBaseFoldersFromResults: boolean;
     private supportedFileExtensions: string[] | null;
+    private locatingPromise: Promise<AutodetectedProjectList> | null = null;
 
     constructor(public kind: string, public displayName: string, public repositoryDetector: RepositoryDetector) {
         this.maxDepth = -1;
@@ -117,7 +118,23 @@ export class CustomProjectLocator {
         }
     }
 
-    public async locateProjects(): Promise<AutodetectedProjectList> {
+    public locateProjects(): Promise<AutodetectedProjectList> {
+        if (this.alreadyLocated) {
+            return Promise.resolve(this.projectList);
+        }
+
+        if (this.locatingPromise) {
+            return this.locatingPromise;
+        }
+
+        this.locatingPromise = this.doLocateProjects().finally(() => {
+            this.locatingPromise = null;
+        });
+
+        return this.locatingPromise;
+    }
+
+    private async doLocateProjects(): Promise<AutodetectedProjectList> {
 
         let projectsDirList = this.baseFolders;
         projectsDirList = await PathUtils.expandWithGlobPatterns(projectsDirList);
@@ -230,6 +247,7 @@ export class CustomProjectLocator {
                 fs.unlinkSync(cacheFile);
             }
             this.alreadyLocated = false;
+            this.locatingPromise = null;
             this.locateProjects()
                 .then(() => {
                     resolve(true);
