@@ -8,12 +8,12 @@ import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { l10n } from 'vscode';
 
 const EXTENSION_ID = 'zoosewu.project-manager-zoo';
 const REPO = 'zoosewu/vscode-project-manager';
 const GITHUB_API_LATEST = `https://api.github.com/repos/${REPO}/releases/latest`;
-const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const UPDATE_CHECK_INTERVAL_MS = 7 * ONE_DAY_MS;
 const LAST_UPDATE_CHECK_KEY = 'lastUpdateCheck';
 
 interface GitHubRelease {
@@ -41,7 +41,6 @@ function httpsGetFollowRedirects(url: string): Promise<string> {
 
 function downloadFileFollowRedirects(url: string, dest: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        const file = fs.createWriteStream(dest);
         const options = { headers: { 'User-Agent': `vscode-extension-${EXTENSION_ID}` } };
         const request = (requestUrl: string) => {
             https.get(requestUrl, options, (res) => {
@@ -49,6 +48,12 @@ function downloadFileFollowRedirects(url: string, dest: string): Promise<void> {
                     request(res.headers.location);
                     return;
                 }
+                if (res.statusCode !== 200) {
+                    res.resume();
+                    reject(new Error(`Download failed with HTTP ${res.statusCode}`));
+                    return;
+                }
+                const file = fs.createWriteStream(dest);
                 res.pipe(file);
                 file.on('finish', () => file.close(() => resolve()));
                 file.on('error', err => {
@@ -73,6 +78,10 @@ function isNewerVersion(current: string, candidate: string): boolean {
     return lPat > cPat;
 }
 
+export function isUpdateCheckDue(lastCheckedMs: number, nowMs: number): boolean {
+    return nowMs - lastCheckedMs >= UPDATE_CHECK_INTERVAL_MS;
+}
+
 async function fetchLatestRelease(): Promise<GitHubRelease | null> {
     try {
         const body = await httpsGetFollowRedirects(GITHUB_API_LATEST);
@@ -82,9 +91,13 @@ async function fetchLatestRelease(): Promise<GitHubRelease | null> {
     }
 }
 
-export async function checkForUpdates(context: vscode.ExtensionContext): Promise<void> {
+/**
+ * Installs the latest GitHub release without user interaction when it is newer than the
+ * installed version. The new version takes effect the next time the window is reloaded.
+ */
+async function checkForUpdates(context: vscode.ExtensionContext): Promise<void> {
     const lastChecked = context.globalState.get<number>(LAST_UPDATE_CHECK_KEY, 0);
-    if (Date.now() - lastChecked < UPDATE_CHECK_INTERVAL_MS) {
+    if (!isUpdateCheckDue(lastChecked, Date.now())) {
         return;
     }
     await context.globalState.update(LAST_UPDATE_CHECK_KEY, Date.now());
@@ -99,43 +112,28 @@ export async function checkForUpdates(context: vscode.ExtensionContext): Promise
         return;
     }
 
-    const vsixAsset = release.assets.find(a => a.name.endsWith('.vsix'));
+    const vsixAsset = release.assets?.find(a => a.name.endsWith('.vsix'));
     if (!vsixAsset) {
         return;
     }
 
-    const latestVersion = release.tag_name.replace(/^v/, '');
-    const updateAction = l10n.t('Update to v{0}', latestVersion);
-    const laterAction = l10n.t('Later');
-
-    const choice = await vscode.window.showInformationMessage(
-        l10n.t('Project Manager (Zoo) v{0} is available (installed: v{1}).', latestVersion, currentVersion),
-        updateAction,
-        laterAction
-    );
-
-    if (choice !== updateAction) {
-        return;
-    }
-
     const vsixPath = path.join(os.tmpdir(), vsixAsset.name);
-
     try {
-        await vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: l10n.t('Downloading Project Manager (Zoo) v{0}...', latestVersion),
-                cancellable: false,
-            },
-            () => downloadFileFollowRedirects(vsixAsset.browser_download_url, vsixPath)
-        );
-    } catch {
-        vscode.window.showErrorMessage(l10n.t('Failed to download the update. Please try again later.'));
-        return;
+        await downloadFileFollowRedirects(vsixAsset.browser_download_url, vsixPath);
+        await vscode.commands.executeCommand('workbench.extensions.installExtension', vscode.Uri.file(vsixPath));
+    } catch (error) {
+        console.error(`[${EXTENSION_ID}] Auto-update to ${release.tag_name} failed:`, error);
+    } finally {
+        fs.unlink(vsixPath, () => undefined);
     }
+}
 
-    await vscode.commands.executeCommand(
-        'workbench.extensions.installExtension',
-        vscode.Uri.file(vsixPath)
-    );
+/**
+ * Checks for updates on activation and once a day afterwards, so long-running windows
+ * still honor the weekly interval.
+ */
+export function registerAutoUpdate(context: vscode.ExtensionContext): void {
+    checkForUpdates(context);
+    const timer = setInterval(() => checkForUpdates(context), ONE_DAY_MS);
+    context.subscriptions.push({ dispose: () => clearInterval(timer) });
 }

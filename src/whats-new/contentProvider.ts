@@ -11,13 +11,30 @@ export class ProjectManagerContentProvider implements ContentProvider {
         return <Header> {logo: <Image> {src: logoUrl, height: 50, width: 50}, 
             message: `<b>Project Manager</b> helps you to easily access your <b>projects</b>,
             no matter where they are located. <i>Don't miss those important projects anymore</i>.
-            <br><br>You can define your own <b>Projects</b> (also called <b>Favorites</b>), or choose 
-            for auto-detect <b>Git</b>, <b>Mercurial</b> or <b>SVN</b> repositories, <b>VSCode</b> 
-            folders or <b>any</b> other folder.`};
+            <br><br>Save your own <b>Projects</b> (also called <b>Favorites</b>) and organize them 
+            with <b>Groups</b>.`};
     }
 
     public provideChangeLog(): ChangeLogItem[] {
         const changeLog: ChangeLogItem[] = [];
+
+        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.4.0", releaseDate: "November 2026" } });
+        changeLog.push({
+            kind: ChangeLogKind.CHANGED,
+            detail: "<b>Auto-update</b> now checks GitHub Releases once a week and installs new versions silently"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.CHANGED,
+            detail: "<b>Help and Feedback</b> only links to this fork's repository"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.FIXED,
+            detail: "Activity Bar icon stays highlighted even when the Side Bar is not selected"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.INTERNAL,
+            detail: "Removed auto-detection of <b>Git</b>, <b>Mercurial</b>, <b>SVN</b>, <b>VSCode</b> and <b>Any</b> projects — the Side Bar only shows <b>Favorites</b>"
+        });
 
         changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.3.0", releaseDate: "April 2026" } });
         changeLog.push({

@@ -15,19 +15,8 @@ export function currentIconThemeHasFolderIcon(): boolean {
     return currentIconTheme === null || currentIconTheme === "vs-seti";
 }
 
-function translateCodiconToLocalIcons(codicon: string): string {
-    switch (codicon) {
-        case codicons.file_code: return "vscode";
-        case codicons.git_branch: return "git";
-        case codicons.zap: return "svn";
-        case codicons.file_directory: return "folder";
-        case codicons.root_folder: return "favorites-workspace";
-        default: return codicon;
-    }
-}
-
 export function getProjectIconPath(icon: string, lightDark: string): string {
-    return "images/ico-" + translateCodiconToLocalIcons(icon) + "-" + lightDark + ".svg";
+    return "images/ico-" + icon + "-" + lightDark + ".svg";
 }
 
 export function getProjectIcon(icon: string, projectPath: string): string | IconPath {

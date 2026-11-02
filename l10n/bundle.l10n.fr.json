@@ -1,9 +1,6 @@
 {
     "Remote projects can't be revealed in {0}": "Les projets à distance ne peuvent pas être dévoilés dans {0}",
-    "While Project Manager is offered for free, if you \n        find it useful, please consider supporting it. Thank you!": "Bien que Project Manager soit proposé gratuitement, \n si vous le trouvez utile, pensez à soutenir le projet. Nous vous remercions !",
     "Could not open the project!": "Impossible d'ouvrir le projet !",
-    "Refreshing Projects": "Actualisation des projets",
-    "The projects have been refreshed!": "Les projets ont été actualisés !",
     "No projects saved yet! You should open a folder and use Save Project instead. Do you really want to edit manually? ": "Aucun projet n'a encore été enregistré ! Vous devriez ouvrir un dossier et utiliser Enregistrer un projet à la place. Voulez-vous vraiment éditer manuellement ?",
     "Yes, edit manually": "Oui, éditer manuellement",
     "Project Name": "Nom du projet",
@@ -34,8 +31,6 @@
     "Loading projects (pick one)...": "Chargement de projets (choisissez-en un)...",
     "Open Project": "Ouvrir un projet",
     "Do you want to open the project in the active window?": "Voulez-vous ouvrir le projet dans la fenêtre active ?",
-    "Error while loading projects.": "Erreur lors du chargement des projets.",
-    "{0} projects have been refreshed!": "{0} projets ont été actualisés !",
     "No tags available/defined.": "Aucune étiquette disponible/définie.",
     "Select the tags": "Sélectionner les étiquettes",
     "Select tags": "Sélectionner des étiquettes",

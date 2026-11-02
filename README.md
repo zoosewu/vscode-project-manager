@@ -10,19 +10,21 @@
   <a title="Learn more about Project Manager" href="https://github.com/zoosewu/vscode-project-manager"><img src="https://raw.githubusercontent.com/alefragnani/vscode-project-manager/master/images/vscode-project-manager-logo-readme.png" alt="Project Manager Logo" width="70%" /></a>
 </p>
 
-# What's new in Project Manager 13.2
+# What's new in Project Manager 13.4
 
-* **Auto-update** — detects the latest GitHub release on startup and installs automatically
+* **Auto-update** — checks the latest GitHub release once a week and installs it silently (takes effect after the next window reload)
+* **Favorites only** — auto-detection of Git, Mercurial, SVN, VSCode and Any projects has been removed
+* **Help and Feedback** links only point to this fork's repository
+* Activity Bar icon now follows the selected/unselected state
 * Distributed via **GitHub Releases** (VSIX) instead of the VS Code Marketplace
 * Organize projects with **Group hierarchy** using slash notation (e.g., `Work/Frontend/my-app`)
 * **View as Groups** mode in the Favorites Side Bar
 * Edit or **Rename Group** from the Side Bar context menu
 * Projects stored in **settings.json** — shareable via Settings Sync
-* Faster startup via parallel and progressive autodetect provider loading
 
 # Installation
 
-This extension is distributed as a VSIX file via [GitHub Releases](https://github.com/zoosewu/vscode-project-manager/releases/latest). The extension checks for updates automatically on startup.
+This extension is distributed as a VSIX file via [GitHub Releases](https://github.com/zoosewu/vscode-project-manager/releases/latest). Once a week the extension checks for a newer release and installs it silently; the new version takes effect after the next window reload.
 
 **Manual install:**
 
@@ -34,12 +36,11 @@ This extension is distributed as a VSIX file via [GitHub Releases](https://githu
 
 It helps you to easily access your **projects**, no matter where they are located. _Don't miss those important projects anymore_.
 
-You can define your own **Projects** (also called **Favorites**), or choose for auto-detect **Git**, **Mercurial** or **SVN** repositories, **VSCode** folders, or **any** other folder.
+You can define your own **Projects** (also called **Favorites**) and organize them with **Groups**.
 
 Here are some of the features that **Project Manager** provides:
 
 * Save any folder or workspace as a **Project**
-* Auto-detect **Git**, **Mercurial** or **SVN** repositories
 * Organize your projects using **Groups**
 * Open projects in the same or new window
 * Identify _deleted/renamed_ projects
@@ -51,10 +52,9 @@ Here are some of the features that **Project Manager** provides:
 ## Available Commands
 
 * `Project Manager: Save Project` — Save the current folder/workspace as a new project
-* `Project Manager: List Projects to Open` — List all saved/detected projects and pick one
+* `Project Manager: List Projects to Open` — List all saved projects and pick one
 * `Project Manager: List Projects to Open in New Window` — Open a project in a new window
 * `Project Manager: Add Project to Workspace` — Add a project as a workspace folder
-* `Project Manager: Refresh Projects` — Force-refresh all auto-detected projects
 
 ## Manage your projects
 
@@ -166,7 +166,7 @@ This is the _regular_ scenario — the extension works out of the box. When inst
 
 ### But what if I do most of my work on Remotes
 
-If you normally connect to remotes (SSH/WSL) and want to save Favorite projects on that remote, or auto-detect repos there, install the extension on the remote side by adding:
+If you normally connect to remotes (SSH/WSL) and want to save Favorite projects on that remote, install the extension on the remote side by adding:
 
 ```json
 "remote.extensionKind": {
@@ -193,12 +193,6 @@ If you normally connect to remotes (SSH/WSL) and want to save Favorite projects 
 
 ![List](images/project-manager-list-sort-by-name.png)
 
-* Group the project list by its _kind_ (**Favorites**, **Git**, **Mercurial**, **SVN**, **VS Code**)
-
-```json
-"projectManager.groupList": true
-```
-
 * Remove the current project from the list (`false` by default)
 
 ```json
@@ -211,70 +205,10 @@ If you normally connect to remotes (SSH/WSL) and want to save Favorite projects 
 "projectManager.checkInvalidPathsBeforeListing": false
 ```
 
-* Support symlinks in `baseFolders` (`false` by default)
-
-```json
-"projectManager.supportSymlinksOnBaseFolders": true
-```
-
-* Show parent folder info for duplicate project names (`false` by default)
-
-```json
-"projectManager.showParentFolderInfoOnDuplicates": true
-```
-
 * Filter projects through the full path (`false` by default)
 
 ```json
 "projectManager.filterOnFullPath": true
-```
-
-* Automatic Detection of Projects (**Git**, **Mercurial**, **SVN**, **VSCode**, **Any**)
-
-```json
-"projectManager.git.baseFolders": [
-    "c:\\Projects\\code",
-    "d:\\MoreProjects\\code-*",
-    "$home\\personal-coding"
-]
-```
-
-> Indicates folders or [glob patterns](https://code.visualstudio.com/docs/editor/glob-patterns) to search for projects
-
-```json
-"projectManager.git.ignoredFolders": [
-    "node_modules",
-    "out",
-    "typings",
-    "test",
-    "fork*"
-]
-```
-
-> Indicates folders or glob patterns to be ignored when searching for projects
-
-```json
-"projectManager.git.maxDepthRecursion": 4
-```
-
-> Defines how deep to search for projects
-
-* Exclude base folders themselves from auto-detected results (`false` by default)
-
-```json
-"projectManager.any.excludeBaseFoldersFromResults": true
-```
-
-* Ignore projects found inside other projects (`false` by default)
-
-```json
-"projectManager.ignoreProjectsWithinProjects": true
-```
-
-* Cache automatically detected projects (`true` by default)
-
-```json
-"projectManager.cacheProjectsBetweenSessions": false
 ```
 
 * Display the Project Name in Status Bar (`true` by default)

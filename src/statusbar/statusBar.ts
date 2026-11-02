@@ -4,7 +4,6 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { StatusBarAlignment, StatusBarItem, window, workspace } from "vscode";
-import { Locators } from "../autodetect/locators";
 import { ProjectStorage } from "../storage/storage";
 import { codicons } from "vscode-ext-codicons";
 import { isRemoteUri } from "../utils/remote";
@@ -13,7 +12,7 @@ import { Project } from "../core/project";
 
 let statusItem: StatusBarItem;
 
-export function showStatusBar(projectStorage: ProjectStorage, locators: Locators, projectName?: string): Project {
+export function showStatusBar(projectStorage: ProjectStorage, projectName?: string): Project {
 
     const showStatusConfig = workspace.getConfiguration("projectManager").get("showProjectNameInStatusBar");
 
@@ -54,21 +53,6 @@ export function showStatusBar(projectStorage: ProjectStorage, locators: Locators
         foundProject = projectStorage.existsRemoteWithRootPath(workspace0);
     } else {
         foundProject = projectStorage.existsWithRootPath(currentProjectPath, true);
-        if (!foundProject) {
-            foundProject = locators.vscLocator.existsWithRootPath(currentProjectPath);
-        }
-        if (!foundProject) {
-            foundProject = locators.gitLocator.existsWithRootPath(currentProjectPath);
-        }
-        if (!foundProject) {
-            foundProject = locators.mercurialLocator.existsWithRootPath(currentProjectPath);
-        }
-        if (!foundProject) {
-            foundProject = locators.svnLocator.existsWithRootPath(currentProjectPath);
-        }
-        if (!foundProject) {
-            foundProject = locators.anyLocator.existsWithRootPath(currentProjectPath);
-        }
     }
     if (foundProject) {
         statusItem.text += foundProject.name;

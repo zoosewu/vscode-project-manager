@@ -4,25 +4,39 @@
 *--------------------------------------------------------------------------------------------*/
 
 import fs = require("fs");
-import { commands, Disposable, l10n, MessageItem, QuickInputButton, QuickPickItem, ThemeIcon, window, workspace } from "vscode";
+import { commands, Disposable, l10n, MessageItem, QuickInputButton, QuickPickItem, ThemeIcon, Uri, window, workspace } from "vscode";
 import { ThemeIcons } from "vscode-ext-codicons";
-import { CustomProjectLocator } from "../autodetect/abstractLocator";
-import { Locators } from "../autodetect/locators";
 import { Container } from "../core/container";
 import { Project } from "../core/project";
 import { ProjectStorage } from "../storage/storage";
 import { PathUtils } from "../utils/path";
-import { isRemotePath } from "../utils/remote";
+import { isRemotePath, isRemoteUri } from "../utils/remote";
+import { sortProjects } from "../utils/sorter";
 import { buildProjectUri } from "../utils/uri";
 import { CommandLocation, ConfirmSwitchOnActiveWindowMode, OpenInCurrentWindowIfEmptyMode } from "../core/constants";
 
-function getProjects(itemsSorted: any[]): Promise<any[]> {
+function removeCurrentProject(items: any[]): any[] {
+    const workspace0 = workspace.workspaceFile ? workspace.workspaceFile :
+        workspace.workspaceFolders ? workspace.workspaceFolders[ 0 ].uri :
+            undefined;
 
-    return new Promise((resolve) => {
+    if (!workspace0 || !workspace.getConfiguration("projectManager").get("removeCurrentProjectFromList")) {
+        return items;
+    }
 
-        resolve(itemsSorted);
+    if (isRemoteUri(workspace0)) {
+        return items.filter(value => !isRemotePath(value.description) || Uri.parse(value.description).path !== workspace0.path);
+    }
+    return items.filter(value => value.description.toString().toLowerCase() !== workspace0.fsPath.toLowerCase());
+}
 
-    });
+function prepareProjectList(items: any[]): any[] {
+    let itemsToShow = PathUtils.expandHomePaths(items);
+    itemsToShow = removeCurrentProject(itemsToShow);
+    if (workspace.getConfiguration("projectManager").get("checkInvalidPathsBeforeListing", true)) {
+        itemsToShow = PathUtils.indicateInvalidPaths(itemsToShow);
+    }
+    return sortProjects(itemsToShow);
 }
 
 async function folderNotFound(name: string, projectStorage: ProjectStorage) {
@@ -67,18 +81,6 @@ function canPickSelectedProject(item: QuickPickItem, projectStorage: ProjectStor
     return false;
 }
 
-function getProjectsFromLocator(folders: any, locators: Locators, locatorToFilter: CustomProjectLocator, locatorToGetFrom: CustomProjectLocator) {
-    if (locatorToFilter && locatorToFilter !== locatorToGetFrom) {
-        return folders;
-    }
-
-    if (!locators) {
-        return folders;
-    }
-
-    return locators.getLocatorProjects(<any[]>folders, locatorToGetFrom);
-}
-
 class OpenInNewWindowButton implements QuickInputButton {
     constructor(public iconPath: ThemeIcon, public tooltip: string) { }
 }
@@ -90,111 +92,78 @@ export interface Picked<T> {
     button: QuickInputButton | undefined
 }
 
-export async function pickProjects(projectStorage: ProjectStorage, locators: Locators, showOpenInNewWindowButton: boolean,
-    locatorToFilter: CustomProjectLocator): Promise<Picked<Project> | undefined> {
+export async function pickProjects(projectStorage: ProjectStorage, showOpenInNewWindowButton: boolean): Promise<Picked<Project> | undefined> {
     const disposables: Disposable[] = [];
 
     try {
         return await new Promise<Picked<Project> | undefined>((resolve) => {
-            let items = [];
-            if (projectStorage) {
-                items = projectStorage.map();
-                if (locators) {
-                    items = locators?.sortGroupedList(items);
-                }
+            const projects = projectStorage.map();
+            if (projects.length === 0) {
+                window.showInformationMessage(l10n.t("No projects saved yet!"));
+                return resolve(undefined);
             }
 
-            getProjects(items)
-                .then((folders) => {
-                    return getProjectsFromLocator(folders, locators, locatorToFilter, locators?.vscLocator);
-                })
-                .then((folders) => {
-                    return getProjectsFromLocator(folders, locators, locatorToFilter, locators?.gitLocator);
-                })
-                .then((folders) => {
-                    return getProjectsFromLocator(folders, locators, locatorToFilter, locators?.mercurialLocator);
-                })
-                .then((folders) => {
-                    return getProjectsFromLocator(folders, locators, locatorToFilter, locators?.svnLocator);
-                })
-                .then((folders) => {
-                    return getProjectsFromLocator(folders, locators, locatorToFilter, locators?.anyLocator);
-                })
-                .then((folders) => { // sort
-                    if ((<any[]>folders).length === 0) {
-                        window.showInformationMessage(l10n.t("No projects saved yet!"));
-                        return resolve(undefined);
-                    } else {
-                        if (!workspace.getConfiguration("projectManager").get("groupList", false)) {
-                            if (locators) {
-                                folders = locators?.sortProjectList(folders);
-                            }
-                        }
-                        commands.executeCommand("setContext", "inProjectManagerList", true);
+            commands.executeCommand("setContext", "inProjectManagerList", true);
 
-                        //
-                        folders = (<any[]>folders).map(folder => {
-                            return {
-                                label: folder.label,
-                                description: folder.description,
-                                detail: folder.group || undefined,
-                                profile: folder.profile,
-                                buttons: showOpenInNewWindowButton ? [ openInNewWindowButton ] : []
-                            };
-                        });
-                        const input = window.createQuickPick();
-                        input.placeholder = l10n.t("Loading projects (pick one)...");
-                        input.matchOnDescription = workspace.getConfiguration("projectManager").get("filterOnFullPath", false);
-                        input.matchOnDetail = false;
-                        input.items = <any[]>folders;
-                        input.onDidChangeSelection(items => {
-                            const item = <any>items[ 0 ];
-                            if (item) {
-                                if (!canPickSelectedProject(item, projectStorage)) {
-                                    resolve(undefined);
-                                    input.hide();
-                                    return;
-                                }
-
-                                resolve(<Picked<Project>>{
-                                    item: {
-                                        name: item.label,
-                                        rootPath: PathUtils.normalizePath(item.description),
-                                        profile: item.profile,
-                                    }, button: undefined
-                                });
-                                input.hide();
-                                return;
-                            }
-                        }),
-                        input.onDidTriggerItemButton(item => {
-                            if (item) {
-                                if (!canPickSelectedProject(item.item, projectStorage)) {
-                                    resolve(undefined);
-                                    input.hide();
-                                    return;
-                                }
-
-                                resolve(<Picked<Project>>{
-                                    item: {
-                                        name: item.item.label,
-                                        rootPath: PathUtils.normalizePath(item.item.description)
-                                    }, button: item.button
-                                });
-                                input.hide();
-                                return;
-                            }
-                        }),
-                        input.onDidHide(() => {
-                            commands.executeCommand("setContext", "inProjectManagerList", false);
-                            resolve(undefined);
-                            input.dispose();
-                            return;
-                        });
-                        input.show();
-
+            const folders = prepareProjectList(projects).map(folder => {
+                return {
+                    label: folder.label,
+                    description: folder.description,
+                    detail: folder.group || undefined,
+                    profile: folder.profile,
+                    buttons: showOpenInNewWindowButton ? [ openInNewWindowButton ] : []
+                };
+            });
+            const input = window.createQuickPick();
+            input.placeholder = l10n.t("Loading projects (pick one)...");
+            input.matchOnDescription = workspace.getConfiguration("projectManager").get("filterOnFullPath", false);
+            input.matchOnDetail = false;
+            input.items = <any[]>folders;
+            input.onDidChangeSelection(items => {
+                const item = <any>items[ 0 ];
+                if (item) {
+                    if (!canPickSelectedProject(item, projectStorage)) {
+                        resolve(undefined);
+                        input.hide();
+                        return;
                     }
-                });
+
+                    resolve(<Picked<Project>>{
+                        item: {
+                            name: item.label,
+                            rootPath: PathUtils.normalizePath(item.description),
+                            profile: item.profile,
+                        }, button: undefined
+                    });
+                    input.hide();
+                    return;
+                }
+            }),
+            input.onDidTriggerItemButton(item => {
+                if (item) {
+                    if (!canPickSelectedProject(item.item, projectStorage)) {
+                        resolve(undefined);
+                        input.hide();
+                        return;
+                    }
+
+                    resolve(<Picked<Project>>{
+                        item: {
+                            name: item.item.label,
+                            rootPath: PathUtils.normalizePath(item.item.description)
+                        }, button: item.button
+                    });
+                    input.hide();
+                    return;
+                }
+            }),
+            input.onDidHide(() => {
+                commands.executeCommand("setContext", "inProjectManagerList", false);
+                resolve(undefined);
+                input.dispose();
+                return;
+            });
+            input.show();
         });
 
     } finally {

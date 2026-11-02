@@ -4,7 +4,7 @@ Always reference these instructions first and fall back to additional search or 
 
 ## Project Overview
 
-**Project Manager** is a Visual Studio Code extension that helps users easily access and manage their projects, whether they are favorites, Git repositories, Mercurial, SVN, or VS Code folders. The extension provides a dedicated sidebar, status bar integration, and quick-pick commands for seamless project navigation.
+**Project Manager** is a Visual Studio Code extension that helps users easily access and manage their favorite projects, organized in groups. The extension provides a dedicated sidebar, status bar integration, and quick-pick commands for seamless project navigation.
 
 ## Technology Stack
 
@@ -53,23 +53,22 @@ Manual validation checklist:
 1. Run `npm run build` successfully.
 2. Press F5 to launch Extension Development Host.
 3. Save/list/open projects using quick pick and sidebar flows.
-4. Validate project detection for supported providers.
-5. Validate status bar updates and project switching behavior.
+4. Validate status bar updates and project switching behavior.
 
 ## Project Structure and Key Files
 
 ```
 src/
-├── autodetect/           # Project auto-detection logic (Git, SVN, Mercurial, VS Code)
 ├── commands/             # Command implementations
 ├── core/                 # Core domain models and constants
 │   ├── constants.ts      # Enums and constants (PROJECTS_FILE, CommandLocation, etc.)
 │   ├── container.ts      # Dependency injection container
 │   └── project.ts        # Project interface and factory functions
-├── quickpick/            # QuickPick UI implementations (project picker, tag picker)
+├── quickpick/            # QuickPick UI implementations (project picker)
 ├── sidebar/              # Sidebar tree view providers and decorations
 ├── statusbar/            # Status bar integration
-├── storage/              # Project storage management (projects.json)
+├── storage/              # Project storage management (settings.json)
+├── updater/              # Weekly silent auto-update from GitHub Releases
 ├── utils/                # Utility functions (path, remote detection, URI building)
 ├── whats-new/            # What's New notifications
 ├── test/                 # Test suites
@@ -132,7 +131,6 @@ walkthrough/              # Getting Started walkthrough content
 ### Architecture Patterns
 - **Container Pattern**: The `Container` class stores global state like `Container.context`
 - **TreeDataProvider Pattern**: The sidebar uses VS Code's `TreeDataProvider` API for project listing and management.
-- **Cached Data**: The extension caches autodetected projects to optimize listing
 - **setContext Pattern**: Uses `VS Code.commands.executeCommand("setContext", "projectManager:hasProjects", true/false)` to control command visibility based on project availability.
 - **Helper Utilities**: Use helper utilities for URI and cross-platform path handling.
 
@@ -140,22 +138,17 @@ walkthrough/              # Getting Started walkthrough content
 
 ### Key Features
 1. **Favorite Projects**: Save favorite projects for easier switch
-2. **Project Providers**: Support for Git, Mercurial, SVN, and VS Code folders with auto-detection
-3. **Auto-detected Projects**: Auto-detect different kind of projects with a wide variety of configurations
-4. **Sidebar**: Tree views showing all projects
-5. **Status bar**: Show current project and allow quick switching
-6. **Project Tags**: Tag projects and filter by tags in quick pick and sidebar
-7. **Remote Support**: Full support for remote development (SSH/WSL/Containers/Codespaces)
-8. **Internationalization support**: Localization of all user-facing strings
+2. **Project Groups**: Organize favorites in a group hierarchy (e.g. `Work/Frontend`)
+3. **Sidebar**: Tree view showing all favorite projects
+4. **Status bar**: Show current project and allow quick switching
+5. **Remote Support**: Full support for remote development (SSH/WSL/Containers/Codespaces)
+6. **Auto-update**: Weekly silent install of new GitHub Releases
+7. **Internationalization support**: Localization of all user-facing strings
 
 ### Important Settings
+- `projectManager.projects`
 - `projectManager.sortList`
-- `projectManager.groupList`
 - `projectManager.showProjectNameInStatusBar`
-- `projectManager.tags`
-- `projectManager.git.baseFolders`
-- `projectManager.git.ignoredFolders`
-- `projectManager.git.maxDepthRecursion`
 
 ## Dependencies and External Tools
 

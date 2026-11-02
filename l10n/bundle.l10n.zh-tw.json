@@ -1,9 +1,6 @@
 {
     "Remote projects can't be revealed in {0}": "無法在 {0} 開啟遠端項目",
-    "While Project Manager is offered for free, if you \n        find it useful, please consider supporting it. Thank you!": "Project Manager 是免費提供的，如您 \n        覺得項目對你十分有用，請考慮支持。謝謝！",
     "Could not open the project!": "無法開啟項目！",
-    "Refreshing Projects": "正在刷新項目清單",
-    "The projects have been refreshed!": "項目清單已刷新！",
     "No projects saved yet! You should open a folder and use Save Project instead. Do you really want to edit manually? ": "尚未保存任何項目！請先打開一個文件夾並使用“保存項目”。確定要手動編輯嗎？",
     "Yes, edit manually": "是的，手動編輯",
     "Project Name": "項目名稱",
@@ -34,8 +31,6 @@
     "Loading projects (pick one)...": "正在加載項目（請選擇一個）...",
     "Open Project": "打開項目",
     "Do you want to open the project in the active window?": "你想在當前窗口中打開項目嗎？",
-    "Error while loading projects.": "加載項目時出錯。",
-    "{0} projects have been refreshed!": "{0} 項目已刷新！",
     "No tags available/defined.": "無可用/定義的標籤。",
     "Select the tags": "選擇標籤",
     "Select tags": "選擇標籤",

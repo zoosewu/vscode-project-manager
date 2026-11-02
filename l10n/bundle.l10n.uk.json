@@ -1,9 +1,6 @@
 {
     "Remote projects can't be revealed in {0}": "Віддалені проєкти не можна відобразити у {0}",
-    "While Project Manager is offered for free, if you \n        find it useful, please consider supporting it. Thank you!": "Project Manager пропонується безкоштовно. Якщо ви вважаєте його корисним, будь ласка, розгляньте можливість підтримки. Дякуємо!",
     "Could not open the project!": "Не вдалося відкрити проєкт!",
-    "Refreshing Projects": "Оновлення проєктів",
-    "The projects have been refreshed!": "Проєкти оновлено!",
     "No projects saved yet! You should open a folder and use Save Project instead. Do you really want to edit manually? ": "Ще немає збережених проєктів! Відкрийте папку та скористайтеся опцією «Зберегти проєкт». Ви впевнені, що бажаєте редагувати вручну?",
     "Yes, edit manually": "Так, редагувати вручну",
     "Project Name": "Назва проєкту",
@@ -34,8 +31,6 @@
     "Loading projects (pick one)...": "Завантаження проєктів (виберіть один)...",
     "Open Project": "Відкрити проєкт",
     "Do you want to open the project in the active window?": "Відкрити проєкт в активному вікні?",
-    "Error while loading projects.": "Помилка під час завантаження проєктів.",
-    "{0} projects have been refreshed!": "Оновлено проєктів: {0}",
     "No tags available/defined.": "Немає доступних або визначених тегів.",
     "Select the tags": "Оберіть теги",
     "Select tags": "Вибрати теги",

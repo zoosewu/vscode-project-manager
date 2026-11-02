@@ -4,19 +4,15 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionContext } from "vscode";
-import { HelpAndFeedbackView, Link, StandardLinksProvider, ProvideFeedbackLink, Command } from "vscode-ext-help-and-feedback-view";
+import { HelpAndFeedbackView, Link, StandardLinksProvider } from "vscode-ext-help-and-feedback-view";
 
 export function registerHelpAndFeedbackView(context: ExtensionContext) {
-    const items = new Array<Link | Command>();
+    // Links are built from the "homepage" and "bugs.url" fields in package.json
     const predefinedProvider = new StandardLinksProvider('zoosewu.project-manager-zoo');
-    items.push(predefinedProvider.getGetStartedLink());
-    items.push(new ProvideFeedbackLink('project-manager'));
-    items.push(predefinedProvider.getReviewIssuesLink());
-    items.push(predefinedProvider.getReportIssueLink());
-    items.push({
-        icon: 'heart',
-        title: 'Support',
-        command: 'projectManager.supportProjectManager'
-    });
+    const items: Link[] = [
+        predefinedProvider.getGetStartedLink(),
+        predefinedProvider.getReviewIssuesLink(),
+        predefinedProvider.getReportIssueLink(),
+    ];
     new HelpAndFeedbackView(context, "projectManagerHelpAndFeedback", items);
 }

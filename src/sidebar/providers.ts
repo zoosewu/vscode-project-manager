@@ -4,10 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from "vscode";
-import { Locators } from "../autodetect/locators";
 import { ProjectStorage } from "../storage/storage";
 import { GroupNode, ProjectNode } from "./nodes";
-import { AutodetectProvider } from "./autodetectProvider";
 import { StorageProvider } from "./storageProvider";
 import { Container } from "../core/container";
 import { l10n } from "vscode";
@@ -15,56 +13,19 @@ import { l10n } from "vscode";
 export class Providers {
 
     public storageProvider: StorageProvider;
-    public vscodeProvider: AutodetectProvider;
-    public gitProvider: AutodetectProvider;
-    public mercurialProvider: AutodetectProvider;
-    public svnProvider: AutodetectProvider;
-    public anyProvider: AutodetectProvider;
 
     private storageTreeView: vscode.TreeView<ProjectNode | GroupNode>;
-    private vscodeTreeView: vscode.TreeView<ProjectNode>;
-    private gitTreeView: vscode.TreeView<ProjectNode>;
-    private mercurialTreeView: vscode.TreeView<ProjectNode>;
-    private svnTreeView: vscode.TreeView<ProjectNode>;
-    private anyTreeView: vscode.TreeView<ProjectNode>;
 
-    private locators: Locators;
     private projectStorage: ProjectStorage;
 
-    constructor(locators: Locators, storage: ProjectStorage) {
-        this.locators = locators;
+    constructor(storage: ProjectStorage) {
         this.projectStorage = storage;
 
         this.storageProvider = new StorageProvider(this.projectStorage);
-        this.vscodeProvider = new AutodetectProvider(this.locators.vscLocator);
-        this.gitProvider = new AutodetectProvider(this.locators.gitLocator);
-        this.mercurialProvider = new AutodetectProvider(this.locators.mercurialLocator);
-        this.svnProvider = new AutodetectProvider(this.locators.svnLocator);
-        this.anyProvider = new AutodetectProvider(this.locators.anyLocator);
 
         this.storageTreeView = vscode.window.createTreeView("projectsExplorerFavorites", {
             treeDataProvider: this.storageProvider,
             showCollapseAll: true
-        });
-        this.vscodeTreeView = vscode.window.createTreeView("projectsExplorerVSCode", {
-            treeDataProvider: this.vscodeProvider,
-            showCollapseAll: false
-        });
-        this.gitTreeView = vscode.window.createTreeView("projectsExplorerGit", {
-            treeDataProvider: this.gitProvider,
-            showCollapseAll: false
-        });
-        this.mercurialTreeView = vscode.window.createTreeView("projectsExplorerMercurial", {
-            treeDataProvider: this.mercurialProvider,
-            showCollapseAll: false
-        });
-        this.svnTreeView = vscode.window.createTreeView("projectsExplorerSVN", {
-            treeDataProvider: this.svnProvider,
-            showCollapseAll: false
-        });
-        this.anyTreeView = vscode.window.createTreeView("projectsExplorerAny", {
-            treeDataProvider: this.anyProvider,
-            showCollapseAll: false
         });
 
         this.registerStorageTreeViewListeners();
@@ -85,49 +46,8 @@ export class Providers {
         // Group expansion changes are handled by VS Code natively
     }
 
-    public async showTreeViewFromAllProviders() {
-        await Promise.all([
-            this.vscodeProvider.showTreeView(),
-            this.gitProvider.showTreeView(),
-            this.mercurialProvider.showTreeView(),
-            this.svnProvider.showTreeView(),
-            this.anyProvider.showTreeView(),
-        ]);
-
-        this.updateTreeViewDetails();
-    }
-
-    /**
-     * Starts all five autodetect providers concurrently without blocking the caller.
-     * Each provider refreshes its tree view and updates the sidebar titles as soon as
-     * it finishes locating projects (filesystem scan or cache read).
-     *
-     * @param onProviderLoaded - Optional callback invoked after each individual provider
-     *   finishes. Use this to react to new project data becoming available, e.g. to
-     *   retry status bar detection for autodetect-only projects on a cold cache.
-     */
-    public startAutodetectProvidersInBackground(onProviderLoaded?: () => void): void {
-        for (const provider of [
-            this.vscodeProvider,
-            this.gitProvider,
-            this.mercurialProvider,
-            this.svnProvider,
-            this.anyProvider,
-        ]) {
-            provider.showTreeView().then(() => {
-                this.updateTreeViewDetails();
-                onProviderLoaded?.();
-            });
-        }
-    }
-
     public refreshTreeViews() {
         this.storageProvider.refresh();
-        this.vscodeProvider.refresh();
-        this.gitProvider.refresh();
-        this.mercurialProvider.refresh();
-        this.svnProvider.refresh();
-        this.anyProvider.refresh();
     }
 
     public refreshStorageTreeView() {
@@ -141,14 +61,5 @@ export class Providers {
 
         this.storageTreeView.title = `Favorites (${this.projectStorage.length() - disabledProjects})`;
         this.storageTreeView.description = disabledProjectsTitle;
-    }
-
-    public updateTreeViewDetails() {
-        this.updateTreeViewStorage();
-        this.vscodeTreeView.title = `VSCode (${this.locators.vscLocator.projectList.length})`;
-        this.gitTreeView.title = `Git (${this.locators.gitLocator.projectList.length})`;
-        this.mercurialTreeView.title = `Mercurial (${this.locators.mercurialLocator.projectList.length})`;
-        this.svnTreeView.title = `SVN (${this.locators.svnLocator.projectList.length})`;
-        this.anyTreeView.title = `Any (${this.locators.anyLocator.projectList.length})`;
     }
 }

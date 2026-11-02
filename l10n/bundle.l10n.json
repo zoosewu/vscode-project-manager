@@ -1,9 +1,6 @@
 {
     "Remote projects can't be revealed in {0}": "Remote projects can't be revealed in {0}",
-    "While Project Manager is offered for free, if you \n        find it useful, please consider supporting it. Thank you!": "While Project Manager is offered for free, if you \n        find it useful, please consider supporting it. Thank you!",
     "Could not open the project!": "Could not open the project!",
-    "Refreshing Projects": "Refreshing Projects",
-    "The projects have been refreshed!": "The projects have been refreshed!",
     "No projects saved yet! You should open a folder and use Save Project instead. Do you really want to edit manually? ": "No projects saved yet! You should open a folder and use Save Project instead. Do you really want to edit manually? ",
     "Yes, edit manually": "Yes, edit manually",
     "Project Name": "Project Name",
@@ -34,8 +31,6 @@
     "Loading projects (pick one)...": "Loading projects (pick one)...",
     "Open Project": "Open Project",
     "Do you want to open the project in the active window?": "Do you want to open the project in the active window?",
-    "Error while loading projects.": "Error while loading projects.",
-    "{0} projects have been refreshed!": "{0} projects have been refreshed!",
     "No tags available/defined.": "No tags available/defined.",
     "Select the tags": "Select the tags",
     "Select tags": "Select tags",

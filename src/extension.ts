@@ -6,9 +6,7 @@
 import path = require("path");
 import * as vscode from "vscode";
 
-import { Locators } from "./autodetect/locators";
 import { ProjectStorage } from "./storage/storage";
-import { PathUtils } from "./utils/path";
 
 import { Providers } from "./sidebar/providers";
 
@@ -19,22 +17,18 @@ import { isMacOS, isRemoteUri, isWindows } from "./utils/remote";
 import { buildProjectUri } from "./utils/uri";
 import { Container } from "./core/container";
 import { registerWhatsNew } from "./whats-new/commands";
-import { registerSupportProjectManager } from "./commands/supportProjectManager";
 import { registerHelpAndFeedbackView } from "./sidebar/helpAndFeedbackView";
 import { registerRevealFileInOS } from "./commands/revealFileInOS";
 import { registerOpenSettings } from "./commands/openSettings";
 import { ViewFavoritesAs } from "./sidebar/constants";
 import { registerSortBy, updateSortByContext } from "./commands/sortBy";
 import { canSwitchOnActiveWindow, openPickedProject, pickProjects, shouldOpenInNewWindow } from "./quickpick/projectsPicker";
-import { CustomProjectLocator } from "./autodetect/abstractLocator";
 import { l10n } from "vscode";
 import { registerWalkthrough } from "./commands/walkthrough";
-import { checkForUpdates } from "./updater/githubUpdater";
+import { registerAutoUpdate } from "./updater/githubUpdater";
 import { registerSideBarDecorations } from "./sidebar/decoration";
 import { GroupNode, ProjectNode } from "./sidebar/nodes";
 import { parseProjectInput, Project } from "./core/project";
-
-let locators: Locators;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -42,47 +36,28 @@ export async function activate(context: vscode.ExtensionContext) {
 
     Container.initialize(context);
 
-    // Sets storage path if recommended path provided by current version of VS Code.  
-    PathUtils.setExtensionContext(context);
-
     // load the projects
-    locators = new Locators();
-
     const projectStorage: ProjectStorage = new ProjectStorage();
 
-    const providerManager: Providers = new Providers(locators, projectStorage);
-    locators.setProviderManager(providerManager);
+    const providerManager: Providers = new Providers(projectStorage);
 
     registerRevealFileInOS();
     registerOpenSettings();
-    registerSupportProjectManager();
     registerHelpAndFeedbackView(context);
     registerSortBy();
     registerSideBarDecorations();
     registerWalkthrough();
 
-    // Defer non-critical initialization — both may trigger UI on activation.
+    // Defer non-critical initialization — both may trigger UI or network on activation.
     setImmediate(() => {
         registerWhatsNew();
-        checkForUpdates(context);
+        registerAutoUpdate(context);
     });
 
     context.subscriptions.push(vscode.commands.registerCommand("_projectManager.openFolderWelcome", () => {
         const openFolderCommand = isWindows || isMacOS ? "workbench.action.files.openFolder" : "workbench.action.files.openFileFolder";
         vscode.commands.executeCommand(openFolderCommand);
     }));
-    context.subscriptions.push(vscode.commands.registerCommand("projectManager.hideGitWelcome", () => {
-        context.globalState.update("hideGitWelcome", true);
-        providerManager.showTreeViewFromAllProviders();
-        vscode.commands.executeCommand("setContext", "projectManager.hiddenGitWelcome", true);
-    }));
-    context.subscriptions.push(vscode.commands.registerCommand("projectManager.showGitWelcome", () => {
-        context.globalState.update("hideGitWelcome", false);
-        providerManager.showTreeViewFromAllProviders();
-        vscode.commands.executeCommand("setContext", "projectManager.hiddenGitWelcome", false);
-    }));
-    const hideGitWelcome = context.globalState.get<boolean>("hideGitWelcome", false);
-    vscode.commands.executeCommand("setContext", "projectManager.hiddenGitWelcome", hideGitWelcome);
 
     vscode.commands.registerCommand("_projectManager.open", async (projectPath: string, projectName: string, profile: string) => {
         const uri = buildProjectUri(projectPath);
@@ -105,17 +80,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // register commands (here, because it needs to be used right below if an invalid JSON is present)
     vscode.commands.registerCommand("projectManager.saveProject", () => saveProject());
-    vscode.commands.registerCommand("projectManager.refreshProjects", () => refreshProjects(true, true));
-    locators.registerCommands();
     vscode.commands.registerCommand("projectManager.listProjects", () => listProjects(false));
     vscode.commands.registerCommand("projectManager.listProjectsNewWindow", () => listProjects(true));
     
     vscode.commands.registerCommand("projectManager.listFavoriteProjects#sideBarFavorites", () => listStorageProjects());
-    vscode.commands.registerCommand("projectManager.listGitProjects#sideBarGit", () => listAutoDetectedProjects(locators.gitLocator));
-    vscode.commands.registerCommand("projectManager.listVSCodeProjects#sideBarVSCode", () => listAutoDetectedProjects(locators.vscLocator));
-    vscode.commands.registerCommand("projectManager.listSVNProjects#sideBarSVN", () => listAutoDetectedProjects(locators.svnLocator));
-    vscode.commands.registerCommand("projectManager.listMercurialProjects#sideBarMercurial", () => listAutoDetectedProjects(locators.mercurialLocator));
-    vscode.commands.registerCommand("projectManager.listAnyProjects#sideBarAny", () => listAutoDetectedProjects(locators.anyLocator));
 
     // new commands (ActivityBar)
     vscode.commands.registerCommand("projectManager.addToWorkspace#sideBar", (node) => addProjectToWorkspace(node));
@@ -163,7 +131,6 @@ export async function activate(context: vscode.ExtensionContext) {
         providerManager.refreshStorageTreeView();
         vscode.window.showInformationMessage(l10n.t("Group renamed!"));
     });
-    vscode.commands.registerCommand("projectManager.addToFavorites", (node) => saveProject(node));
     vscode.commands.registerCommand("_projectManager.toggleProjectEnabled", (node) => toggleProjectEnabled(node));
 
     function getViewMode(): string {
@@ -203,31 +170,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     loadProjectsFile();
 
-    // Show status bar immediately using storage (favorites) and any warm cache from
-    // locators. For autodetect-only projects on a cold cache this may return undefined;
-    // the background callback below will retry once each provider finishes scanning.
-    Container.currentProject = showStatusBar(projectStorage, locators);
-
-    // Favorites sidebar is ready instantly (VS Code config is in-memory). Autodetect
-    // providers are started in the background; each one refreshes its own tree view and
-    // updates the sidebar titles as soon as it finishes. If the status bar did not find
-    // the current project yet (cold cache, autodetect-only project), each completed
-    // provider triggers another attempt.
-    providerManager.startAutodetectProvidersInBackground(() => {
-        if (!Container.currentProject) {
-            Container.currentProject = showStatusBar(projectStorage, locators);
-        }
-    });
+    Container.currentProject = showStatusBar(projectStorage);
+    providerManager.updateTreeViewStorage();
 
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async cfg => {
-        if (cfg.affectsConfiguration("projectManager.git") || cfg.affectsConfiguration("projectManager.hg") ||
-            cfg.affectsConfiguration("projectManager.vscode") || cfg.affectsConfiguration("projectManager.svn") || 
-            cfg.affectsConfiguration("projectManager.any") || 
-            cfg.affectsConfiguration("projectManager.ignoreProjectsWithinProjects") || 
-            cfg.affectsConfiguration("projectManager.supportSymlinksOnBaseFolders")) {
-            refreshProjects();
-        }
-
         if (cfg.affectsConfiguration("workbench.iconTheme")) {
             providerManager.refreshTreeViews();
         }
@@ -244,75 +190,15 @@ export async function activate(context: vscode.ExtensionContext) {
             providerManager.updateTreeViewStorage();
         }
 
-        if (cfg.affectsConfiguration("projectManager.showParentFolderInfoOnDuplicates")) {
-            providerManager.refreshTreeViews();
-        }
-
     }));
 
-    function refreshProjects(showMessage?: boolean, forceRefresh?: boolean) {
-
-        vscode.window.withProgress({
-            location: vscode.ProgressLocation.Notification,
-            title: l10n.t("Refreshing Projects"),
-            cancellable: false
-        }, async (progress) => {
-            progress.report({ message: "VSCode" });
-            const rvscode = await locators.vscLocator.refreshProjects(forceRefresh);
-        
-            progress.report({ message: "Git" });
-            const rgit = await locators.gitLocator.refreshProjects(forceRefresh);
-        
-            progress.report({ message: "Mercurial" });
-            const rmercurial = await locators.mercurialLocator.refreshProjects(forceRefresh);
-        
-            progress.report({ message: "SVN" });
-            const rsvn = await locators.svnLocator.refreshProjects(forceRefresh);
-
-            progress.report({ message: "Any" });
-            const rany = await locators.anyLocator.refreshProjects(forceRefresh);
-
-            if (rvscode || rgit || rmercurial || rsvn || rany || forceRefresh) {
-                progress.report({ message: "Activity Bar"});
-                if (rvscode || forceRefresh) {
-                    providerManager.vscodeProvider.refresh();
-                }
-                if (rgit || forceRefresh) {
-                    providerManager.gitProvider.refresh();
-                }
-                if (rmercurial || forceRefresh) {
-                    providerManager.mercurialProvider.refresh();
-                }
-                if (rsvn || forceRefresh) {
-                    providerManager.svnProvider.refresh();
-                }
-                if (rany || forceRefresh) {
-                    providerManager.anyProvider.refresh();
-                }
-                providerManager.showTreeViewFromAllProviders();
-            }
-
-            if (showMessage) {
-                vscode.window.showInformationMessage(l10n.t("The projects have been refreshed!"));
-            }
-        });
-    }
-
-    async function saveProject(node?: ProjectNode) {
-        let wpath: string;
-        let rootPath: string;
-
-        if (node) {
-            wpath = node.label as string; 
-            rootPath = node.command.arguments[0];
-        } else {
-            const projectDetails = await getProjectDetails();
-            if (!projectDetails) {
-                return;
-            }
-            rootPath = projectDetails.path;
-            wpath = projectDetails.name;
+    async function saveProject() {
+        const projectDetails = await getProjectDetails();
+        if (!projectDetails) {
+            return;
         }
+        const rootPath = projectDetails.path;
+        const wpath = projectDetails.name;
 
         const saveProjectInternal = async (rawInput: string): Promise<boolean> => {
             const { name: projectName, group } = parseProjectInput(rawInput);
@@ -329,10 +215,8 @@ export async function activate(context: vscode.ExtensionContext) {
                 await projectStorage.save();
                 providerManager.updateTreeViewStorage();
                 vscode.window.showInformationMessage(l10n.t("Project saved!"));
-                if (!node) {
-                    showStatusBar(projectStorage, locators, projectName);
-                    updateCurrentProject();
-                }
+                showStatusBar(projectStorage, projectName);
+                updateCurrentProject();
                 return true;
             } else {
                 const optionUpdate = <vscode.MessageItem> {
@@ -359,9 +243,7 @@ export async function activate(context: vscode.ExtensionContext) {
                     await projectStorage.save();
                     providerManager.updateTreeViewStorage();
                     vscode.window.showInformationMessage(l10n.t("Project saved!"));
-                    if (!node) {
-                        showStatusBar(projectStorage, locators, projectName);
-                    }
+                    showStatusBar(projectStorage, projectName);
                     return true;
                 }
 
@@ -406,17 +288,12 @@ export async function activate(context: vscode.ExtensionContext) {
     }
 
     async function listProjects(forceNewWindow: boolean) {
-        const pick = await pickProjects(projectStorage, locators, !forceNewWindow, undefined); 
+        const pick = await pickProjects(projectStorage, !forceNewWindow); 
         openPickedProject(pick, forceNewWindow, CommandLocation.CommandPalette);
     }
 
-    async function listAutoDetectedProjects(locator: CustomProjectLocator) {
-        const pick = await pickProjects(undefined, locators, true, locator); 
-        openPickedProject(pick, false, CommandLocation.SideBar);
-    }
-
     async function listStorageProjects() {
-        const pick = await pickProjects(projectStorage, undefined, true, undefined); 
+        const pick = await pickProjects(projectStorage, true); 
         openPickedProject(pick, false, CommandLocation.SideBar);
     }
 
@@ -444,7 +321,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        const pick = await pickProjects(projectStorage, locators, false, undefined); 
+        const pick = await pickProjects(projectStorage, false); 
         if (pick) {
             addProjectPathToWorkspace(pick.item.rootPath);
         }
@@ -517,8 +394,4 @@ export async function activate(context: vscode.ExtensionContext) {
         }
             
     }
-}
-
-export function deactivate() {
-    locators?.dispose();
 }
