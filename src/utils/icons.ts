@@ -7,7 +7,7 @@ import path = require("path");
 import { IconPath, Uri, workspace } from "vscode";
 import { codicons } from "vscode-ext-codicons";
 import { Container } from "../core/container";
-import { isRemoteUri, REMOTE_PREFIX, VIRTUAL_WORKSPACE_PREFIX } from "./remote";
+import { getRemoteKind, isRemoteUri, REMOTE_PREFIX, VIRTUAL_WORKSPACE_PREFIX } from "./remote";
 
 export function currentIconThemeHasFolderIcon(): boolean {
     const currentIconTheme = workspace.getConfiguration("workbench").get<string>("iconTheme", "");
@@ -49,28 +49,11 @@ export interface TooltipIconInfo {
 }
 
 export function getIconDetailsFromProjectPath(projectPath: string): TooltipIconInfo {
-    if (projectPath.startsWith(`${REMOTE_PREFIX}://codespaces`)) {
+    const remoteKind = projectPath.startsWith(`${REMOTE_PREFIX}://`) ? getRemoteKind(Uri.parse(projectPath)) : undefined;
+    if (remoteKind) {
         return {
-            icon: codicons.github,
-            title: "Codespaces"
-        };
-    }
-    if (projectPath.startsWith(`${REMOTE_PREFIX}://dev-container`)) {
-        return {
-            icon: codicons.symbol_method,
-            title: "Container"
-        };
-    }
-    if (projectPath.startsWith(`${REMOTE_PREFIX}://ssh`)) {
-        return {
-            icon: codicons.terminal,
-            title: "SSH"
-        };
-    }
-    if (projectPath.startsWith(`${REMOTE_PREFIX}://wsl`)) {
-        return {
-            icon: codicons.terminal_linux,
-            title: "WSL"
+            icon: `$(${remoteKind.codicon})`,
+            title: remoteKind.label
         };
     }
     if (projectPath.startsWith(`${VIRTUAL_WORKSPACE_PREFIX}://`)) {

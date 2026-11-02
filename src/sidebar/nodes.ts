@@ -6,7 +6,7 @@
 import { Command, IconPath, MarkdownString, ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import { ThemeIcons } from "vscode-ext-codicons";
 import { currentIconThemeHasFolderIcon, getProjectIcon, getIconDetailsFromProjectPath } from "../utils/icons";
-import { REMOTE_PREFIX, VIRTUAL_WORKSPACE_PREFIX } from "../utils/remote";
+import { getRemoteKind, VIRTUAL_WORKSPACE_PREFIX } from "../utils/remote";
 
 export interface ProjectPreview {
     name: string;
@@ -50,23 +50,16 @@ export class ProjectNode extends TreeItem {
                 case "favorites-workspace":
                     return ThemeIcons.root_folder;
 
-                case "favorites-remote":
-                    if (projectPath.startsWith(`${REMOTE_PREFIX}://codespaces`)) {
-                        return ThemeIcons.github;
-                    }
-                    if (projectPath.startsWith(`${REMOTE_PREFIX}://dev-container`)) {
-                        return new ThemeIcon('symbol-method', new ThemeColor("icon.foreground"));
-                    }
-                    if (projectPath.startsWith(`${REMOTE_PREFIX}://ssh`)) {
-                        return ThemeIcons.terminal;
-                    }
-                    if (projectPath.startsWith(`${REMOTE_PREFIX}://wsl`)) {
-                        return ThemeIcons.terminal_linux;
-                    }
+                case "favorites-remote": {
                     if (projectPath.startsWith(`${VIRTUAL_WORKSPACE_PREFIX}://`)) {
                         return ThemeIcons.remote;
                     }
-                    return ThemeIcons.remote_explorer;
+                    const remoteKind = getRemoteKind(Uri.parse(projectPath));
+                    // Symbol icons such as symbol-method are tinted by default; keep every icon neutral
+                    return remoteKind
+                        ? new ThemeIcon(remoteKind.codicon, new ThemeColor("icon.foreground"))
+                        : ThemeIcons.remote_explorer;
+                }
 
                 default:
                     return getProjectIcon(icon, projectPath);

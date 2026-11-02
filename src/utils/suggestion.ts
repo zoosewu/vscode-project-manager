@@ -5,20 +5,10 @@
 
 import { commands, l10n, Uri, window, workspace } from "vscode";
 import path = require("path");
-import { isRunningOnCodespaces } from "./remote";
-
-const REMOTE_TYPE_LABELS: Record<string, string> = {
-    "ssh-remote": "SSH",
-    "wsl": "WSL",
-    "attached-container": "Container",
-    "dev-container": "Container",
-    "codespaces": "Codespaces",
-    "tunnel": "Tunnel",
-};
+import { getRemoteKind, getRemoteType, isRunningOnCodespaces } from "./remote";
 
 function getRemoteTypeLabel(uri: Uri): string {
-    const remoteType = uri.authority.split("+")[0];
-    return REMOTE_TYPE_LABELS[remoteType] ?? remoteType;
+    return getRemoteKind(uri)?.label ?? getRemoteType(uri);
 }
 
 function prefixedName(baseName: string, prefix: string): string {

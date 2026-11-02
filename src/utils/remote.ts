@@ -22,3 +22,26 @@ export function isRemoteUri(uri: Uri): boolean {
 export function isRunningOnCodespaces(): boolean {
     return env.remoteName?.toLocaleLowerCase() === 'codespaces';
 }
+
+export interface RemoteKind {
+    label: string;
+    codicon: string;
+}
+
+/** Keyed by the remote type, the part of a vscode-remote authority before "+". */
+const REMOTE_KINDS: Record<string, RemoteKind> = {
+    "codespaces": { label: "Codespaces", codicon: "github" },
+    "dev-container": { label: "Container", codicon: "symbol-method" },
+    "attached-container": { label: "Container", codicon: "symbol-method" },
+    "ssh-remote": { label: "SSH", codicon: "terminal" },
+    "wsl": { label: "WSL", codicon: "terminal-linux" },
+    "tunnel": { label: "Tunnel", codicon: "remote" },
+};
+
+export function getRemoteType(uri: Uri): string {
+    return uri.authority.split("+")[ 0 ];
+}
+
+export function getRemoteKind(uri: Uri): RemoteKind | undefined {
+    return uri.scheme === REMOTE_PREFIX ? REMOTE_KINDS[ getRemoteType(uri) ] : undefined;
+}
