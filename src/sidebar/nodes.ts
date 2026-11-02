@@ -19,18 +19,14 @@ export class ProjectNode extends TreeItem {
     constructor(
         public readonly label: string,
         public readonly collapsibleState: TreeItemCollapsibleState,
-        public readonly icon: string | undefined,
+        public readonly icon: string,
         public readonly preview: ProjectPreview,
         public readonly command?: Command
     ) {
         super(label, collapsibleState);
 
-        if (icon) {
-            this.iconPath = this.getIconPath(icon, preview.path);
-            this.contextValue = "ProjectNodeKind";
-        } else {
-            this.contextValue = "ConfigNodeKind";
-        }
+        this.iconPath = this.getIconPath(icon, preview.path);
+        this.contextValue = "ProjectNodeKind";
 
         this.resourceUri = Uri.from({
             scheme: 'projectManager-view',

@@ -233,17 +233,6 @@ suite("ProjectStorage", () => {
         assert.strictEqual(storage.length(), 1);
     });
 
-    test("setProjects replaces all projects", async () => {
-        const storage = new ProjectStorage();
-        storage.push("A", "/a");
-        storage.setProjects([
-            { name: "B", rootPath: "/b", paths: [], profile: "", group: "" }
-        ]);
-        assert.strictEqual(storage.length(), 1);
-        assert.ok(storage.exists("B"));
-        assert.strictEqual(storage.exists("A"), false);
-    });
-
     test("push with group parameter stores the group", () => {
         const storage = new ProjectStorage();
         storage.push("App", "/app", "Work/Frontend");

@@ -26,19 +26,6 @@ export class PathUtils {
     }
 
     /**
-     * If the project path is in the user's home directory then store the home directory as a
-     * parameter. This will help in situations when the user works with the same projects on
-     * different machines, under different user names.
-     */
-    public static compactHomePath(path: string) {
-        if (path.startsWith(homeDir)) {
-            return path.replace(homeDir, HOME_PATH_VARIABLE);
-        }
-
-        return path;
-    }
-
-    /**
      * Expand $home parameter from path to real os home path
      * 
      * @param path The path to expand

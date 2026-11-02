@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 import fs = require("fs");
-import { commands, Disposable, l10n, MessageItem, QuickInputButton, QuickPickItem, ThemeIcon, Uri, window, workspace } from "vscode";
+import { commands, l10n, MessageItem, QuickInputButton, QuickPickItem, ThemeIcon, Uri, window, workspace } from "vscode";
 import { ThemeIcons } from "vscode-ext-codicons";
 import { Container } from "../core/container";
 import { Project } from "../core/project";
@@ -70,11 +70,6 @@ function canPickSelectedProject(item: QuickPickItem, projectStorage: ProjectStor
         return true;
     }
 
-    if (item.label.substr(0, 2) === "$(") {
-        window.showErrorMessage(l10n.t("Path does not exist or is unavailable."));
-        return false;
-    }
-
     folderNotFound(item.label, projectStorage);
     return false;
 }
@@ -90,85 +85,73 @@ export interface Picked<T> {
     button: QuickInputButton | undefined
 }
 
-export async function pickProjects(projectStorage: ProjectStorage, showOpenInNewWindowButton: boolean): Promise<Picked<Project> | undefined> {
-    const disposables: Disposable[] = [];
+export function pickProjects(projectStorage: ProjectStorage, showOpenInNewWindowButton: boolean): Promise<Picked<Project> | undefined> {
+    return new Promise<Picked<Project> | undefined>((resolve) => {
+        const projects = projectStorage.map();
+        if (projects.length === 0) {
+            window.showInformationMessage(l10n.t("No projects saved yet!"));
+            return resolve(undefined);
+        }
 
-    try {
-        return await new Promise<Picked<Project> | undefined>((resolve) => {
-            const projects = projectStorage.map();
-            if (projects.length === 0) {
-                window.showInformationMessage(l10n.t("No projects saved yet!"));
-                return resolve(undefined);
-            }
-
-            commands.executeCommand("setContext", "inProjectManagerList", true);
-
-            const folders = prepareProjectList(projects).map(folder => {
-                return {
-                    label: folder.label,
-                    description: folder.description,
-                    detail: folder.group || undefined,
-                    profile: folder.profile,
-                    buttons: showOpenInNewWindowButton ? [ openInNewWindowButton ] : []
-                };
-            });
-            const input = window.createQuickPick();
-            input.placeholder = l10n.t("Loading projects (pick one)...");
-            input.matchOnDescription = workspace.getConfiguration("projectManager").get("filterOnFullPath", false);
-            input.matchOnDetail = false;
-            input.items = <any[]>folders;
-            input.onDidChangeSelection(items => {
-                const item = <any>items[ 0 ];
-                if (item) {
-                    if (!canPickSelectedProject(item, projectStorage)) {
-                        resolve(undefined);
-                        input.hide();
-                        return;
-                    }
-
-                    resolve(<Picked<Project>>{
-                        item: {
-                            name: item.label,
-                            rootPath: PathUtils.normalizePath(item.description),
-                            profile: item.profile,
-                        }, button: undefined
-                    });
-                    input.hide();
-                    return;
-                }
-            }),
-            input.onDidTriggerItemButton(item => {
-                if (item) {
-                    if (!canPickSelectedProject(item.item, projectStorage)) {
-                        resolve(undefined);
-                        input.hide();
-                        return;
-                    }
-
-                    resolve(<Picked<Project>>{
-                        item: {
-                            name: item.item.label,
-                            rootPath: PathUtils.normalizePath(item.item.description),
-                            profile: (<any>item.item).profile,
-                        }, button: item.button
-                    });
-                    input.hide();
-                    return;
-                }
-            }),
-            input.onDidHide(() => {
-                commands.executeCommand("setContext", "inProjectManagerList", false);
-                resolve(undefined);
-                input.dispose();
-                return;
-            });
-            input.show();
+        const folders = prepareProjectList(projects).map(folder => {
+            return {
+                label: folder.label,
+                description: folder.description,
+                detail: folder.group || undefined,
+                profile: folder.profile,
+                buttons: showOpenInNewWindowButton ? [ openInNewWindowButton ] : []
+            };
         });
+        const input = window.createQuickPick();
+        input.placeholder = l10n.t("Loading projects (pick one)...");
+        input.matchOnDescription = workspace.getConfiguration("projectManager").get("filterOnFullPath", false);
+        input.matchOnDetail = false;
+        input.items = <any[]>folders;
+        input.onDidChangeSelection(items => {
+            const item = <any>items[ 0 ];
+            if (item) {
+                if (!canPickSelectedProject(item, projectStorage)) {
+                    resolve(undefined);
+                    input.hide();
+                    return;
+                }
 
-    } finally {
-        disposables.forEach(d => d.dispose());
-    }
+                resolve(<Picked<Project>>{
+                    item: {
+                        name: item.label,
+                        rootPath: PathUtils.normalizePath(item.description),
+                        profile: item.profile,
+                    }, button: undefined
+                });
+                input.hide();
+                return;
+            }
+        }),
+        input.onDidTriggerItemButton(item => {
+            if (item) {
+                if (!canPickSelectedProject(item.item, projectStorage)) {
+                    resolve(undefined);
+                    input.hide();
+                    return;
+                }
 
+                resolve(<Picked<Project>>{
+                    item: {
+                        name: item.item.label,
+                        rootPath: PathUtils.normalizePath(item.item.description),
+                        profile: (<any>item.item).profile,
+                    }, button: item.button
+                });
+                input.hide();
+                return;
+            }
+        }),
+        input.onDidHide(() => {
+            resolve(undefined);
+            input.dispose();
+        });
+        input.show();
+    });
 }
 
 export function shouldOpenInNewWindow(openInNewWindow: boolean, calledFrom: CommandLocation): boolean {
@@ -181,13 +164,6 @@ export function shouldOpenInNewWindow(openInNewWindow: boolean, calledFrom: Comm
     }
 
     const config = workspace.getConfiguration("projectManager").get<string>("openInCurrentWindowIfEmpty");
-
-    if (config === OpenInCurrentWindowIfEmptyMode.always) {
-        return false;
-    }
-    if (config === OpenInCurrentWindowIfEmptyMode.never) {
-        return openInNewWindow;
-    }
 
     switch (config) {
         case OpenInCurrentWindowIfEmptyMode.always:

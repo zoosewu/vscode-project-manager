@@ -619,11 +619,9 @@
 		"build": "webpack --mode development",
 		"watch": "webpack --watch --mode development",
 		"vscode:prepublish": "webpack --mode production",
-		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch",
 		"compile": "tsc -p ./",
 		"lint": "eslint -c package.json --ext .ts src",
-		"test-compile": "tsc -p ./ && pnpm run webpack",
+		"test-compile": "tsc -p ./ && pnpm run build",
 		"just-test": "node ./out/src/test/runTest.js",
 		"test": "pnpm run lint && pnpm run test-compile && pnpm run just-test",
 		"package": "pnpm dlx @vscode/vsce package --no-dependencies"
@@ -637,6 +635,7 @@
 		"@vscode/test-electron": "^2.5.2",
 		"eslint": "^8.1.0",
 		"eslint-config-vscode-ext": "^1.1.0",
+		"glob": "^10.5.0",
 		"mocha": "^11.1.0",
 		"terser-webpack-plugin": "^5.2.4",
 		"ts-loader": "^9.2.5",
@@ -645,7 +644,6 @@
 		"webpack-cli": "^4.8.0"
 	},
 	"dependencies": {
-		"glob": "^10.5.0",
 		"vscode-ext-codicons": "^1.4.0",
 		"vscode-ext-help-and-feedback-view": "^1.0.1"
 	}

@@ -19,7 +19,6 @@ import { Container } from "./core/container";
 import { registerHelpAndFeedbackView } from "./sidebar/helpAndFeedbackView";
 import { registerRevealFileInOS } from "./commands/revealFileInOS";
 import { registerOpenSettings } from "./commands/openSettings";
-import { ViewFavoritesAs } from "./sidebar/constants";
 import { registerSortBy, updateSortByContext } from "./commands/sortBy";
 import { canSwitchOnActiveWindow, openPickedProject, pickProjects, shouldOpenInNewWindow } from "./quickpick/projectsPicker";
 import { l10n } from "vscode";
@@ -146,21 +145,10 @@ export async function activate(context: vscode.ExtensionContext) {
         providerManager.refresh();
     }
 
-    async function toggleViewAsFavoriteProjects(view: ViewFavoritesAs) {
-        switch (view) {
-            case ViewFavoritesAs.VIEW_AS_LIST:
-                await setViewMode("list");
-                break;
-            case ViewFavoritesAs.VIEW_AS_GROUPS:
-                await setViewMode("groups");
-                break;
-        }
-    }
-
     const viewMode = getViewMode();
     setViewModeContext(viewMode);
-    vscode.commands.registerCommand("_projectManager.viewAsList#sideBarFavorites", () => toggleViewAsFavoriteProjects(ViewFavoritesAs.VIEW_AS_LIST));
-    vscode.commands.registerCommand("_projectManager.viewAsGroups#sideBarFavorites", () => toggleViewAsFavoriteProjects(ViewFavoritesAs.VIEW_AS_GROUPS));
+    vscode.commands.registerCommand("_projectManager.viewAsList#sideBarFavorites", () => setViewMode("list"));
+    vscode.commands.registerCommand("_projectManager.viewAsGroups#sideBarFavorites", () => setViewMode("groups"));
 
     reloadProjects();
 

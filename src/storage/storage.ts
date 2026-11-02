@@ -137,14 +137,7 @@ export class ProjectStorage {
     }
 
     public exists(name: string): boolean {
-        let found = false;
-
-        for (const element of this.projects) {
-            if (element.name.toLocaleLowerCase() === name.toLocaleLowerCase()) {
-                found = true;
-            }
-        }
-        return found;
+        return this.indexOf(name) >= 0;
     }
 
     public existsWithRootPath(rootPath: string, returnExpandedHomePath: boolean = false): Project {
@@ -182,24 +175,15 @@ export class ProjectStorage {
             const config = vscode.workspace.getConfiguration("projectManager");
             const items = config.get<Array<Partial<Project>>>("projects", []);
 
-            this.projects = items.map(item => ({
-                name: "",
-                rootPath: "",
-                paths: [],
-                profile: "",
-                group: "",
-                ...item
-            }));
-
-            this.projects = this.projects.map(project => ({
-                name: project.name,
-                rootPath: project.rootPath,
-                paths: project.paths,
-                profile: project.profile,
-                group: project.group
-            }));
-
-            this.projects = this.projects.filter(p => p.name !== "" && p.rootPath !== "");
+            this.projects = items
+                .map(item => ({
+                    name: item.name ?? "",
+                    rootPath: item.rootPath ?? "",
+                    paths: item.paths ?? [],
+                    profile: item.profile ?? "",
+                    group: item.group ?? ""
+                }))
+                .filter(p => p.name !== "" && p.rootPath !== "");
 
             this.updatePaths();
             return "";
@@ -223,10 +207,6 @@ export class ProjectStorage {
 
     public getProjects(): Project[] {
         return [...this.projects];
-    }
-
-    public setProjects(projects: Project[]): void {
-        this.projects = projects;
     }
 
     public map(): any {

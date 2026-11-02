@@ -9,12 +9,11 @@ import { Stack } from "./stack";
 
 function sortByName(items: any[]): any[] {
     const itemsSorted = items.sort((n1, n2) => {
-        // ignore octicons
-        if (n1.label.replace(/\$\(\w*(-)*\w*\)\s/, "").toLowerCase() > n2.label.replace(/\$\(\w*(-)*\w*\)\s/, "").toLowerCase()) {
+        if (n1.label.toLowerCase() > n2.label.toLowerCase()) {
             return 1;
         }
 
-        if (n1.label.replace(/\$\(\w*(-)*\w*\)\s/, "").toLowerCase() < n2.label.replace(/\$\(\w*(-)*\w*\)\s/, "").toLowerCase()) {
+        if (n1.label.toLowerCase() < n2.label.toLowerCase()) {
             return -1;
         }
 

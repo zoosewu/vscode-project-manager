@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      glob:
-        specifier: ^10.5.0
-        version: 10.5.0
       vscode-ext-codicons:
         specifier: ^1.4.0
         version: 1.6.0
@@ -42,6 +39,9 @@ importers:
       eslint-config-vscode-ext:
         specifier: ^1.1.0
         version: 1.1.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      glob:
+        specifier: ^10.5.0
+        version: 10.5.0
       mocha:
         specifier: ^11.1.0
         version: 11.7.6
