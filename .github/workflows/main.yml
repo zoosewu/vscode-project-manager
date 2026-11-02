@@ -27,11 +27,14 @@ jobs:
           submodules: true
 
       # Runs a set of commands using the runners shell
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: 'npm'
+          cache: 'pnpm'
 
       # Runs the tests
       - name: Cache VS Code downloads
@@ -41,8 +44,8 @@ jobs:
           key: vscode-test-${{ matrix.os }}-${{ hashFiles('**/package.json') }}
           restore-keys: |
             vscode-test-${{ matrix.os }}-
-      - run: npm ci
-      - run: xvfb-run -a npm test
+      - run: pnpm install --frozen-lockfile
+      - run: xvfb-run -a pnpm test
         if: runner.os == 'Linux'
-      - run: npm test
+      - run: pnpm test
         if: runner.os != 'Linux'

@@ -32,17 +32,20 @@ jobs:
         with:
           submodules: true
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Package extension
-        run: npx @vscode/vsce package --no-dependencies
+        run: pnpm dlx @vscode/vsce package --no-dependencies
 
       - name: Upload VSIX to GitHub Release
         run: gh release upload ${{ needs.release-please.outputs.tag_name }} *.vsix

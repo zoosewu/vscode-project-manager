@@ -9,7 +9,7 @@ node_modules/**
 tsconfig.json
 test/**
 *.vsix
-package-lock.json
+pnpm-lock.yaml
 webpack.config.js
 **/.github/
 **/.git/**

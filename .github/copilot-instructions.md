@@ -21,28 +21,28 @@ Bootstrap and local setup:
 ```bash
 git submodule init
 git submodule update
-npm install
+pnpm install
 ```
 
 Build and development quickstart:
 
 ```bash
-npm run build
-npm run lint
+pnpm run build
+pnpm run lint
 ```
 
-- Use `npm run watch` during active development.
+- Use `pnpm run watch` during active development.
 - Use VS Code "Launch Extension" (F5) to validate behavior in Extension Development Host.
 - Expected command timings are usually under 10 seconds.
-- Never cancel `npm install`, `npm run watch`, or `npm test` once started.
+- Never cancel `pnpm install`, `pnpm run watch`, or `pnpm test` once started.
 ## Build and Development Commands
 
-- `npm run compile` - TypeScript compilation
-- `npm run build` - Webpack development build
-- `npm run watch` - Continuous webpack build
-- `npm run lint` - ESLint validation
-- `npm run test` - Full test suite
-- `npm run vscode:prepublish` - Production build
+- `pnpm run compile` - TypeScript compilation
+- `pnpm run build` - Webpack development build
+- `pnpm run watch` - Continuous webpack build
+- `pnpm run lint` - ESLint validation
+- `pnpm run test` - Full test suite
+- `pnpm run vscode:prepublish` - Production build
 
 ## Testing and Validation
 
@@ -50,7 +50,7 @@ Automated tests use the VS Code test runner and may fail in restricted environme
 
 Manual validation checklist:
 
-1. Run `npm run build` successfully.
+1. Run `pnpm run build` successfully.
 2. Press F5 to launch Extension Development Host.
 3. Save/list/open projects using quick pick and sidebar flows.
 4. Validate status bar updates and project switching behavior.
@@ -166,9 +166,9 @@ walkthrough/              # Getting Started walkthrough content
 
 Before committing:
 
-1. Run `npm run lint`.
-2. Run `npm run build`.
-3. Run `npm run test-compile`.
+1. Run `pnpm run lint`.
+2. Run `pnpm run build`.
+3. Run `pnpm run test-compile`.
 4. Validate core quick pick/sidebar workflows in Extension Host.
 
 ## Documentation Sync on Every Feature Commit

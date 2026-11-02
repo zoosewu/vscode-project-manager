@@ -13,11 +13,14 @@ jobs:
         with:
           submodules: true
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Cache VS Code downloads
         uses: actions/cache@v4
@@ -28,20 +31,20 @@ jobs:
             vscode-test-ubuntu-latest-
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
-        run: xvfb-run -a npm test
+        run: xvfb-run -a pnpm test
 
       - name: Package extension
-        run: npx @vscode/vsce package --no-dependencies
+        run: pnpm dlx @vscode/vsce package --no-dependencies
 
       - name: Publish to VS Code Marketplace
-        run: npx @vscode/vsce publish --no-dependencies --packagePath *.vsix
+        run: pnpm dlx @vscode/vsce publish --no-dependencies --packagePath *.vsix
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: Publish to OpenVSX
-        run: npx ovsx publish *.vsix -p $OVSX_PAT
+        run: pnpm dlx ovsx publish *.vsix -p $OVSX_PAT
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}

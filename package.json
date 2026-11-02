@@ -7,6 +7,7 @@
 	"engines": {
 		"vscode": "^1.78.0"
 	},
+	"packageManager": "pnpm@10.33.2",
 	"categories": [
 		"Other"
 	],
@@ -646,15 +647,15 @@
 		"webpack-dev": "webpack --mode development --watch",
 		"compile": "tsc -p ./",
 		"lint": "eslint -c package.json --ext .ts src vscode-whats-new",
-		"pretest": "npm run compile && npm run lint",
-		"test-compile": "tsc -p ./ && npm run webpack",
+		"test-compile": "tsc -p ./ && pnpm run webpack",
 		"just-test": "node ./out/src/test/runTest.js",
-		"test": "npm run test-compile && npm run just-test",
-		"package": "npx @vscode/vsce package --no-dependencies"
+		"test": "pnpm run lint && pnpm run test-compile && pnpm run just-test",
+		"package": "pnpm dlx @vscode/vsce package --no-dependencies"
 	},
 	"devDependencies": {
 		"@types/mocha": "^10.0.0",
 		"@types/node": "^22.18.10",
+		"@types/semver": "^7.7.1",
 		"@types/vscode": "^1.78.0",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
@@ -670,6 +671,7 @@
 	},
 	"dependencies": {
 		"glob": "^10.5.0",
+		"semver": "^7.8.1",
 		"vscode-ext-codicons": "^1.4.0",
 		"vscode-ext-help-and-feedback-view": "^1.0.1"
 	}

@@ -18,6 +18,7 @@ Prerequisites
 
 - [Git](https://git-scm.com/), `>= 2.22.0`
 - [NodeJS](https://nodejs.org/), `>= 22.22.1`
+- [pnpm](https://pnpm.io/), version pinned by `packageManager` in `package.json` (`corepack enable` picks it up)
 
 ### Dependencies
 
@@ -26,7 +27,7 @@ From a terminal, where you have cloned the repository, execute the following com
 ```
 git submodule init
 git submodule update
-npm install
+pnpm install
 ```
 
 ### Build / Watch
@@ -41,7 +42,7 @@ This will first do an initial full build and then watch for file changes, compil
 
 ### Linting
 
-This project uses [ESLint](https://eslint.org/) for code linting. You can run ESLint across the code by calling `npm run lint` from a terminal. Warnings from ESLint show up in the `Errors and Warnings` quick box and you can navigate to them from inside VS Code.
+This project uses [ESLint](https://eslint.org/) for code linting. You can run ESLint across the code by calling `pnpm run lint` from a terminal. Warnings from ESLint show up in the `Errors and Warnings` quick box and you can navigate to them from inside VS Code.
 
 To lint the code as you make changes you can install the [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) extension.
 
