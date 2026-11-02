@@ -39,8 +39,6 @@
     "projectManager.configuration.projects.description": "The list of favorite projects",
     "projectManager.configuration.checkInvalidPathsBeforeListing.description": "Controla se deve verificar por pastas inválidas antes de listá-las, apresentando uma mensagem abaixo do nome do projeto",
     "projectManager.configuration.filterOnFullPath.description": "Controla se deve filtrar projetos pelo caminho completo",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.description": "Indica se o comando Nova Janela abre o projeto na janela corrente, quando vazia",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.deprecation": "Use `openInCurrentWindowIfEmpty` em vez disso",
     "projectManager.configuration.openInCurrentWindowIfEmpty.description": "Indica se o comando Nova Janela abre o projeto na janela corrente, quando vazia",
     "projectManager.configuration.confirmSwitchOnActiveWindow.description": "Controla se a extensão deve solicitar confirmação ao abrir projetos na janela ativa.",
     "projectManager.colors.sideBar.currentProjectHighlightForeground.description": "A cor para destacar o projeto corrente na Barra Lateral",

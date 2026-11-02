@@ -35,8 +35,6 @@
     "projectManager.configuration.projects.description": "The list of favorite projects",
     "projectManager.configuration.checkInvalidPathsBeforeListing.description": "Faut-il vérifier les chemins non valides avant de lister les projets, en affichant un message sous le nom du projet ?",
     "projectManager.configuration.filterOnFullPath.description": "Faut-il filtrer les projets par le chemin complet ?",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.description": "Précise si la commande Nouvelle fenêtre permet d'ouvrir le projet dans la fenêtre courante, lorsqu'elle est vide.",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.deprecation": "Utiliser `projectManager.openInCurrentWindowIfEmpty` à la place",
     "projectManager.configuration.openInCurrentWindowIfEmpty.description": "Précise si la commande Nouvelle fenêtre permet d'ouvrir le projet dans la fenêtre courante, lorsqu'elle est vide.",
     "projectManager.configuration.confirmSwitchOnActiveWindow.description": "Détermine si l'extension doit demander une confirmation lors de l'ouverture de projets dans la fenêtre active.",
     "projectManager.walkthroughs.title": "Démarrer avec Project Manager",

@@ -15,6 +15,7 @@
 * **Reorder Favorites** by drag and drop (or **Move Up** / **Move Down**), including moving projects between groups
 * **Auto-update** — checks the latest GitHub release once a week and installs it silently (takes effect after the next window reload)
 * **Disable Project** removed — every saved project is listed; projects disabled in older versions show up again
+* The deprecated `projectManager.openInCurrenWindowIfEmpty` setting (misspelled) is no longer read — use `projectManager.openInCurrentWindowIfEmpty`
 * **No What's New page** — updates stay silent; release notes live in the [CHANGELOG](CHANGELOG.md)
 * **Favorites only** — auto-detection of Git, Mercurial, SVN, VSCode and Any projects has been removed
 * **Help and Feedback** links only point to this fork's repository

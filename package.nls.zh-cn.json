@@ -39,8 +39,6 @@
     "projectManager.configuration.projects.description": "The list of favorite projects",
     "projectManager.configuration.checkInvalidPathsBeforeListing.description": "列出之前是否检查无效路径，并在项目名称下方显示一条消息？",
     "projectManager.configuration.filterOnFullPath.description": "是否通过完整路径过滤项目？",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.description": "当本窗口为空时，执行在新窗口中打开项目的命令后是否应该打开新窗口？",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.deprecation": "改用 `openInCurrentWindowIfEmpty`",
     "projectManager.configuration.openInCurrentWindowIfEmpty.description": "当本窗口为空时，执行在新窗口中打开项目的命令后是否应该打开新窗口？",
     "projectManager.configuration.confirmSwitchOnActiveWindow.description": "控制在活动窗口中打开项目时扩展是否要求确认。",
     "projectManager.colors.sideBar.currentProjectHighlightForeground.description": "用于在侧边栏中高亮当前项目的颜色",

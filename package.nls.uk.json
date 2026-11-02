@@ -39,8 +39,6 @@
     "projectManager.configuration.projects.description": "The list of favorite projects",
     "projectManager.configuration.checkInvalidPathsBeforeListing.description": "Перевіряти недійсні шляхи перед відображенням списку, показуючи повідомлення під назвою проєкту?",
     "projectManager.configuration.filterOnFullPath.description": "Фільтрувати проєкти за повним шляхом?",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.description": "Вказує, чи відкривати проєкт у поточному вікні, якщо воно порожнє, при використанні команди Нове вікно.",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.deprecation": "Використовуйте `projectManager.openInCurrentWindowIfEmpty` замість цього",
     "projectManager.configuration.openInCurrentWindowIfEmpty.description": "Вказує, чи відкривати проєкт у поточному вікні, якщо воно порожнє, при використанні команди Нове вікно.",
     "projectManager.configuration.confirmSwitchOnActiveWindow.description": "Чи питати підтвердження при відкритті проєктів в активному вікні?",
     "projectManager.colors.sideBar.currentProjectHighlightForeground.description": "Колір для виділення поточного проєкту у бічній панелі",

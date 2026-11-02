@@ -35,8 +35,6 @@
     "projectManager.configuration.projects.description": "The list of favorite projects",
     "projectManager.configuration.checkInvalidPathsBeforeListing.description": "列出之前是否應該檢查無效路徑，並在項目名稱下方顯示一條消息？",
     "projectManager.configuration.filterOnFullPath.description": "是否應該通過完整路徑過濾項目？",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.description": "當本窗口為空時，執行在新窗口中打開項目的命令後是否應該打開新窗口？",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.deprecation": "改用`openInCurrentWindowIfEmpty`",
     "projectManager.configuration.openInCurrentWindowIfEmpty.description": "當本窗口為空時，執行在新窗口中打開項目的命令後是否應該打開新窗口？",
     "projectManager.configuration.confirmSwitchOnActiveWindow.description": "控制在活動窗口中打開項目時擴展是否應要求確認。",
     "projectManager.walkthroughs.title": "項目管理器入門",

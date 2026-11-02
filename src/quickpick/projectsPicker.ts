@@ -182,16 +182,7 @@ export function shouldOpenInNewWindow(openInNewWindow: boolean, calledFrom: Comm
         return openInNewWindow;
     }
 
-    // Check for setting name before and after typo was corrected
-    const oldValue = workspace.getConfiguration("projectManager").inspect("openInCurrenWindowIfEmpty");
-    const newValue = workspace.getConfiguration("projectManager").inspect("openInCurrentWindowIfEmpty");
-
-    let config: string | unknown;
-    if (oldValue.globalValue) {
-        config = newValue.globalValue === undefined ? oldValue.globalValue : newValue.globalValue;
-    } else {
-        config = workspace.getConfiguration("projectManager").get<string>("openInCurrentWindowIfEmpty");
-    }
+    const config = workspace.getConfiguration("projectManager").get<string>("openInCurrentWindowIfEmpty");
 
     if (config === OpenInCurrentWindowIfEmptyMode.always) {
         return false;

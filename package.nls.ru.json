@@ -34,8 +34,6 @@
     "projectManager.configuration.projects.description": "The list of favorite projects",
     "projectManager.configuration.checkInvalidPathsBeforeListing.description": "Следует ли проверять наличие недопустимых путей перед выводом списка, показывая сообщение под именем проекта?",
     "projectManager.configuration.filterOnFullPath.description": "Следует ли фильтровать проекты по полному пути?",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.description": "Указывает, открывает ли команда «Новое окно» проект в текущем пустом окне.",
-    "projectManager.configuration.openInCurrenWindowIfEmpty.deprecation": "Вместо этого используйте `openInCurrentWindowIfEmpty`",
     "projectManager.configuration.openInCurrentWindowIfEmpty.description": "Указывает, открывает ли команда «Новое окно» проект в текущем пустом окне.",
     "projectManager.configuration.confirmSwitchOnActiveWindow.description": "Определяет, должно ли расширение запрашивать подтверждение при открытии проектов в активном окне."
 }
