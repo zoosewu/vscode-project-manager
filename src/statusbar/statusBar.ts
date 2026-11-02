@@ -5,7 +5,6 @@
 
 import { StatusBarAlignment, StatusBarItem, window, workspace } from "vscode";
 import { ProjectStorage } from "../storage/storage";
-import { codicons } from "vscode-ext-codicons";
 import { isRemoteUri } from "../utils/remote";
 import { getCodiconFromUri } from "../utils/icons";
 import { Project } from "../core/project";
@@ -58,14 +57,5 @@ export function showStatusBar(projectStorage: ProjectStorage, projectName?: stri
         statusItem.text += foundProject.name;
         statusItem.show();
         return foundProject;
-    }
-}
-
-export function updateStatusBar(oldName: string, oldPath: string, newName: string): void {
-    if (!statusItem) {
-        return;
-    }
-    if (statusItem.text === codicons.file_directory + " " + oldName && statusItem.tooltip === oldPath) {
-        statusItem.text = codicons.file_directory + " " + newName;
     }
 }

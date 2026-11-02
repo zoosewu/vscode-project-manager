@@ -10,7 +10,7 @@ import { ProjectStorage } from "./storage/storage";
 
 import { Providers } from "./sidebar/providers";
 
-import { showStatusBar, updateStatusBar } from "./statusbar/statusBar";
+import { showStatusBar } from "./statusbar/statusBar";
 import { getProjectDetails } from "./utils/suggestion";
 import { CommandLocation } from "./core/constants";
 import { isMacOS, isRemoteUri, isWindows } from "./utils/remote";
@@ -356,7 +356,7 @@ export async function activate(context: vscode.ExtensionContext) {
             projectStorage.rename(oldName, newName);
             await projectStorage.save();
             vscode.window.showInformationMessage(l10n.t("Project renamed!"));
-            updateStatusBar(oldName, node.command.arguments[0], newName);
+            Container.currentProject = showStatusBar(projectStorage);
         } else {
             vscode.window.showErrorMessage(l10n.t("Project already exists!"));
         }

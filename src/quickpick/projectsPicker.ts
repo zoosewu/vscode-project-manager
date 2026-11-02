@@ -150,7 +150,8 @@ export async function pickProjects(projectStorage: ProjectStorage, showOpenInNew
                     resolve(<Picked<Project>>{
                         item: {
                             name: item.item.label,
-                            rootPath: PathUtils.normalizePath(item.item.description)
+                            rootPath: PathUtils.normalizePath(item.item.description),
+                            profile: (<any>item.item).profile,
                         }, button: item.button
                     });
                     input.hide();
