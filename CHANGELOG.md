@@ -27,6 +27,19 @@
 - Security Alert: braces (dependabot [PR #746](https://github.com/alefragnani/vscode-project-manager/pull/746))
 
 
+## [13.4.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.3.0...v13.4.0) (2026-04-07)
+
+
+### ### Added
+
+* remove tags feature in favor of groups-only organization ([aba698e](https://github.com/zoosewu/vscode-project-manager/commit/aba698e55e8628c3481c3d67a085fa20a1bccd83))
+
+
+### ### Fixed
+
+* **changelog:** remove duplicate entries caused by regular merge commits ([5b914f8](https://github.com/zoosewu/vscode-project-manager/commit/5b914f8227b70afe76bbd5cf209275c4c7e220f2))
+* **i18n:** fix invalid JSON in Russian and Ukrainian NLS files ([b591d3a](https://github.com/zoosewu/vscode-project-manager/commit/b591d3ae9d79cdfcc0c7af2b65f1509e3d1e6828))
+
 ## [13.3.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.2.0...v13.3.0) (2026-04-07)
 
 

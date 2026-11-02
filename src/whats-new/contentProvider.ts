@@ -18,7 +18,11 @@ export class ProjectManagerContentProvider implements ContentProvider {
     public provideChangeLog(): ChangeLogItem[] {
         const changeLog: ChangeLogItem[] = [];
 
-        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.4.0", releaseDate: "November 2026" } });
+        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.5.0", releaseDate: "November 2026" } });
+        changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "<b>Rename Group</b> directly from the Side Bar context menu — renames the group and all sub-groups in one step"
+        });
         changeLog.push({
             kind: ChangeLogKind.NEW,
             detail: "<b>Reorder Favorites</b> by drag and drop in the Side Bar, and move projects between <b>Groups</b> in the Groups view"
@@ -44,11 +48,7 @@ export class ProjectManagerContentProvider implements ContentProvider {
             detail: "Removed auto-detection of <b>Git</b>, <b>Mercurial</b>, <b>SVN</b>, <b>VSCode</b> and <b>Any</b> projects — the Side Bar only shows <b>Favorites</b>"
         });
 
-        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.3.0", releaseDate: "April 2026" } });
-        changeLog.push({
-            kind: ChangeLogKind.NEW,
-            detail: "<b>Rename Group</b> directly from the Side Bar context menu — renames the group and all sub-groups in one step"
-        });
+        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.4.0", releaseDate: "April 2026" } });
         changeLog.push({
             kind: ChangeLogKind.INTERNAL,
             detail: "Removed <b>Tags</b> feature — projects are now organized exclusively via <b>Groups</b>"

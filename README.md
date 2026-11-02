@@ -10,7 +10,7 @@
   <a title="Learn more about Project Manager" href="https://github.com/zoosewu/vscode-project-manager"><img src="https://raw.githubusercontent.com/zoosewu/vscode-project-manager/master/images/vscode-project-manager-logo-readme.png" alt="Project Manager Logo" width="70%" /></a>
 </p>
 
-# What's new in Project Manager 13.4
+# What's new in Project Manager 13.5
 
 * **Reorder Favorites** by drag and drop (or **Move Up** / **Move Down**), including moving projects between groups
 * **Auto-update** — checks the latest GitHub release once a week and installs it silently (takes effect after the next window reload)
