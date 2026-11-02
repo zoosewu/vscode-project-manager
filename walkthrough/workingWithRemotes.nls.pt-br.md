@@ -12,13 +12,13 @@ _Simplesmente funciona_
 
 ### Mas e se a maior porte do meu trabalho é em Remotos
 
-Se você normalmente conecta a remotos (como SSH/WSL) e gostaria de salvar seus projetos Favoritos naquele remoto, ou ser possível auto-detectar repositórios localizados naqueles remotos, você deve ativar/instalar a extensão para funcionar naqueles remotos.. 
+Se você normalmente conecta a remotos (como SSH/WSL) e gostaria de salvar seus projetos Favoritos naquele remoto, você deve ativar/instalar a extensão para funcionar naqueles remotos.. 
 
 Você precisa apenas adicionar as linhas abaixo nas suas `Configurações de Usuário`.
 
 ```json
     "remote.extensionKind": {
-        "alefragnani.project-manager": [
+        "zoosewu.project-manager-zoo": [
             "workspace"
         ]
     },

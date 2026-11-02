@@ -12,13 +12,13 @@ _Ça marche, c'est tout_
 
 ### Mais que se passe-t-il si j'effectue la majeure partie de mon travail à distance ?
 
-Si vous vous connectez normalement à des connexions distantes (comme SSH/WSL) et que vous souhaitez sauvegarder les projets Favorite sur cette connexion distante, ou être en mesure de détecter automatiquement les dépôts situés sur cette connexion distante, vous devez activer/installer l'extension pour travailler à distance. 
+Si vous vous connectez normalement à des connexions distantes (comme SSH/WSL) et que vous souhaitez sauvegarder les projets Favorite sur cette connexion distante, vous devez activer/installer l'extension pour travailler à distance. 
 
 Il vous suffit d'ajouter les lignes ci-dessous dans vos `Paramètres utilisateur`.
 
 ```json
     "remote.extensionKind": {
-        "alefragnani.project-manager": [
+        "zoosewu.project-manager-zoo": [
             "workspace"
         ]
     },

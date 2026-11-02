@@ -12,13 +12,13 @@ _It just works_
 
 ### But what if I do most of my work on Remotes
 
-If you normally connect to remotes (like SSH/WSL) and would like to save Favorite projects on that remote, or to be able to auto-detect repos located on that remote, you must activate/install the extension to work on remotes. 
+If you normally connect to remotes (like SSH/WSL) and would like to save Favorite projects on that remote, you must activate/install the extension to work on remotes. 
 
 You just have to add the lines below on your `User Settings`.
 
 ```json
     "remote.extensionKind": {
-        "alefragnani.project-manager": [
+        "zoosewu.project-manager-zoo": [
             "workspace"
         ]
     },

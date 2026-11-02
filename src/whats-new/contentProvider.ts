@@ -25,7 +25,7 @@ export class ProjectManagerContentProvider implements ContentProvider {
         });
         changeLog.push({
             kind: ChangeLogKind.CHANGED,
-            detail: "<b>Help and Feedback</b> only links to this fork's repository"
+            detail: "<b>Help and Feedback</b>, walkthroughs and this page only link to this fork"
         });
         changeLog.push({
             kind: ChangeLogKind.FIXED,
@@ -501,18 +501,7 @@ export class ProjectManagerContentProvider implements ContentProvider {
     }
 
     public provideSupportChannels(): SupportChannel[] {
-        const supportChannels: SupportChannel[] = [];
-        supportChannels.push({
-            title: "Become a sponsor on GitHub",
-            link: "https://www.github.com/sponsors/alefragnani",
-            message: "Become a Sponsor"
-        });
-        supportChannels.push({
-            title: "Donate via PayPal",
-            link: "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=EP57F3B6FXKTU&lc=US&item_name=Alessandro%20Fragnani&item_number=vscode%20extensions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted",
-            message: "Donate via PayPal"
-        });
-        return supportChannels;
+        return [];
     }
 }
 
@@ -520,7 +509,7 @@ export class ProjectManagerSocialMediaProvider implements SocialMediaProvider {
     public provideSocialMedias() {
         return [{
             title: "Follow me on Twitter",
-            link: "https://www.twitter.com/alefragnani"
+            link: "https://www.twitter.com/zoosewu1"
         }];
     }
 }

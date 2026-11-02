@@ -6,12 +6,12 @@ When contributing to this project, please first discuss the changes you wish to 
 
 ## Your First Code Contribution
 
-Unsure where to begin contributing? You can start by looking through the [`help wanted`](https://github.com/alefragnani/vscode-project-manager/labels/good%20first%20issue) issues.
+Unsure where to begin contributing? You can start by looking through the [`help wanted`](https://github.com/zoosewu/vscode-project-manager/labels/good%20first%20issue) issues.
 
 ### Getting the code
 
 ```
-git clone https://github.com/alefragnani/vscode-project-manager.git
+git clone https://github.com/zoosewu/vscode-project-manager.git
 ```
 
 Prerequisites

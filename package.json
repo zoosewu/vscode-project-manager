@@ -38,9 +38,6 @@
 	"bugs": {
 		"url": "https://github.com/zoosewu/vscode-project-manager/issues"
 	},
-	"sponsor": {
-		"url": "https://github.com/sponsors/alefragnani"
-	},
 	"activationEvents": [
 		"onStartupFinished"
 	],
