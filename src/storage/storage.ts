@@ -9,6 +9,14 @@ import { PathUtils } from "../utils/path";
 import { isRemotePath } from "../utils/remote";
 import { createProject, normalizeGroupPath, Project } from "../core/project";
 
+/** A saved project shaped for lists: label is the name, description is the root path. */
+export interface ProjectListItem {
+    label: string;
+    description: string;
+    profile: string;
+    group: string;
+}
+
 export class ProjectStorage {
 
     private projects: Project[];
@@ -209,16 +217,13 @@ export class ProjectStorage {
         return [...this.projects];
     }
 
-    public map(): any {
-        const newItems = this.projects.map(item => {
-            return {
-                label: item.name,
-                description: item.rootPath,
-                profile: item.profile,
-                group: item.group
-            };
-        });
-        return newItems;
+    public map(): ProjectListItem[] {
+        return this.projects.map(item => ({
+            label: item.name,
+            description: item.rootPath,
+            profile: item.profile,
+            group: item.group
+        }));
     }
 
     private updatePaths(): void {

@@ -5,11 +5,8 @@
 
 "use strict";
 
-import fs = require("fs");
 import os = require("os");
 import path = require("path");
-import { codicons } from "vscode-ext-codicons";
-import { isRemotePath } from "./remote";
 
 export const homeDir = os.homedir();
 export const HOME_PATH_VARIABLE = "$home";
@@ -45,18 +42,6 @@ export class PathUtils {
     }
 
     /**
-     * Expand $home parameter from path to real os home path
-     * 
-     * @param items The array of items <QuickPickItem> to expand
-     */
-    public static expandHomePaths(items: any[]) {
-        return items.map(item => {
-            item.description = this.expandHomePath(item.description);
-            return item;
-        });
-    }
-
-    /**
      * Update a path to use the proper path separator, based on the Host OS
      * 
      * @param item The path <string> to update
@@ -83,20 +68,5 @@ export class PathUtils {
         }
 
         return normalizedPath;
-    }
-
-    /**
-     * Indicates if a path is invalid, which means "does not exists"
-     * "
-     * @param items The items <QuickPickItems> to check for invalid paths
-     */
-    public static indicateInvalidPaths(items: any[]): any[] {
-        for (const element of items) {
-            if (!element.detail && (!isRemotePath(element.description)) && (!fs.existsSync(element.description.toString()))) {
-                element.detail = codicons.circle_slash + " Path does not exist";
-            }
-        }
-
-        return items;
     }
 }

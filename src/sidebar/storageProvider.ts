@@ -6,20 +6,12 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { Container } from "../core/container";
+import { Project } from "../core/project";
 import { ProjectStorage } from "../storage/storage";
 import { PathUtils } from "../utils/path";
 import { isRemotePath } from "../utils/remote";
 import { sortProjects } from "../utils/sorter";
 import { GroupNode, ProjectNode } from "./nodes";
-
-interface ProjectInQuickPick {
-    label: string;
-    description: string;
-    profile: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ProjectInQuickPickList extends Array<ProjectInQuickPick> { }
 
 export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | GroupNode> {
 
@@ -41,65 +33,18 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Gr
         return element;
     }
 
-    public getChildren(element?: ProjectNode | GroupNode): Thenable<(ProjectNode | GroupNode)[]> {
+    public getChildren(element?: ProjectNode | GroupNode): (ProjectNode | GroupNode)[] {
+        if (element) {
+            return element instanceof GroupNode ? this.getGroupChildren(element) : [];
+        }
 
-        return new Promise(resolve => {
+        const viewMode = Container.context.globalState.get<string>("favoritesViewMode", "list");
+        if (viewMode === "groups") {
+            return this.getGroupRootChildren();
+        }
 
-            if (element) {
-
-                if (element instanceof GroupNode) {
-                    resolve(this.getGroupChildren(element));
-                    return;
-                }
-
-                resolve([]);
-                return;
-
-            } else { // ROOT
-
-                if (this.projectSource.length() === 0) {
-                    return resolve([]);
-                }
-
-                const viewMode = Container.context.globalState.get<string>("favoritesViewMode", "list");
-
-                // viewAsGroups
-                if (viewMode === "groups") {
-                    resolve(this.getGroupRootChildren());
-                    return;
-                }
-
-                // viewAsList (default)
-                const nodes: ProjectNode[] = [];
-
-                let projectsMapped: ProjectInQuickPickList;
-                projectsMapped = <ProjectInQuickPickList>this.projectSource.map();
-                projectsMapped = sortProjects(projectsMapped);
-
-                for (let index = 0; index < projectsMapped.length; index++) {
-                    const prj: ProjectInQuickPick = projectsMapped[ index ];
-
-                    let iconFavorites = "favorites";
-                    if (path.extname(prj.description) === ".code-workspace") {
-                        iconFavorites = "favorites-workspace";
-                    } else if (isRemotePath(prj.description)) {
-                        iconFavorites = "favorites-remote";
-                    }
-                    nodes.push(new ProjectNode(prj.label, vscode.TreeItemCollapsibleState.None,
-                        iconFavorites, {
-                            name: prj.label,
-                            path: PathUtils.expandHomePath(prj.description)
-                        },
-                        {
-                            command: "_projectManager.open",
-                            title: "",
-                            arguments: [ PathUtils.expandHomePath(prj.description), prj.label, prj.profile ],
-                        }));
-                }
-
-                resolve(nodes);
-            }
-        });
+        return sortProjects(this.projectSource.map()).map(item =>
+            this.createProjectNode({ name: item.label, rootPath: item.description, profile: item.profile }));
     }
 
     private getGroupRootChildren(): (ProjectNode | GroupNode)[] {
@@ -111,7 +56,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Gr
     }
 
     private buildGroupLevel(
-        projects: Array<{ name: string; rootPath: string; profile: string; group: string }>,
+        projects: Project[],
         parentPath: string
     ): (ProjectNode | GroupNode)[] {
         const projectNodes: ProjectNode[] = [];
@@ -144,7 +89,7 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Gr
         return [...groupNodes, ...projectNodes];
     }
 
-    private createProjectNode(project: { name: string; rootPath: string; profile: string; group: string }): ProjectNode {
+    private createProjectNode(project: Pick<Project, "name" | "rootPath" | "profile">): ProjectNode {
         const prjPath = PathUtils.expandHomePath(project.rootPath);
         let iconFavorites = "favorites";
         if (path.extname(prjPath) === ".code-workspace") {

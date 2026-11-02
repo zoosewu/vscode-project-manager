@@ -5,17 +5,32 @@
 
 import fs = require("fs");
 import { commands, l10n, MessageItem, QuickInputButton, QuickPickItem, ThemeIcon, Uri, window, workspace } from "vscode";
-import { ThemeIcons } from "vscode-ext-codicons";
+import { codicons, ThemeIcons } from "vscode-ext-codicons";
 import { Container } from "../core/container";
-import { Project } from "../core/project";
-import { ProjectStorage } from "../storage/storage";
+import { ProjectListItem, ProjectStorage } from "../storage/storage";
 import { PathUtils } from "../utils/path";
 import { isRemotePath, isRemoteUri } from "../utils/remote";
 import { sortProjects } from "../utils/sorter";
 import { buildProjectUri, getCurrentWorkspaceUri } from "../utils/uri";
 import { CommandLocation, ConfirmSwitchOnActiveWindowMode, OpenInCurrentWindowIfEmptyMode } from "../core/constants";
 
-function removeCurrentProject(items: any[]): any[] {
+interface ProjectPickItem extends QuickPickItem {
+    description: string;
+    profile: string;
+}
+
+export interface PickedProject {
+    name: string;
+    rootPath: string;
+    profile: string;
+}
+
+export interface Picked {
+    item: PickedProject;
+    button: QuickInputButton | undefined;
+}
+
+function removeCurrentProject(items: ProjectListItem[]): ProjectListItem[] {
     const workspace0 = getCurrentWorkspaceUri();
 
     if (!workspace0 || !workspace.getConfiguration("projectManager").get("removeCurrentProjectFromList")) {
@@ -25,16 +40,26 @@ function removeCurrentProject(items: any[]): any[] {
     if (isRemoteUri(workspace0)) {
         return items.filter(value => !isRemotePath(value.description) || Uri.parse(value.description).path !== workspace0.path);
     }
-    return items.filter(value => value.description.toString().toLowerCase() !== workspace0.fsPath.toLowerCase());
+    return items.filter(value => value.description.toLowerCase() !== workspace0.fsPath.toLowerCase());
 }
 
-function prepareProjectList(items: any[]): any[] {
-    let itemsToShow = PathUtils.expandHomePaths(items);
-    itemsToShow = removeCurrentProject(itemsToShow);
-    if (workspace.getConfiguration("projectManager").get("checkInvalidPathsBeforeListing", true)) {
-        itemsToShow = PathUtils.indicateInvalidPaths(itemsToShow);
-    }
-    return sortProjects(itemsToShow);
+function pathIsMissing(projectPath: string): boolean {
+    return !isRemotePath(projectPath) && !fs.existsSync(projectPath);
+}
+
+export function buildPickItems(items: ProjectListItem[], showOpenInNewWindowButton: boolean): ProjectPickItem[] {
+    const expanded = items.map(item => ({ ...item, description: PathUtils.expandHomePath(item.description) }));
+    const checkInvalidPaths = workspace.getConfiguration("projectManager").get("checkInvalidPathsBeforeListing", true);
+
+    return sortProjects(removeCurrentProject(expanded)).map(item => ({
+        label: item.label,
+        description: item.description,
+        detail: checkInvalidPaths && pathIsMissing(item.description)
+            ? codicons.circle_slash + " Path does not exist"
+            : item.group || undefined,
+        profile: item.profile,
+        buttons: showOpenInNewWindowButton ? [ openInNewWindowButton ] : []
+    }));
 }
 
 async function folderNotFound(name: string, projectStorage: ProjectStorage) {
@@ -60,92 +85,49 @@ async function folderNotFound(name: string, projectStorage: ProjectStorage) {
     }
 }
 
-function canPickSelectedProject(item: QuickPickItem, projectStorage: ProjectStorage): boolean {
-
-    if (isRemotePath(item.description)) {
-        return true;
-    }
-
-    if (fs.existsSync(item.description.toString())) {
-        return true;
-    }
-
-    folderNotFound(item.label, projectStorage);
-    return false;
-}
-
 class OpenInNewWindowButton implements QuickInputButton {
     constructor(public iconPath: ThemeIcon, public tooltip: string) { }
 }
 
 const openInNewWindowButton = new OpenInNewWindowButton(ThemeIcons.link_external, l10n.t('Open in New Window'));
 
-export interface Picked<T> {
-    item: T;
-    button: QuickInputButton | undefined
-}
-
-export function pickProjects(projectStorage: ProjectStorage, showOpenInNewWindowButton: boolean): Promise<Picked<Project> | undefined> {
-    return new Promise<Picked<Project> | undefined>((resolve) => {
+export function pickProjects(projectStorage: ProjectStorage, showOpenInNewWindowButton: boolean): Promise<Picked | undefined> {
+    return new Promise<Picked | undefined>((resolve) => {
         const projects = projectStorage.map();
         if (projects.length === 0) {
             window.showInformationMessage(l10n.t("No projects saved yet!"));
             return resolve(undefined);
         }
 
-        const folders = prepareProjectList(projects).map(folder => {
-            return {
-                label: folder.label,
-                description: folder.description,
-                detail: folder.group || undefined,
-                profile: folder.profile,
-                buttons: showOpenInNewWindowButton ? [ openInNewWindowButton ] : []
-            };
-        });
-        const input = window.createQuickPick();
+        const input = window.createQuickPick<ProjectPickItem>();
         input.placeholder = l10n.t("Loading projects (pick one)...");
         input.matchOnDescription = workspace.getConfiguration("projectManager").get("filterOnFullPath", false);
         input.matchOnDetail = false;
-        input.items = <any[]>folders;
-        input.onDidChangeSelection(items => {
-            const item = <any>items[ 0 ];
-            if (item) {
-                if (!canPickSelectedProject(item, projectStorage)) {
-                    resolve(undefined);
-                    input.hide();
-                    return;
-                }
+        input.items = buildPickItems(projects, showOpenInNewWindowButton);
 
-                resolve(<Picked<Project>>{
+        const accept = (item: ProjectPickItem, button: QuickInputButton | undefined) => {
+            if (pathIsMissing(item.description)) {
+                folderNotFound(item.label, projectStorage);
+                resolve(undefined);
+            } else {
+                resolve({
                     item: {
                         name: item.label,
                         rootPath: PathUtils.normalizePath(item.description),
-                        profile: item.profile,
-                    }, button: undefined
+                        profile: item.profile
+                    },
+                    button
                 });
-                input.hide();
-                return;
             }
-        }),
-        input.onDidTriggerItemButton(item => {
-            if (item) {
-                if (!canPickSelectedProject(item.item, projectStorage)) {
-                    resolve(undefined);
-                    input.hide();
-                    return;
-                }
+            input.hide();
+        };
 
-                resolve(<Picked<Project>>{
-                    item: {
-                        name: item.item.label,
-                        rootPath: PathUtils.normalizePath(item.item.description),
-                        profile: (<any>item.item).profile,
-                    }, button: item.button
-                });
-                input.hide();
-                return;
+        input.onDidChangeSelection(items => {
+            if (items[ 0 ]) {
+                accept(items[ 0 ], undefined);
             }
-        }),
+        });
+        input.onDidTriggerItemButton(event => accept(event.item, event.button));
         input.onDidHide(() => {
             resolve(undefined);
             input.dispose();
@@ -209,7 +191,7 @@ export async function canSwitchOnActiveWindow(calledFrom: CommandLocation): Prom
     return answer === optionOpenProject;
 }
 
-export async function openPickedProject(picked: Picked<Project>, forceNewWindow: boolean, calledFrom: CommandLocation) {
+export async function openPickedProject(picked: Picked | undefined, forceNewWindow: boolean, calledFrom: CommandLocation) {
     if (!picked) { return; }
 
     if (!picked.button) {

@@ -7,7 +7,12 @@ import { workspace } from "vscode";
 import { Container } from "../core/container";
 import { Stack } from "./stack";
 
-function sortByName(items: any[]): any[] {
+interface SortableProject {
+    label: string;
+    description: string;
+}
+
+function sortByName<T extends SortableProject>(items: T[]): T[] {
     const itemsSorted = items.sort((n1, n2) => {
         if (n1.label.toLowerCase() > n2.label.toLowerCase()) {
             return 1;
@@ -22,7 +27,7 @@ function sortByName(items: any[]): any[] {
     return itemsSorted;
 }
 
-function sortByPath(items: any[]): any[] {
+function sortByPath<T extends SortableProject>(items: T[]): T[] {
     const itemsSorted = items.sort((n1, n2) => {
         if (n1.description > n2.description) {
             return 1;
@@ -37,7 +42,7 @@ function sortByPath(items: any[]): any[] {
     return itemsSorted;
 }
 
-function sortByRecent(items: any[], stack: Stack): any[] {
+function sortByRecent<T extends SortableProject>(items: T[], stack: Stack): T[] {
 
     if (stack.length() === 0) {
         return items;
@@ -66,25 +71,19 @@ function sortByRecent(items: any[], stack: Stack): any[] {
     return loadedProjects;
 }
 
-export function sortProjects(itemsToShow) {
-    let newItemsSorted = [];
+export function sortProjects<T extends SortableProject>(itemsToShow: T[]): T[] {
     const criteria = workspace.getConfiguration("projectManager").get<string>("sortList", "Name");
     switch (criteria) {
         case "Path":
-            newItemsSorted = sortByPath(itemsToShow);
-            break;
+            return sortByPath(itemsToShow);
 
         case "Saved":
-            newItemsSorted = itemsToShow;
-            break;
+            return itemsToShow;
 
         case "Recent":
-            newItemsSorted = sortByRecent(itemsToShow, Container.stack);
-            break;
+            return sortByRecent(itemsToShow, Container.stack);
 
         default:
-            newItemsSorted = sortByName(itemsToShow);
-            break;
+            return sortByName(itemsToShow);
     }
-    return newItemsSorted;
 }
