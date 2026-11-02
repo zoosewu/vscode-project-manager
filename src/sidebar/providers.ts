@@ -12,7 +12,7 @@ import { Container } from "../core/container";
 
 export class Providers {
 
-    public storageProvider: StorageProvider;
+    private storageProvider: StorageProvider;
 
     private storageTreeView: vscode.TreeView<ProjectNode | GroupNode>;
 
@@ -26,7 +26,7 @@ export class Providers {
         this.storageTreeView = vscode.window.createTreeView("projectsExplorerFavorites", {
             treeDataProvider: this.storageProvider,
             showCollapseAll: true,
-            dragAndDropController: new FavoritesDragAndDropController(this.projectStorage, () => this.refreshStorageTreeView())
+            dragAndDropController: new FavoritesDragAndDropController(this.projectStorage)
         });
 
         this.registerStorageTreeViewListeners();
@@ -47,16 +47,8 @@ export class Providers {
         // Group expansion changes are handled by VS Code natively
     }
 
-    public refreshTreeViews() {
+    public refresh() {
         this.storageProvider.refresh();
-    }
-
-    public refreshStorageTreeView() {
-        this.storageProvider.refresh();
-        this.updateTreeViewStorage();
-    }
-
-    public updateTreeViewStorage() {
         this.storageTreeView.title = `Favorites (${this.projectStorage.length()})`;
     }
 }

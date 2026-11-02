@@ -21,6 +21,7 @@
 * **Help and Feedback** links only point to this fork's repository
 * Activity Bar icon now follows the selected/unselected state
 * Fixed: **Open in New Window** from the project list keeps the project's profile, renaming a remote project updates the Status Bar, and revealing a remote project no longer tries to open the OS file manager
+* Fixed: the current project check mark in the Side Bar also works with the Status Bar disabled, and the Status Bar clears when the current project is deleted
 * Distributed via **GitHub Releases** (VSIX) instead of the VS Code Marketplace
 * Organize projects with **Group hierarchy** using slash notation (e.g., `Work/Frontend/my-app`)
 * **View as Groups** mode in the Favorites Side Bar

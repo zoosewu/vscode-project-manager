@@ -14,7 +14,7 @@ import { showStatusBar } from "./statusbar/statusBar";
 import { getProjectDetails } from "./utils/suggestion";
 import { CommandLocation } from "./core/constants";
 import { isMacOS, isRemoteUri, isWindows } from "./utils/remote";
-import { buildProjectUri } from "./utils/uri";
+import { buildProjectUri, getCurrentWorkspaceUri } from "./utils/uri";
 import { Container } from "./core/container";
 import { registerHelpAndFeedbackView } from "./sidebar/helpAndFeedbackView";
 import { registerRevealFileInOS } from "./commands/revealFileInOS";
@@ -45,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerOpenSettings();
     registerHelpAndFeedbackView(context);
     registerSortBy();
-    registerMoveProjectCommands(projectStorage, () => providerManager.refreshStorageTreeView());
+    registerMoveProjectCommands(projectStorage);
     registerSideBarDecorations();
     registerWalkthrough();
 
@@ -108,7 +108,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
         projectStorage.editGroup(project.name, newGroup);
         await projectStorage.save();
-        providerManager.refreshStorageTreeView();
         vscode.window.showInformationMessage(l10n.t("Project group updated!"));
     });
     vscode.commands.registerCommand("_projectManager.renameGroup", async (node: GroupNode) => {
@@ -126,7 +125,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
         projectStorage.renameGroup(currentGroup, newGroup);
         await projectStorage.save();
-        providerManager.refreshStorageTreeView();
         vscode.window.showInformationMessage(l10n.t("Group renamed!"));
     });
     function getViewMode(): string {
@@ -145,7 +143,7 @@ export async function activate(context: vscode.ExtensionContext) {
     async function setViewMode(mode: string) {
         await Container.context.globalState.update("favoritesViewMode", mode);
         setViewModeContext(mode);
-        providerManager.refreshTreeViews();
+        providerManager.refresh();
     }
 
     async function toggleViewAsFavoriteProjects(view: ViewFavoritesAs) {
@@ -164,29 +162,40 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("_projectManager.viewAsList#sideBarFavorites", () => toggleViewAsFavoriteProjects(ViewFavoritesAs.VIEW_AS_LIST));
     vscode.commands.registerCommand("_projectManager.viewAsGroups#sideBarFavorites", () => toggleViewAsFavoriteProjects(ViewFavoritesAs.VIEW_AS_GROUPS));
 
-    loadProjectsFile();
+    reloadProjects();
 
-    Container.currentProject = showStatusBar(projectStorage);
-    providerManager.updateTreeViewStorage();
-
+    // Every change to the saved projects, from commands or from editing settings.json,
+    // flows through here so the Side Bar and Status Bar always reflect the stored list.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async cfg => {
-        if (cfg.affectsConfiguration("workbench.iconTheme")) {
-            providerManager.refreshTreeViews();
+        if (cfg.affectsConfiguration("projectManager.projects")) {
+            reloadProjects();
+            return;
         }
 
         if (cfg.affectsConfiguration("projectManager.sortList")) {
             updateSortByContext();
-            providerManager.storageProvider.refresh();
-            providerManager.updateTreeViewStorage();
         }
-
-        if (cfg.affectsConfiguration("projectManager.projects")) {
-            loadProjectsFile();
-            providerManager.storageProvider.refresh();
-            providerManager.updateTreeViewStorage();
+        if (cfg.affectsConfiguration("projectManager.sortList") || cfg.affectsConfiguration("workbench.iconTheme")) {
+            providerManager.refresh();
         }
-
     }));
+
+    function reloadProjects() {
+        loadProjectsFile();
+        Container.currentProject = findCurrentProject();
+        showStatusBar(Container.currentProject);
+        providerManager.refresh();
+    }
+
+    function findCurrentProject(): Project | undefined {
+        const uri = getCurrentWorkspaceUri();
+        if (!uri) {
+            return undefined;
+        }
+        return isRemoteUri(uri)
+            ? projectStorage.existsRemoteWithRootPath(uri)
+            : projectStorage.existsWithRootPath(uri.fsPath, true);
+    }
 
     async function saveProject() {
         const projectDetails = await getProjectDetails();
@@ -209,10 +218,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 context.globalState.update("recent", Container.stack.toString());
                 projectStorage.push(projectName, rootPath, group);
                 await projectStorage.save();
-                providerManager.updateTreeViewStorage();
                 vscode.window.showInformationMessage(l10n.t("Project saved!"));
-                showStatusBar(projectStorage, projectName);
-                updateCurrentProject();
                 return true;
             } else {
                 const optionUpdate = <vscode.MessageItem> {
@@ -237,9 +243,7 @@ export async function activate(context: vscode.ExtensionContext) {
                         projectStorage.editGroup(projectName, group);
                     }
                     await projectStorage.save();
-                    providerManager.updateTreeViewStorage();
                     vscode.window.showInformationMessage(l10n.t("Project saved!"));
-                    showStatusBar(projectStorage, projectName);
                     return true;
                 }
 
@@ -266,21 +270,6 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
         input.show();
-    }
-
-    function updateCurrentProject() {
-        const workspace0 = vscode.workspace.workspaceFile ? vscode.workspace.workspaceFile :
-            vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[ 0 ].uri :
-                undefined;
-        const currentProjectPath = workspace0 ? workspace0.fsPath : undefined;
-
-        let foundProject: Project;
-        if (workspace0 && isRemoteUri(workspace0)) {
-            foundProject = projectStorage.existsRemoteWithRootPath(workspace0);
-        } else {
-            foundProject = projectStorage.existsWithRootPath(currentProjectPath, true);
-        }
-        Container.currentProject = foundProject;
     }
 
     async function listProjects(forceNewWindow: boolean) {
@@ -327,7 +316,6 @@ export async function activate(context: vscode.ExtensionContext) {
         Container.stack.pop(node.command.arguments[1]);
         projectStorage.pop(node.command.arguments[1]);
         await projectStorage.save();
-        providerManager.updateTreeViewStorage();
         vscode.window.showInformationMessage(l10n.t("Project successfully deleted!"));
     }
 
@@ -354,7 +342,6 @@ export async function activate(context: vscode.ExtensionContext) {
             projectStorage.rename(oldName, newName);
             await projectStorage.save();
             vscode.window.showInformationMessage(l10n.t("Project renamed!"));
-            Container.currentProject = showStatusBar(projectStorage);
         } else {
             vscode.window.showErrorMessage(l10n.t("Project already exists!"));
         }

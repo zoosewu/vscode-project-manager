@@ -4,58 +4,29 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { StatusBarAlignment, StatusBarItem, window, workspace } from "vscode";
-import { ProjectStorage } from "../storage/storage";
-import { isRemoteUri } from "../utils/remote";
 import { getCodiconFromUri } from "../utils/icons";
+import { getCurrentWorkspaceUri } from "../utils/uri";
 import { Project } from "../core/project";
 
 let statusItem: StatusBarItem;
 
-export function showStatusBar(projectStorage: ProjectStorage, projectName?: string): Project {
-
+export function showStatusBar(currentProject: Project | undefined): void {
     const showStatusConfig = workspace.getConfiguration("projectManager").get("showProjectNameInStatusBar");
+    const workspace0 = getCurrentWorkspaceUri();
 
-    // multi-root - decide do use the "first folder" as the original "rootPath"
-    // let currentProjectPath = vscode.workspace.rootPath;
-    //   const workspace0 = workspace.workspaceFolders ? workspace.workspaceFolders[0] : undefined;
-    //   const currentProjectPath = workspace0 ? workspace0.uri.fsPath : undefined;
-    const workspace0 = workspace.workspaceFile ? workspace.workspaceFile :
-        workspace.workspaceFolders ? workspace.workspaceFolders[ 0 ].uri :
-            undefined;
-    const currentProjectPath = workspace0 ? workspace0.fsPath : undefined;
-
-    if (!showStatusConfig || !currentProjectPath) { return; }
+    if (!showStatusConfig || !workspace0 || !currentProject) {
+        statusItem?.hide();
+        return;
+    }
 
     if (!statusItem) {
         statusItem = window.createStatusBarItem("projectManager.statusBar", StatusBarAlignment.Left);
         statusItem.name = "Project Manager";
     }
-    statusItem.text = getCodiconFromUri(workspace0) + " ";
-    statusItem.tooltip = currentProjectPath;
+    statusItem.text = getCodiconFromUri(workspace0) + " " + currentProject.name;
+    statusItem.tooltip = workspace0.fsPath;
 
     const openInNewWindow: boolean = workspace.getConfiguration("projectManager").get("openInNewWindowWhenClickingInStatusBar", false);
-    if (openInNewWindow) {
-        statusItem.command = "projectManager.listProjectsNewWindow";
-    } else {
-        statusItem.command = "projectManager.listProjects";
-    }
-
-    // if we have a projectName, we don't need to search.
-    if (projectName) {
-        statusItem.text += projectName;
-        statusItem.show();
-        return undefined;
-    }
-
-    let foundProject: Project;
-    if (isRemoteUri(workspace0)) {
-        foundProject = projectStorage.existsRemoteWithRootPath(workspace0);
-    } else {
-        foundProject = projectStorage.existsWithRootPath(currentProjectPath, true);
-    }
-    if (foundProject) {
-        statusItem.text += foundProject.name;
-        statusItem.show();
-        return foundProject;
-    }
+    statusItem.command = openInNewWindow ? "projectManager.listProjectsNewWindow" : "projectManager.listProjects";
+    statusItem.show();
 }

@@ -45,7 +45,7 @@ export class FavoritesDragAndDropController implements vscode.TreeDragAndDropCon
     readonly dragMimeTypes = [ FAVORITE_MIME_TYPE ];
     readonly dropMimeTypes = [ FAVORITE_MIME_TYPE ];
 
-    constructor(private readonly storage: ProjectStorage, private readonly onDidReorder: () => void) { }
+    constructor(private readonly storage: ProjectStorage) { }
 
     public handleDrag(source: readonly FavoritesNode[], dataTransfer: vscode.DataTransfer): void {
         const project = source.find(node => node instanceof ProjectNode) as ProjectNode | undefined;
@@ -66,11 +66,9 @@ export class FavoritesDragAndDropController implements vscode.TreeDragAndDropCon
             return;
         }
 
-        if (!this.applyDrop(name, target, mode)) {
-            return;
+        if (this.applyDrop(name, target, mode)) {
+            await this.storage.save();
         }
-        await this.storage.save();
-        this.onDidReorder();
     }
 
     private applyDrop(name: string, target: FavoritesNode | undefined, mode: ReorderMode): boolean {
@@ -96,18 +94,16 @@ export class FavoritesDragAndDropController implements vscode.TreeDragAndDropCon
     }
 }
 
-export function registerMoveProjectCommands(storage: ProjectStorage, onDidReorder: () => void) {
+export function registerMoveProjectCommands(storage: ProjectStorage) {
     const move = async (node: ProjectNode, offset: -1 | 1) => {
         const mode = getReorderMode();
         if (!mode) {
             await explainSortBySavedRequired();
             return;
         }
-        if (!storage.moveProjectBy(projectName(node), offset, mode === "groups")) {
-            return;
+        if (storage.moveProjectBy(projectName(node), offset, mode === "groups")) {
+            await storage.save();
         }
-        await storage.save();
-        onDidReorder();
     };
 
     Container.context.subscriptions.push(

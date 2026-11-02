@@ -60,7 +60,6 @@ const names = (storage: ProjectStorage) => storage.getProjects().map(p => `${p.g
 // "Sort by Saved" shows the stored order, so other sort modes are rejected with a hint.
 suite("Favorites drag and drop", () => {
     let storage: ProjectStorage;
-    let reorderCount: number;
     let controller: FavoritesDragAndDropController;
 
     suiteSetup(() => {
@@ -77,9 +76,8 @@ suite("Favorites drag and drop", () => {
         sortList = "Saved";
         savedProjects = undefined;
         shownMessages = [];
-        reorderCount = 0;
         storage = new ProjectStorage();
-        controller = new FavoritesDragAndDropController(storage, () => reorderCount++);
+        controller = new FavoritesDragAndDropController(storage);
     });
 
     test("List view sorted by Saved reorders and saves the projects", async () => {
@@ -90,7 +88,6 @@ suite("Favorites drag and drop", () => {
 
         assert.deepStrictEqual(names(storage), [ ":B", ":A" ]);
         assert.ok(savedProjects, "new order must be persisted");
-        assert.strictEqual(reorderCount, 1);
     });
 
     test("List view sorted by Name rejects the drop and explains why", async () => {
@@ -102,7 +99,6 @@ suite("Favorites drag and drop", () => {
 
         assert.deepStrictEqual(names(storage), [ ":A", ":B" ]);
         assert.strictEqual(savedProjects, undefined);
-        assert.strictEqual(reorderCount, 0);
         assert.strictEqual(shownMessages.length, 1);
         assert.ok(shownMessages[ 0 ].includes("Saved"));
     });
@@ -147,6 +143,6 @@ suite("Favorites drag and drop", () => {
         await drag(controller, new GroupNode("Work", "Work", vscode.TreeItemCollapsibleState.Expanded), projectNode("Root"));
 
         assert.deepStrictEqual(names(storage), [ "Work:W1", ":Root" ]);
-        assert.strictEqual(reorderCount, 0);
+        assert.strictEqual(savedProjects, undefined);
     });
 });

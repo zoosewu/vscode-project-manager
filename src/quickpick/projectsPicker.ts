@@ -12,13 +12,11 @@ import { ProjectStorage } from "../storage/storage";
 import { PathUtils } from "../utils/path";
 import { isRemotePath, isRemoteUri } from "../utils/remote";
 import { sortProjects } from "../utils/sorter";
-import { buildProjectUri } from "../utils/uri";
+import { buildProjectUri, getCurrentWorkspaceUri } from "../utils/uri";
 import { CommandLocation, ConfirmSwitchOnActiveWindowMode, OpenInCurrentWindowIfEmptyMode } from "../core/constants";
 
 function removeCurrentProject(items: any[]): any[] {
-    const workspace0 = workspace.workspaceFile ? workspace.workspaceFile :
-        workspace.workspaceFolders ? workspace.workspaceFolders[ 0 ].uri :
-            undefined;
+    const workspace0 = getCurrentWorkspaceUri();
 
     if (!workspace0 || !workspace.getConfiguration("projectManager").get("removeCurrentProjectFromList")) {
         return items;
