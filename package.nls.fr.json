@@ -28,8 +28,6 @@
     "projectManager.commands.toggleProjectEnabled.title": "Désactiver le projet",
     "projectManager.commands.openFolderWelcome.title": "Ouvrir le dossier",
     "projectManager.commands.openSideBar.title": "Ouvrir la barre latérale",
-    "projectManager.commands.whatsNew.title": "Project Manager: Nouveauté",
-    "projectManager.commands.whatsNewContextMenu.title": "Nouveauté",
     "projectManager.configuration.title": "Project Manager (Zoo)",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Le nom du projet doit-il être affiché dans la barre d'état ?",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Le projet doit-il être ouvert dans une nouvelle fenêtre lorsque vous cliquez sur la barre d'état ?",

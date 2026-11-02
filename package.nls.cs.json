@@ -27,8 +27,6 @@
     "projectManager.commands.sortByRecent#sideBarFavorites.title": "Seřadit podle Nedávné",
     "projectManager.commands.toggleProjectEnabled.title": "Zakázat projekt",
     "projectManager.commands.openFolderWelcome.title": "Otevřít složku",
-    "projectManager.commands.whatsNew.title": "Projektový manažer: Co je nového",
-    "projectManager.commands.whatsNewContextMenu.title": "Co je nového",
     "projectManager.configuration.title": "Projektový manažer",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Měl by se ve stavovém řádku zobrazit název projektu?",
     "projectManager.configuration.openInNewWindowWhenClickingInStatusBar.description": "Měl by být projekt otevřen pomocí nového okna, když kliknete na stavový řádek?",

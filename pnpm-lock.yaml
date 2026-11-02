@@ -11,9 +11,6 @@ importers:
       glob:
         specifier: ^10.5.0
         version: 10.5.0
-      semver:
-        specifier: ^7.8.1
-        version: 7.8.1
       vscode-ext-codicons:
         specifier: ^1.4.0
         version: 1.6.0
@@ -27,9 +24,6 @@ importers:
       '@types/node':
         specifier: ^22.18.10
         version: 22.19.19
-      '@types/semver':
-        specifier: ^7.7.1
-        version: 7.7.1
       '@types/vscode':
         specifier: ^1.78.0
         version: 1.120.0

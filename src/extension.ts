@@ -16,7 +16,6 @@ import { CommandLocation } from "./core/constants";
 import { isMacOS, isRemoteUri, isWindows } from "./utils/remote";
 import { buildProjectUri } from "./utils/uri";
 import { Container } from "./core/container";
-import { registerWhatsNew } from "./whats-new/commands";
 import { registerHelpAndFeedbackView } from "./sidebar/helpAndFeedbackView";
 import { registerRevealFileInOS } from "./commands/revealFileInOS";
 import { registerOpenSettings } from "./commands/openSettings";
@@ -50,11 +49,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerSideBarDecorations();
     registerWalkthrough();
 
-    // Defer non-critical initialization — both may trigger UI or network on activation.
-    setImmediate(() => {
-        registerWhatsNew();
-        registerAutoUpdate(context);
-    });
+    // Defer the update check — it hits the network on activation.
+    setImmediate(() => registerAutoUpdate(context));
 
     context.subscriptions.push(vscode.commands.registerCommand("_projectManager.openFolderWelcome", () => {
         const openFolderCommand = isWindows || isMacOS ? "workbench.action.files.openFolder" : "workbench.action.files.openFileFolder";

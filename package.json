@@ -186,14 +186,6 @@
 				"icon": "$(list-tree)"
 			},
 			{
-				"command": "projectManager.whatsNew",
-				"title": "%projectManager.commands.whatsNew.title%"
-			},
-			{
-				"command": "_projectManager.whatsNewContextMenu",
-				"title": "%projectManager.commands.whatsNewContextMenu.title%"
-			},
-			{
 				"command": "_projectManager.toggleProjectEnabled",
 				"title": "%projectManager.commands.toggleProjectEnabled.title%"
 			},
@@ -266,10 +258,6 @@
 				},
 				{
 					"command": "projectManager.openSettings#sideBarFavorites",
-					"when": "false"
-				},
-				{
-					"command": "_projectManager.whatsNewContextMenu",
 					"when": "false"
 				},
 				{
@@ -403,13 +391,6 @@
 					"command": "projectManager.addToWorkspace#sideBar",
 					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
 					"group": "workspace"
-				}
-			],
-			"extension/context": [
-				{
-					"command": "_projectManager.whatsNewContextMenu",
-					"group": "projectManager",
-					"when": "extension == zoosewu.project-manager-zoo && extensionStatus == installed"
 				}
 			],
 			"projectManager.sideBar.favorites.title": [
@@ -672,7 +653,7 @@
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
 		"compile": "tsc -p ./",
-		"lint": "eslint -c package.json --ext .ts src vscode-whats-new",
+		"lint": "eslint -c package.json --ext .ts src",
 		"test-compile": "tsc -p ./ && pnpm run webpack",
 		"just-test": "node ./out/src/test/runTest.js",
 		"test": "pnpm run lint && pnpm run test-compile && pnpm run just-test",
@@ -681,7 +662,6 @@
 	"devDependencies": {
 		"@types/mocha": "^10.0.0",
 		"@types/node": "^22.18.10",
-		"@types/semver": "^7.7.1",
 		"@types/vscode": "^1.78.0",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
@@ -697,7 +677,6 @@
 	},
 	"dependencies": {
 		"glob": "^10.5.0",
-		"semver": "^7.8.1",
 		"vscode-ext-codicons": "^1.4.0",
 		"vscode-ext-help-and-feedback-view": "^1.0.1"
 	}

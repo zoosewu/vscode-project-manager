@@ -70,7 +70,6 @@ src/
 ├── storage/              # Project storage management (settings.json)
 ├── updater/              # Weekly silent auto-update from GitHub Releases
 ├── utils/                # Utility functions (path, remote detection, URI building)
-├── whats-new/            # What's New notifications
 ├── test/                 # Test suites
 │   ├── suite/            # Test cases
 │   └── runTest.ts        # Test runner
@@ -79,7 +78,6 @@ src/
 dist/                     # Webpack bundles (extension.js)
 l10n/                     # Localization files
 out/                      # Compiled TypeScript files
-vscode-whats-new/         # Git submodule for What's New
 walkthrough/              # Getting Started walkthrough content
 ```
 
@@ -152,7 +150,6 @@ walkthrough/              # Getting Started walkthrough content
 
 ## Dependencies and External Tools
 
-- Requires `vscode-whats-new` submodule initialization.
 - No external runtime tools are required beyond standard extension toolchain.
 
 ## Troubleshooting and Known Limitations
@@ -173,16 +170,12 @@ Before committing:
 
 ## Documentation Sync on Every Feature Commit
 
-Any commit that adds or changes a user-facing feature **must** also update:
+Any commit that adds or changes a user-facing feature **must** also update **`README.md`** —
+reflect the change in the "What's new" list and in the relevant section (features list,
+commands, settings, or side bar documentation).
 
-1. **`src/whats-new/contentProvider.ts`** — add an entry under the upcoming version block
-   (`ChangeLogKind.NEW`, `CHANGED`, or `FIXED` as appropriate).
-2. **`README.md`** — reflect the new capability in the relevant section (features list,
-   commands, settings, or side bar documentation).
-
-These updates should be included in the same commit as the feature change, not as a separate
-follow-up. If the upcoming version block does not yet exist in `contentProvider.ts`, create it
-before the previous version's block.
+This update should be included in the same commit as the feature change, not as a separate
+follow-up. Release notes are generated into `CHANGELOG.md` by release-please from commit messages.
 
 ## Common Tasks
 
