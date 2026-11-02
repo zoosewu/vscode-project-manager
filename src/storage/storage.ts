@@ -102,9 +102,8 @@ export class ProjectStorage {
     }
 
     /**
-     * Swaps a project with its nearest visible neighbor in the given direction. Disabled
-     * projects are skipped because they are hidden in the Side Bar; with sameGroupOnly,
-     * projects of other groups are skipped too.
+     * Swaps a project with its nearest neighbor in the given direction; with sameGroupOnly,
+     * projects of other groups are skipped.
      */
     public moveProjectBy(name: string, offset: -1 | 1, sameGroupOnly: boolean): boolean {
         const from = this.indexOf(name);
@@ -115,7 +114,7 @@ export class ProjectStorage {
         const group = this.projects[ from ].group;
         for (let index = from + offset; index >= 0 && index < this.projects.length; index += offset) {
             const neighbor = this.projects[ index ];
-            if (!neighbor.enabled || (sameGroupOnly && neighbor.group !== group)) {
+            if (sameGroupOnly && neighbor.group !== group) {
                 continue;
             }
             this.projects[ index ] = this.projects[ from ];
@@ -127,19 +126,6 @@ export class ProjectStorage {
 
     private indexOf(name: string): number {
         return this.projects.findIndex(element => element.name.toLowerCase() === name.toLowerCase());
-    }
-
-    public toggleEnabled(name: string): boolean | undefined {
-        for (const element of this.projects) {
-            if (element.name.toLowerCase() === name.toLowerCase()) {
-                element.enabled = !element.enabled;
-                return element.enabled;
-            }
-        }
-    }
-
-    public disabled(): Array<Project> | undefined {
-        return this.projects.filter(project => !project.enabled);
     }
 
     public updateRootPath(name: string, path: string): void {
@@ -200,7 +186,6 @@ export class ProjectStorage {
                 name: "",
                 rootPath: "",
                 paths: [],
-                enabled: true,
                 profile: "",
                 group: "",
                 ...item
@@ -210,7 +195,6 @@ export class ProjectStorage {
                 name: project.name,
                 rootPath: project.rootPath,
                 paths: project.paths,
-                enabled: project.enabled,
                 profile: project.profile,
                 group: project.group
             }));
@@ -246,7 +230,7 @@ export class ProjectStorage {
     }
 
     public map(): any {
-        const newItems = this.projects.filter(item => item.enabled).map(item => {
+        const newItems = this.projects.map(item => {
             return {
                 label: item.name,
                 description: item.rootPath,

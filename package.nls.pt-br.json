@@ -29,7 +29,6 @@
     "projectManager.commands.sortByName#sideBarFavorites.title": "Ordenado por Nome",
     "projectManager.commands.sortByPath#sideBarFavorites.title": "Ordenado por Caminho",
     "projectManager.commands.sortByRecent#sideBarFavorites.title": "Ordenado por Recente",
-    "projectManager.commands.toggleProjectEnabled.title": "Desabilitar Projeto",
     "projectManager.commands.openFolderWelcome.title": "Abrir Pasta",
     "projectManager.commands.openSideBar.title": "Abrir Barra Lateral",
     "projectManager.configuration.title": "Project Manager (Zoo)",

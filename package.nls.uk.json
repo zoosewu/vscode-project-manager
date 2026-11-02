@@ -29,7 +29,6 @@
     "projectManager.commands.sortByName#sideBarFavorites.title": "Сортувати за назвою",
     "projectManager.commands.sortByPath#sideBarFavorites.title": "Сортувати за шляхом",
     "projectManager.commands.sortByRecent#sideBarFavorites.title": "Сортувати за недавніми",
-    "projectManager.commands.toggleProjectEnabled.title": "Вимкнути проєкт",
     "projectManager.commands.openFolderWelcome.title": "Відкрити папку",
     "projectManager.commands.openSideBar.title": "Відкрити бічну панель",
     "projectManager.configuration.title": "Project Manager (Zoo)",

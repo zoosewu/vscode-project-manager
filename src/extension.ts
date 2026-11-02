@@ -129,8 +129,6 @@ export async function activate(context: vscode.ExtensionContext) {
         providerManager.refreshStorageTreeView();
         vscode.window.showInformationMessage(l10n.t("Group renamed!"));
     });
-    vscode.commands.registerCommand("_projectManager.toggleProjectEnabled", (node) => toggleProjectEnabled(node));
-
     function getViewMode(): string {
         const stored = Container.context.globalState.get<string>("favoritesViewMode", undefined);
         if (stored !== undefined && stored !== "tags") {
@@ -360,36 +358,5 @@ export async function activate(context: vscode.ExtensionContext) {
         } else {
             vscode.window.showErrorMessage(l10n.t("Project already exists!"));
         }
-    }
-
-    async function toggleProjectEnabled(node: ProjectNode, askForUndo = true) {
-        const projectName: string = node.command.arguments[1];
-        const enabled: boolean = projectStorage.toggleEnabled(projectName);
-        
-        if (enabled === undefined) {
-            return;
-        }
-
-        await projectStorage.save();
-        providerManager.updateTreeViewStorage();
-
-        if (!askForUndo) {
-            return;
-        }
-
-        if (enabled) {
-            vscode.window.showInformationMessage(l10n.t("Project \"{0}\" enabled.", projectName), "Undo").then(undo => {
-                if (undo) {
-                    toggleProjectEnabled(node, false);
-                }
-            });
-        } else {
-            vscode.window.showInformationMessage(l10n.t("Project \"{0}\" disabled.", projectName), "Undo").then(undo => {
-                if (undo) {
-                    toggleProjectEnabled(node, false);
-                }
-            });
-        }
-            
     }
 }

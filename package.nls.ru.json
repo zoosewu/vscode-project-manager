@@ -25,7 +25,6 @@
     "projectManager.commands.sortByName#sideBarFavorites.title": "Сортировать по имени",
     "projectManager.commands.sortByPath#sideBarFavorites.title": "Сортировать по пути",
     "projectManager.commands.sortByRecent#sideBarFavorites.title": "Сортировать по недавнему",
-    "projectManager.commands.toggleProjectEnabled.title": "Отключить проект",
     "projectManager.commands.openFolderWelcome.title": "Открыть папку",
     "projectManager.configuration.title": "Менеджер проектов",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Должно ли отображаться название проекта в строке состояния?",

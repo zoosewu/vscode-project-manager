@@ -25,7 +25,6 @@
     "projectManager.commands.sortByName#sideBarFavorites.title": "按名稱分類",
     "projectManager.commands.sortByPath#sideBarFavorites.title": "按路徑排序",
     "projectManager.commands.sortByRecent#sideBarFavorites.title": "按最近排序",
-    "projectManager.commands.toggleProjectEnabled.title": "禁用項目",
     "projectManager.commands.openFolderWelcome.title": "打開文件夾",
     "projectManager.commands.openSideBar.title": "打開側邊欄",
     "projectManager.configuration.title": "項目管理器",

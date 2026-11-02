@@ -103,17 +103,11 @@ export class StorageProvider implements vscode.TreeDataProvider<ProjectNode | Gr
     }
 
     private getGroupRootChildren(): (ProjectNode | GroupNode)[] {
-        const projects = this.getFilteredEnabledProjects();
-        return this.buildGroupLevel(projects, "");
+        return this.buildGroupLevel(this.projectSource.getProjects(), "");
     }
 
     private getGroupChildren(groupNode: GroupNode): (ProjectNode | GroupNode)[] {
-        const projects = this.getFilteredEnabledProjects();
-        return this.buildGroupLevel(projects, groupNode.groupPath);
-    }
-
-    private getFilteredEnabledProjects(): Array<{ name: string; rootPath: string; profile: string; group: string }> {
-        return this.projectSource.getProjects().filter(p => p.enabled);
+        return this.buildGroupLevel(this.projectSource.getProjects(), groupNode.groupPath);
     }
 
     private buildGroupLevel(

@@ -9,7 +9,6 @@ import { GroupNode, ProjectNode } from "./nodes";
 import { StorageProvider } from "./storageProvider";
 import { FavoritesDragAndDropController } from "./favoritesReorder";
 import { Container } from "../core/container";
-import { l10n } from "vscode";
 
 export class Providers {
 
@@ -58,10 +57,6 @@ export class Providers {
     }
 
     public updateTreeViewStorage() {
-        const disabledProjects = this.projectStorage.disabled()?.length;
-        const disabledProjectsTitle = disabledProjects ? l10n.t("{0} disabled", disabledProjects) : "";
-
-        this.storageTreeView.title = `Favorites (${this.projectStorage.length() - disabledProjects})`;
-        this.storageTreeView.description = disabledProjectsTitle;
+        this.storageTreeView.title = `Favorites (${this.projectStorage.length()})`;
     }
 }

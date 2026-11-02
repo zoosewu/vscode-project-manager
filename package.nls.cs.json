@@ -25,7 +25,6 @@
     "projectManager.commands.sortByName#sideBarFavorites.title": "Seřaď dle jména",
     "projectManager.commands.sortByPath#sideBarFavorites.title": "Seřadit podle cesty",
     "projectManager.commands.sortByRecent#sideBarFavorites.title": "Seřadit podle Nedávné",
-    "projectManager.commands.toggleProjectEnabled.title": "Zakázat projekt",
     "projectManager.commands.openFolderWelcome.title": "Otevřít složku",
     "projectManager.configuration.title": "Projektový manažer",
     "projectManager.configuration.showProjectNameInStatusBar.description": "Měl by se ve stavovém řádku zobrazit název projektu?",

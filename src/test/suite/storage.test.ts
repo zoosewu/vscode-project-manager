@@ -104,38 +104,17 @@ suite("ProjectStorage", () => {
         assert.strictEqual(found!.name, "Sample");
     });
 
-    test("toggleEnabled toggles enabled flag and disabled returns list", () => {
+    test("map returns every project with the quick pick shape", () => {
         const storage = new ProjectStorage();
 
-        storage.push("One", "/path/one");
-        storage.push("Two", "/path/two");
-
-        const toggled = storage.toggleEnabled("one");
-        assert.strictEqual(toggled, false);
-
-        const disabled = storage.disabled();
-        assert.ok(disabled);
-        assert.strictEqual(disabled!.length, 1);
-        assert.strictEqual(disabled![0].name, "One");
-
-        const toggledBack = storage.toggleEnabled("One");
-        assert.strictEqual(toggledBack, true);
-        assert.strictEqual(storage.disabled()!.length, 0);
-    });
-
-    test("map returns only enabled projects with expected shape", () => {
-        const storage = new ProjectStorage();
-
-        storage.push("EnabledProject", "/enabled");
-        storage.push("DisabledProject", "/disabled");
-
-        storage.toggleEnabled("DisabledProject");
+        storage.push("First", "/first");
+        storage.push("Second", "/second");
 
         const mapped = storage.map();
-        assert.strictEqual(mapped.length, 1);
+        assert.strictEqual(mapped.length, 2);
         assert.deepStrictEqual(mapped[0], {
-            label: "EnabledProject",
-            description: "/enabled",
+            label: "First",
+            description: "/first",
             profile: "",
             group: ""
         });
@@ -217,7 +196,18 @@ suite("ProjectStorage", () => {
         assert.ok(storage.exists("Legacy"));
         const project = storage.getProjects()[0];
         assert.strictEqual(project.group, "");
-        assert.strictEqual(project.enabled, true);
+        assert.strictEqual(project.profile, "");
+    });
+
+    test("load keeps projects saved as disabled by older versions visible", () => {
+        stubProjects = [
+            { name: "OldDisabled", rootPath: "/old", enabled: false }
+        ];
+        const storage = new ProjectStorage();
+        storage.load();
+
+        assert.strictEqual(storage.map().length, 1);
+        assert.strictEqual("enabled" in storage.getProjects()[0], false);
     });
 
     test("save and load round-trip with group", async () => {
@@ -247,7 +237,7 @@ suite("ProjectStorage", () => {
         const storage = new ProjectStorage();
         storage.push("A", "/a");
         storage.setProjects([
-            { name: "B", rootPath: "/b", paths: [], enabled: true, profile: "", group: "" }
+            { name: "B", rootPath: "/b", paths: [], profile: "", group: "" }
         ]);
         assert.strictEqual(storage.length(), 1);
         assert.ok(storage.exists("B"));
@@ -314,7 +304,7 @@ suite("ProjectStorage", () => {
         assert.strictEqual(storage.length(), 1);
         const projects = storage.getProjects();
         const keys = Object.keys(projects[0]).sort();
-        assert.deepStrictEqual(keys, ["enabled", "group", "name", "paths", "profile", "rootPath"]);
+        assert.deepStrictEqual(keys, ["group", "name", "paths", "profile", "rootPath"]);
     });
 
     test("map includes group for projects with groups", () => {
@@ -398,18 +388,6 @@ suite("ProjectStorage", () => {
 
         assert.deepStrictEqual(names(storage), ["B", "A"]);
         assert.strictEqual(storage.getProjects()[1].group, "New/Group");
-    });
-
-    test("moveProjectBy skips disabled projects because they are hidden in the Side Bar", () => {
-        const storage = new ProjectStorage();
-        storage.push("A", "/a");
-        storage.push("Hidden", "/hidden");
-        storage.push("B", "/b");
-        storage.toggleEnabled("Hidden");
-
-        assert.strictEqual(storage.moveProjectBy("B", -1, false), true);
-
-        assert.deepStrictEqual(names(storage), ["B", "Hidden", "A"]);
     });
 
     test("moveProjectBy within groups only swaps with projects of the same group", () => {

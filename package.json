@@ -186,10 +186,6 @@
 				"icon": "$(list-tree)"
 			},
 			{
-				"command": "_projectManager.toggleProjectEnabled",
-				"title": "%projectManager.commands.toggleProjectEnabled.title%"
-			},
-			{
 				"command": "_projectManager.openFolderWelcome",
 				"title": "%projectManager.commands.openFolderWelcome.title%"
 			},
@@ -368,11 +364,6 @@
 					"group": "favorites"
 				},
 				{
-					"command": "_projectManager.toggleProjectEnabled",
-					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind",
-					"group": "favorites"
-				},
-				{
 					"command": "_projectManager.renameGroup",
 					"when": "view == projectsExplorerFavorites && viewItem == GroupNodeKind",
 					"group": "favorites"
@@ -484,10 +475,6 @@
 										"type": "string"
 									},
 									"default": []
-								},
-								"enabled": {
-									"type": "boolean",
-									"default": true
 								},
 								"profile": {
 									"type": "string",
