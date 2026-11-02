@@ -62,6 +62,73 @@ export class ProjectStorage {
         }
     }
 
+    /**
+     * Moves a project into the position currently held by the target project, so dragging
+     * down lands after the target and dragging up lands before it.
+     */
+    public moveProject(name: string, targetName: string): boolean {
+        const from = this.indexOf(name);
+        const to = this.indexOf(targetName);
+        if (from < 0 || to < 0 || from === to) {
+            return false;
+        }
+
+        const [ project ] = this.projects.splice(from, 1);
+        this.projects.splice(to, 0, project);
+        return true;
+    }
+
+    /**
+     * Assigns a project to a group and places it after the last project of that group,
+     * or at the end of the list when the group has no other projects.
+     */
+    public moveProjectToGroup(name: string, group: string): boolean {
+        const from = this.indexOf(name);
+        if (from < 0) {
+            return false;
+        }
+
+        const [ project ] = this.projects.splice(from, 1);
+        project.group = normalizeGroupPath(group);
+
+        let lastInGroup = -1;
+        this.projects.forEach((element, index) => {
+            if (element.group === project.group) {
+                lastInGroup = index;
+            }
+        });
+        this.projects.splice(lastInGroup < 0 ? this.projects.length : lastInGroup + 1, 0, project);
+        return true;
+    }
+
+    /**
+     * Swaps a project with its nearest visible neighbor in the given direction. Disabled
+     * projects are skipped because they are hidden in the Side Bar; with sameGroupOnly,
+     * projects of other groups are skipped too.
+     */
+    public moveProjectBy(name: string, offset: -1 | 1, sameGroupOnly: boolean): boolean {
+        const from = this.indexOf(name);
+        if (from < 0) {
+            return false;
+        }
+
+        const group = this.projects[ from ].group;
+        for (let index = from + offset; index >= 0 && index < this.projects.length; index += offset) {
+            const neighbor = this.projects[ index ];
+            if (!neighbor.enabled || (sameGroupOnly && neighbor.group !== group)) {
+                continue;
+            }
+            this.projects[ index ] = this.projects[ from ];
+            this.projects[ from ] = neighbor;
+            return true;
+        }
+        return false;
+    }
+
+    private indexOf(name: string): number {
+        return this.projects.findIndex(element => element.name.toLowerCase() === name.toLowerCase());
+    }
+
     public toggleEnabled(name: string): boolean | undefined {
         for (const element of this.projects) {
             if (element.name.toLowerCase() === name.toLowerCase()) {

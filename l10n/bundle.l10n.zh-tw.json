@@ -49,5 +49,7 @@
     "Replace": "取代",
     "Merge": "合併",
     "Found {0} projects. How would you like to import?": "找到 {0} 個專案。要如何匯入？",
-    "Imported {0} projects.": "已匯入 {0} 個專案。"
+    "Imported {0} projects.": "已匯入 {0} 個專案。",
+    "Projects can only be reordered when the list is sorted by Saved.": "只有在清單按已保存排序時才能調整專案順序。",
+    "Sort by Saved": "按已保存排序"
 }

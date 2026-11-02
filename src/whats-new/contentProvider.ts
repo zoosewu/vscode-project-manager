@@ -20,6 +20,14 @@ export class ProjectManagerContentProvider implements ContentProvider {
 
         changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.4.0", releaseDate: "November 2026" } });
         changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "<b>Reorder Favorites</b> by drag and drop in the Side Bar, and move projects between <b>Groups</b> in the Groups view"
+        });
+        changeLog.push({
+            kind: ChangeLogKind.NEW,
+            detail: "<b>Move Up</b> / <b>Move Down</b> commands in the Side Bar context menu"
+        });
+        changeLog.push({
             kind: ChangeLogKind.CHANGED,
             detail: "<b>Auto-update</b> now checks GitHub Releases once a week and installs new versions silently"
         });

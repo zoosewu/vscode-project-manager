@@ -20,6 +20,8 @@
     "projectManager.commands.renameProject.title": "Renomear Projeto",
     "projectManager.commands.editGroup.title": "Editar Grupo",
     "projectManager.commands.renameGroup.title": "Renomear Grupo",
+    "projectManager.commands.moveProjectUp.title": "Mover para cima",
+    "projectManager.commands.moveProjectDown.title": "Mover para baixo",
     "projectManager.commands.viewAsGroups#sideBarFavorites.title": "Exibir como Grupos",
     "projectManager.commands.viewAsList#sideBarFavorites.title": "Exibir como Lista",
     "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Exibir & Ordenação",

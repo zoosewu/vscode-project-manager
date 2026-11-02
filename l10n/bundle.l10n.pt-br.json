@@ -49,5 +49,7 @@
     "Replace": "Substituir",
     "Merge": "Mesclar",
     "Found {0} projects. How would you like to import?": "Encontrados {0} projetos. Como deseja importar?",
-    "Imported {0} projects.": "{0} projetos importados."
+    "Imported {0} projects.": "{0} projetos importados.",
+    "Projects can only be reordered when the list is sorted by Saved.": "Os projetos só podem ser reordenados quando a lista está ordenada por Salvo.",
+    "Sort by Saved": "Ordenado por Salvo"
 }

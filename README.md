@@ -12,6 +12,7 @@
 
 # What's new in Project Manager 13.4
 
+* **Reorder Favorites** by drag and drop (or **Move Up** / **Move Down**), including moving projects between groups
 * **Auto-update** — checks the latest GitHub release once a week and installs it silently (takes effect after the next window reload)
 * **Favorites only** — auto-detection of Git, Mercurial, SVN, VSCode and Any projects has been removed
 * **Help and Feedback** links only point to this fork's repository
@@ -126,6 +127,15 @@ The Favorites view supports two display modes, cycling with the toolbar button:
 Assign a group path to any project (via the context menu **Edit Group** or the slash notation when saving). Groups nest arbitrarily deep and are rendered as a tree in the **Groups** view mode.
 
 Right-click any group node in the **Groups** view and choose **Rename Group** to rename it (and all sub-groups) in one step.
+
+### Reorder Projects
+
+Drag a project and drop it on another project to take its place. You can also right-click a project and choose **Move Up** / **Move Down**.
+
+* **List** view — reordering requires `Sort by Saved` (`"projectManager.sortList": "Saved"`), because other sort modes would immediately reorder the list again
+* **Groups** view — drop a project on another project to move it into that project's group at that position, on a group node to move it to the end of that group, or on empty space to move it to the root level. **Move Up** / **Move Down** only move within the same group
+
+The new order is saved in the `projectManager.projects` setting, so it is shared via Settings Sync.
 
 ## Keyboard Focused Users
 

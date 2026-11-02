@@ -28,6 +28,7 @@ import { registerWalkthrough } from "./commands/walkthrough";
 import { registerAutoUpdate } from "./updater/githubUpdater";
 import { registerSideBarDecorations } from "./sidebar/decoration";
 import { GroupNode, ProjectNode } from "./sidebar/nodes";
+import { registerMoveProjectCommands } from "./sidebar/favoritesReorder";
 import { parseProjectInput, Project } from "./core/project";
 
 // this method is called when your extension is activated
@@ -45,6 +46,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerOpenSettings();
     registerHelpAndFeedbackView(context);
     registerSortBy();
+    registerMoveProjectCommands(projectStorage, () => providerManager.refreshStorageTreeView());
     registerSideBarDecorations();
     registerWalkthrough();
 

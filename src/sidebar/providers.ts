@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import { ProjectStorage } from "../storage/storage";
 import { GroupNode, ProjectNode } from "./nodes";
 import { StorageProvider } from "./storageProvider";
+import { FavoritesDragAndDropController } from "./favoritesReorder";
 import { Container } from "../core/container";
 import { l10n } from "vscode";
 
@@ -25,7 +26,8 @@ export class Providers {
 
         this.storageTreeView = vscode.window.createTreeView("projectsExplorerFavorites", {
             treeDataProvider: this.storageProvider,
-            showCollapseAll: true
+            showCollapseAll: true,
+            dragAndDropController: new FavoritesDragAndDropController(this.projectStorage, () => this.refreshStorageTreeView())
         });
 
         this.registerStorageTreeViewListeners();

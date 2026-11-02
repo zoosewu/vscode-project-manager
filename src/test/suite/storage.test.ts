@@ -339,6 +339,112 @@ suite("ProjectStorage", () => {
         assert.strictEqual(project!.group, "Deploy/Prod");
     });
 
+    // Reordering: the projects array order is the "Saved" order shown in the Side Bar,
+    // so these tests assert on names in array order.
+    const names = (storage: ProjectStorage) => storage.getProjects().map(p => p.name);
+
+    test("moveProject dragging down onto the next project swaps them", () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        storage.push("B", "/b");
+        storage.push("C", "/c");
+
+        assert.strictEqual(storage.moveProject("A", "B"), true);
+
+        assert.deepStrictEqual(names(storage), ["B", "A", "C"]);
+    });
+
+    test("moveProject dragging up places the project before the target", () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        storage.push("B", "/b");
+        storage.push("C", "/c");
+
+        storage.moveProject("C", "A");
+
+        assert.deepStrictEqual(names(storage), ["C", "A", "B"]);
+    });
+
+    test("moveProject is a no-op for unknown names or dropping on itself", () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        storage.push("B", "/b");
+
+        assert.strictEqual(storage.moveProject("A", "A"), false);
+        assert.strictEqual(storage.moveProject("Missing", "A"), false);
+        assert.strictEqual(storage.moveProject("A", "Missing"), false);
+        assert.deepStrictEqual(names(storage), ["A", "B"]);
+    });
+
+    test("moveProjectToGroup appends after the last project of that group", () => {
+        const storage = new ProjectStorage();
+        storage.push("W1", "/w1", "Work");
+        storage.push("W2", "/w2", "Work");
+        storage.push("P1", "/p1", "Personal");
+        storage.push("Root", "/root");
+
+        assert.strictEqual(storage.moveProjectToGroup("Root", "Work"), true);
+
+        assert.deepStrictEqual(names(storage), ["W1", "W2", "Root", "P1"]);
+        assert.strictEqual(storage.getProjects()[2].group, "Work");
+    });
+
+    test("moveProjectToGroup into a group without projects moves to the end", () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        storage.push("B", "/b");
+
+        storage.moveProjectToGroup("A", "/New//Group/");
+
+        assert.deepStrictEqual(names(storage), ["B", "A"]);
+        assert.strictEqual(storage.getProjects()[1].group, "New/Group");
+    });
+
+    test("moveProjectBy skips disabled projects because they are hidden in the Side Bar", () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        storage.push("Hidden", "/hidden");
+        storage.push("B", "/b");
+        storage.toggleEnabled("Hidden");
+
+        assert.strictEqual(storage.moveProjectBy("B", -1, false), true);
+
+        assert.deepStrictEqual(names(storage), ["B", "Hidden", "A"]);
+    });
+
+    test("moveProjectBy within groups only swaps with projects of the same group", () => {
+        const storage = new ProjectStorage();
+        storage.push("W1", "/w1", "Work");
+        storage.push("P1", "/p1", "Personal");
+        storage.push("W2", "/w2", "Work");
+
+        storage.moveProjectBy("W1", 1, true);
+
+        assert.deepStrictEqual(names(storage), ["W2", "P1", "W1"]);
+    });
+
+    test("moveProjectBy returns false at the edge of the list", () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        storage.push("B", "/b");
+
+        assert.strictEqual(storage.moveProjectBy("A", -1, false), false);
+        assert.strictEqual(storage.moveProjectBy("B", 1, false), false);
+        assert.deepStrictEqual(names(storage), ["A", "B"]);
+    });
+
+    test("reordered projects keep their order after save and load", async () => {
+        const storage = new ProjectStorage();
+        storage.push("A", "/a");
+        storage.push("B", "/b");
+        storage.moveProject("B", "A");
+        await storage.save();
+
+        const reloaded = new ProjectStorage();
+        reloaded.load();
+        assert.deepStrictEqual(names(reloaded), ["B", "A"]);
+    });
+
 });
 
 suite("normalizeGroupPath", () => {

@@ -49,5 +49,7 @@
     "Replace": "Замінити",
     "Merge": "Об’єднати",
     "Found {0} projects. How would you like to import?": "Знайдено проєктів: {0}. Як імпортувати?",
-    "Imported {0} projects.": "Імпортовано проєктів: {0}."
+    "Imported {0} projects.": "Імпортовано проєктів: {0}.",
+    "Projects can only be reordered when the list is sorted by Saved.": "Змінювати порядок проєктів можна лише при сортуванні за збереженням.",
+    "Sort by Saved": "Сортувати за збереженням"
 }

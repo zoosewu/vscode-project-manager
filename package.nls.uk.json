@@ -20,6 +20,8 @@
     "projectManager.commands.renameProject.title": "Перейменувати проєкт",
     "projectManager.commands.editGroup.title": "Редагувати групу",
     "projectManager.commands.renameGroup.title": "Перейменувати групу",
+    "projectManager.commands.moveProjectUp.title": "Перемістити вгору",
+    "projectManager.commands.moveProjectDown.title": "Перемістити вниз",
     "projectManager.commands.viewAsGroups#sideBarFavorites.title": "Перегляд за групами",
     "projectManager.commands.viewAsList#sideBarFavorites.title": "Перегляд списком",
     "projectManager.submenus.viewAndSort#sideBarFavorites.title": "Перегляд і сортування",

@@ -173,6 +173,14 @@
 				"title": "%projectManager.commands.renameGroup.title%"
 			},
 			{
+				"command": "_projectManager.moveProjectUp",
+				"title": "%projectManager.commands.moveProjectUp.title%"
+			},
+			{
+				"command": "_projectManager.moveProjectDown",
+				"title": "%projectManager.commands.moveProjectDown.title%"
+			},
+			{
 				"command": "_projectManager.viewAsGroups#sideBarFavorites",
 				"title": "%projectManager.commands.viewAsGroups#sideBarFavorites.title%",
 				"icon": "$(list-tree)"
@@ -281,6 +289,14 @@
 					"when": "false"
 				},
 				{
+					"command": "_projectManager.moveProjectUp",
+					"when": "false"
+				},
+				{
+					"command": "_projectManager.moveProjectDown",
+					"when": "false"
+				},
+				{
 					"command": "_projectManager.viewAsGroups#sideBarFavorites",
 					"when": "false"
 				}
@@ -372,6 +388,16 @@
 					"command": "_projectManager.renameGroup",
 					"when": "view == projectsExplorerFavorites && viewItem == GroupNodeKind",
 					"group": "favorites"
+				},
+				{
+					"command": "_projectManager.moveProjectUp",
+					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind && (projectManager.favoritesViewMode == 'groups' || projectManager.sortBy == Saved)",
+					"group": "reorder@1"
+				},
+				{
+					"command": "_projectManager.moveProjectDown",
+					"when": "view == projectsExplorerFavorites && viewItem == ProjectNodeKind && (projectManager.favoritesViewMode == 'groups' || projectManager.sortBy == Saved)",
+					"group": "reorder@2"
 				},
 				{
 					"command": "projectManager.addToWorkspace#sideBar",

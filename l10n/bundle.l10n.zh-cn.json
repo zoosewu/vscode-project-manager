@@ -49,5 +49,7 @@
     "Replace": "替换",
     "Merge": "合并",
     "Found {0} projects. How would you like to import?": "找到 {0} 个项目。要如何导入？",
-    "Imported {0} projects.": "已导入 {0} 个项目。"
+    "Imported {0} projects.": "已导入 {0} 个项目。",
+    "Projects can only be reordered when the list is sorted by Saved.": "只有在列表按已保存排序时才能调整项目顺序。",
+    "Sort by Saved": "按已保存排序"
 }

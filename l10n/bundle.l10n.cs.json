@@ -49,5 +49,7 @@
     "Replace": "Nahradit",
     "Merge": "Sloučit",
     "Found {0} projects. How would you like to import?": "Nalezeno projektů: {0}. Jak chcete import provést?",
-    "Imported {0} projects.": "Importováno projektů: {0}."
+    "Imported {0} projects.": "Importováno projektů: {0}.",
+    "Projects can only be reordered when the list is sorted by Saved.": "Pořadí projektů lze měnit pouze při řazení podle Uloženo.",
+    "Sort by Saved": "Seřadit podle Uloženo"
 }
