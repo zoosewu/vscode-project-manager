@@ -30,12 +30,12 @@
 ## [13.4.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.3.0...v13.4.0) (2026-04-07)
 
 
-### ### Added
+### Added
 
 * remove tags feature in favor of groups-only organization ([aba698e](https://github.com/zoosewu/vscode-project-manager/commit/aba698e55e8628c3481c3d67a085fa20a1bccd83))
 
 
-### ### Fixed
+### Fixed
 
 * **changelog:** remove duplicate entries caused by regular merge commits ([5b914f8](https://github.com/zoosewu/vscode-project-manager/commit/5b914f8227b70afe76bbd5cf209275c4c7e220f2))
 * **i18n:** fix invalid JSON in Russian and Ukrainian NLS files ([b591d3a](https://github.com/zoosewu/vscode-project-manager/commit/b591d3ae9d79cdfcc0c7af2b65f1509e3d1e6828))
@@ -57,18 +57,18 @@
 ## [13.1.3](https://github.com/zoosewu/vscode-project-manager/compare/v13.1.2...v13.1.3) (2026-04-02)
 
 
-### ### Fixed
+### Fixed
 
 * resolve multiple bugs found in static analysis ([21a3ccd](https://github.com/zoosewu/vscode-project-manager/commit/21a3ccd49776509543a64c3e3bc44cf7f86d2d1a))
 
 
-### ### Changed
+### Changed
 
 * parallelize provider loading and defer non-critical activation ([20884ba](https://github.com/zoosewu/vscode-project-manager/commit/20884ba204887a25e5ca13ce64b2b31ea3667d23))
 * progressive loading for autodetect sidebar providers ([7edfabe](https://github.com/zoosewu/vscode-project-manager/commit/7edfabe26c8d31e50c4f2055349990e1a5d94876))
 
 
-### ### Internal
+### Internal
 
 * sync release-please manifest to v13.1.2 ([2f899f3](https://github.com/zoosewu/vscode-project-manager/commit/2f899f39d59244ed7620b4f2a50a669342052db8))
 
