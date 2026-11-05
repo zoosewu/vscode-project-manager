@@ -27,6 +27,37 @@
 - Security Alert: braces (dependabot [PR #746](https://github.com/alefragnani/vscode-project-manager/pull/746))
 
 
+## [13.5.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.4.0...v13.5.0) (2026-11-05)
+
+
+### Added
+
+* drop deprecated openInCurrenWindowIfEmpty setting ([193f0c7](https://github.com/zoosewu/vscode-project-manager/commit/193f0c79cb74be3d951f3fe534500fc1e3f9f3fc))
+* keep favorites only, weekly silent auto-update, fix activity bar icon ([f247c6d](https://github.com/zoosewu/vscode-project-manager/commit/f247c6d7d31b3b0bd280cb40848ac4c208e94d03))
+* remove Disable Project ([29b9038](https://github.com/zoosewu/vscode-project-manager/commit/29b9038becdf139e3939acd1b4655fcbe141615d))
+* remove What's New page ([19a7280](https://github.com/zoosewu/vscode-project-manager/commit/19a7280fc5f9a6c9dbd03d99c4882d57422d72ab))
+* **sidebar:** add Rename Group command for batch group path renaming ([1acea94](https://github.com/zoosewu/vscode-project-manager/commit/1acea94ad2bf89b45ff23bd1661097859bb4e6ba))
+* **sidebar:** reorder favorites by drag and drop and move up/down ([b56dfb2](https://github.com/zoosewu/vscode-project-manager/commit/b56dfb23b540f64aa99c36d5747cf40089eeed4a))
+
+
+### Fixed
+
+* keep profile, status bar and reveal behavior consistent for all projects ([01cc547](https://github.com/zoosewu/vscode-project-manager/commit/01cc547241dc833b13b0b5370a03781c710e6ccd))
+* **quickpick:** type project list items and show the missing-path hint ([f80c607](https://github.com/zoosewu/vscode-project-manager/commit/f80c60791541ebc909752b671719c24c6f08677f))
+* refresh Side Bar and Status Bar from a single settings listener ([8dbd3d3](https://github.com/zoosewu/vscode-project-manager/commit/8dbd3d38087c63ab31c92ed8176b2772189cede8))
+
+
+### Changed
+
+* **autodetect:** deduplicate concurrent locateProjects calls ([21ab28c](https://github.com/zoosewu/vscode-project-manager/commit/21ab28c28411e330dba9e2ca00a07a5cb725e92b))
+* **remote:** share one remote type table for names, icons and tooltips ([d74897a](https://github.com/zoosewu/vscode-project-manager/commit/d74897a5d0367e788a7a763220adb81dbd35f66c))
+* remove dead code and unused strings ([123d47d](https://github.com/zoosewu/vscode-project-manager/commit/123d47d345549aa7b914dd498bce0ba5f9996574))
+
+
+### Internal
+
+* point project links and metadata to the zoosewu fork ([c32348d](https://github.com/zoosewu/vscode-project-manager/commit/c32348db4e6f6b6af0ff900db2b59447d9152517))
+
 ## [13.4.0](https://github.com/zoosewu/vscode-project-manager/compare/v13.3.0...v13.4.0) (2026-04-07)
 
 
